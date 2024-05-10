@@ -12,31 +12,37 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class XeroTalon extends SubsystemBase {
     private XeroTalonIO io_;
     private XeroTalonIOInputs inputs_;
-    private String name;
+    private String motor_name;
+    private String sub_name;
 
-    public XeroTalon(int CANID, String name, double gearRatio, double gearRadius){
-        this.io_ = new XeroTalonIOMotor(CANID, name, gearRatio, gearRadius);
-        this.inputs_ = new XeroTalonIOInputs(name);
-        this.name = name;
+    public XeroTalon(int CANID, String motor_name, String sub_name, double gearRatio, double gearRadius){
+        this.io_ = new XeroTalonIOMotor(CANID, motor_name, gearRatio, gearRadius);
+        this.inputs_ = new XeroTalonIOInputs(motor_name);
+        this.sub_name = sub_name;
+        this.motor_name = motor_name;
     }
 
-    public XeroTalon(int CANID, String name, double gearRatio){
-        this(CANID, name, gearRatio, 1);
+    public XeroTalon(int CANID, String name, String sub_name, double gearRatio){
+        this(CANID, name, sub_name, gearRatio, 1);
+    }
+
+    public XeroTalon(int CANID, String motor_name, String sub_name){
+        this(CANID, motor_name, sub_name, 1, 1);
     }
 
     public XeroTalon(int CANID, String name){
-        this(CANID, name, 1, 1);
+        this(CANID, name, name);
     }
 
     public XeroTalon(int CANID){
-        this(CANID, "motor" + CANID, 1, 1);
+        this(CANID, "motor" + CANID);
     }
 
     @Override
     public void periodic(){
         io_.updateInputs(inputs_);
-        Logger.processInputs(name, inputs_);
-        Logger.recordOutput(name + " temperature", getMotor().getDeviceTemp().getValueAsDouble());
+        Logger.processInputs(sub_name, inputs_);
+        Logger.recordOutput(motor_name + " temperature", getMotor().getDeviceTemp().getValueAsDouble());
     }
 
     public void setVelocity(double rps){
