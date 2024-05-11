@@ -11,19 +11,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeShooterSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   private XeroTalon shooter1;
-  private AKInput inputs = new AKInput("IntakeShooterSubsystem");
 
   public IntakeShooterSubsystem() {
     shooter1 = new XeroTalon(3, "Shooter1", "IntakeShooterSubsystem", 0.6);
     shooter1.setPID("s", 0.05);
     shooter1.setPID("p", 0.11);
     shooter1.setPID("v", 0.12);
-    inputs.add("Sensor", false);
+    AKInput.add("IntakeShooterSubsystem", "Sensor", false);
   }
 
   @Override
   public void periodic() {
-    inputs.periodic();
+  }
+
+  public void updateInputs(){
   }
 
   public void spin(double rps){

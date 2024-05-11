@@ -4,22 +4,38 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import MotorFactory.XeroTalonIO.XeroTalonIOInputs;
+import AKInput.AKInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class XeroTalon extends SubsystemBase {
-    private XeroTalonIO io_;
-    private XeroTalonIOInputs inputs_;
     private String motor_name;
-    private String sub_name;
+    private TalonFX motor_;
+    private Slot0Configs pids_;
+    private double gearRatio;
+    private double gearRadius;
+    private int[][] inputIndicies = new int[5][2];
 
     public XeroTalon(int CANID, String motor_name, String sub_name, double gearRatio, double gearRadius){
-        this.io_ = new XeroTalonIOMotor(CANID, motor_name, gearRatio, gearRadius);
-        this.inputs_ = new XeroTalonIOInputs(motor_name);
-        this.sub_name = sub_name;
+        motor_ = new TalonFX(CANID);
+        pids_ = new Slot0Configs();
+        pids_.kS = 0.05; // Add 0.05 V output to overcome static friction
+        pids_.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+        pids_.kP = 0.11; // An error of 1 rps results in 0.11 V output
+        pids_.kI = 0; // no output for integrated error
+        pids_.kD = 0; // no output for error derivative
+        motor_.getConfigurator().apply(pids_);
+        this.gearRatio = gearRatio;
+        this.gearRadius = gearRadius;
         this.motor_name = motor_name;
+        inputIndicies[0] = AKInput.add(sub_name, motor_name + " Position", 0.0);
+        inputIndicies[1] = AKInput.add(sub_name, motor_name + " Velocity", 0.0);
+        inputIndicies[2] = AKInput.add(sub_name, motor_name + " Acceleration", 0.0);
+        inputIndicies[3] = AKInput.add(sub_name, motor_name + " Current", 0.0);
+        inputIndicies[4] = AKInput.add(sub_name, motor_name + " Voltage", 0.0);
     }
 
     public XeroTalon(int CANID, String name, String sub_name, double gearRatio){
@@ -40,56 +56,84 @@ public class XeroTalon extends SubsystemBase {
 
     @Override
     public void periodic(){
-        io_.updateInputs(inputs_);
-        Logger.processInputs(sub_name, inputs_);
+        updateInputs();
         Logger.recordOutput(motor_name + " temperature", getMotor().getDeviceTemp().getValueAsDouble());
     }
 
-    public void setVelocity(double rps){
-        io_.setVelocity(rps);
-    }
-
-    public void motionMagicGotoMeters(double meters){
-        io_.motionMagicGotoMeters(meters);
-    }
-
-    public void motionMagicGotoDegrees(double degs){
-        io_.motionMagicGotoDegrees(degs);
-    }
-
-    public void motionMagicGotoRadians(double rads){
-        io_.motionMagicGotoRadians(rads);
-    }
-
-    public void motionMagicGotoRevolutions(double revs){
-        io_.motionMagicGotoRevolutions(revs);
-    }
-
-    public void setControl(ControlRequest req){
-        io_.setControl(req);
-    }
-
-    public void stop(){
-        io_.stop();
+    public void updateInputs() {
+        AKInput.update(inputIndicies[0], motor_.getPosition().getValueAsDouble());
+        AKInput.update(inputIndicies[1], motor_.getVelocity().getValueAsDouble());
+        AKInput.update(inputIndicies[2], motor_.getAcceleration().getValueAsDouble());
+        AKInput.update(inputIndicies[3], motor_.getSupplyCurrent().getValueAsDouble());
+        AKInput.update(inputIndicies[4], motor_.getMotorVoltage().getValueAsDouble());
     }
 
     public TalonFX getMotor(){
-        return io_.getMotor();
+        return motor_;
     }
 
-    public void setPIDs(Slot0Configs config){
-        io_.setPIDs(config);
+    public void setVelocity(double rps){
+        setControl(new VelocityVoltage(rps/gearRatio));
+    }
+
+    public void stop(){
+        motor_.stopMotor();
+    }
+
+    public void motionMagicGotoMeters(double length){
+        setControl(new MotionMagicVoltage((length * gearRadius)/(Math.PI * 2 * gearRatio)));
+    }
+
+    public void motionMagicGotoRevolutions(double revs){
+        setControl(new MotionMagicVoltage(revs));
+    }
+
+    public void motionMagicGotoDegrees(double degrees){
+        setControl(new MotionMagicVoltage(degrees/360));
+    }
+
+    public void motionMagicGotoRadians(double rads){
+        setControl(new MotionMagicVoltage(rads/(Math.PI * 2)));
+    }
+
+    public void setControl(ControlRequest req){
+        motor_.setControl(req);
+    }
+
+    public void setPIDs(Slot0Configs PIDs){
+        this.pids_ = PIDs;
     }
 
     public void setPIDs(double p, double i, double d){
-        io_.setPIDs(p, i, d);
+        if(p != 0){
+            pids_.kP = p;
+        }
+        if(i != 0){
+            pids_.kI = i;
+        }
+        if(d != 0){
+            pids_.kD = d;
+        }
+
+        motor_.getConfigurator().apply(pids_);
     }
 
     public boolean setPID(String whatToSet, double changed){
-        return io_.setPID(changed, whatToSet);
+        switch(whatToSet.toLowerCase()){
+            case "s": pids_.kS = changed; break;
+            case "v": pids_.kV = changed; break;
+            case "p": pids_.kP = changed; break;
+            case "i": pids_.kI = changed; break;
+            case "d": pids_.kD = changed; break;
+            case "a": pids_.kA = changed; break;
+            case "g": pids_.kG = changed; break;
+            default: return false;
+        }
+        motor_.getConfigurator().apply(pids_);
+        return true;
     }
 
     public Slot0Configs getPIDs(){
-        return io_.getPIDs();
+        return pids_;
     }
 }
