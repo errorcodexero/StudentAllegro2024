@@ -19,7 +19,7 @@ public class XeroTalon extends SubsystemBase {
     private double gearRadius;
     private int[][] inputIndicies = new int[5][2];
 
-    public XeroTalon(int CANID, String motor_name, String sub_name, double gearRatio, double gearRadius){
+    public XeroTalon(int CANID, String sub_name, String motor_name, double gearRatio, double gearRadius){
         motor_ = new TalonFX(CANID);
         pids_ = new Slot0Configs();
         pids_.kS = 0.05; // Add 0.05 V output to overcome static friction
@@ -38,11 +38,11 @@ public class XeroTalon extends SubsystemBase {
         inputIndicies[4] = AKInput.add(sub_name, motor_name + " Voltage", 0.0);
     }
 
-    public XeroTalon(int CANID, String name, String sub_name, double gearRatio){
-        this(CANID, name, sub_name, gearRatio, 1);
+    public XeroTalon(int CANID, String sub_name, String motor_name, double gearRatio){
+        this(CANID, motor_name, sub_name, gearRatio, 1);
     }
 
-    public XeroTalon(int CANID, String motor_name, String sub_name){
+    public XeroTalon(int CANID, String sub_name, String motor_name){
         this(CANID, motor_name, sub_name, 1, 1);
     }
 
@@ -60,7 +60,7 @@ public class XeroTalon extends SubsystemBase {
         Logger.recordOutput(motor_name + " temperature", getMotor().getDeviceTemp().getValueAsDouble());
     }
 
-    public void updateInputs() {
+    private void updateInputs() {
         AKInput.update(inputIndicies[0], motor_.getPosition().getValueAsDouble());
         AKInput.update(inputIndicies[1], motor_.getVelocity().getValueAsDouble());
         AKInput.update(inputIndicies[2], motor_.getAcceleration().getValueAsDouble());
