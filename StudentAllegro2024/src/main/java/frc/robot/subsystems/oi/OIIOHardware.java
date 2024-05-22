@@ -4,28 +4,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
-/** Add your docs here. */
+/**
+ * Hardware Implementation Mapping for The Physical OI Panel
+ */
 public class OIIOHardware extends CommandGenericHID implements OIIO {
 
     public OIIOHardware(int port) {
         super(port);
-    }
-
-    @Override
-    public void updateInputs(OIIOInputsAutoLogged inputs) {
-        inputs.abort = abort().getAsBoolean();
-        inputs.shoot = shoot().getAsBoolean();
-        inputs.collect = collect().getAsBoolean();
-        inputs.unclimb = unclimb().getAsBoolean();
-        inputs.climbPrepare = climbPrepare().getAsBoolean();
-        inputs.climbExecute = climbExecute().getAsBoolean();
-        inputs.eject = eject().getAsBoolean();
-        inputs.turtle = eject().getAsBoolean();
-        
-        inputs.shootPodium = shootPodium().getAsBoolean();
-        inputs.shootSubwoofer = shootSubwoofer().getAsBoolean();
-        inputs.cycleAmp = cycleAmp().getAsBoolean();
-        inputs.cycleSpeaker = cycleSpeaker().getAsBoolean();
     }
 
     @Override
@@ -97,29 +82,6 @@ public class OIIOHardware extends CommandGenericHID implements OIIO {
     public Trigger shootSubwoofer() {
         return button(Constants.OI.Buttons.shootingSubwoofer);
     }
-
-    @Override
-    public ShootingType getShootingType() {
-        if (shootPodium().getAsBoolean())
-            return ShootingType.PODIUM; //  (left)
-
-        if (shootSubwoofer().getAsBoolean())
-            return ShootingType.SUBWOOFER; // (right)
-
-        return ShootingType.AUTO;
-    }
-
-    @Override
-    public CycleType getCycleType() {
-        if (cycleSpeaker().getAsBoolean())
-            return CycleType.SPEAKER; // speaker position (left)
-
-        if (cycleTrap().getAsBoolean())
-            return CycleType.TRAP; // trap position (right)
-
-        return CycleType.AMP; // default middle position
-    }
-
     
 
 }

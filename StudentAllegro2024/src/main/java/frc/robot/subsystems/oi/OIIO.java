@@ -8,7 +8,10 @@ import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-/** Add your docs here. */
+/**
+ * OI layer interface for different hardware implementations to be used.
+ * When extending this class, simply override all abstract methods to return a trigger to the desired button mapping.
+ */
 public interface OIIO {
 
     @AutoLog
@@ -29,7 +32,21 @@ public interface OIIO {
         public boolean shootSubwoofer = false;
     }
 
-    public abstract void updateInputs(OIIOInputsAutoLogged inputs);
+    public default void updateInputs(OIIOInputsAutoLogged inputs) {
+        inputs.abort = abort().getAsBoolean();
+        inputs.shoot = shoot().getAsBoolean();
+        inputs.collect = collect().getAsBoolean();
+        inputs.unclimb = unclimb().getAsBoolean();
+        inputs.climbPrepare = climbPrepare().getAsBoolean();
+        inputs.climbExecute = climbExecute().getAsBoolean();
+        inputs.eject = eject().getAsBoolean();
+        inputs.turtle = eject().getAsBoolean();
+        
+        inputs.shootPodium = shootPodium().getAsBoolean();
+        inputs.shootSubwoofer = shootSubwoofer().getAsBoolean();
+        inputs.cycleAmp = cycleAmp().getAsBoolean();
+        inputs.cycleSpeaker = cycleSpeaker().getAsBoolean();
+    }
 
     public abstract Trigger shoot();
     public abstract Trigger collect();
@@ -52,7 +69,28 @@ public interface OIIO {
      * Gets the current type of shooting from the bottom switch.
      * @return PODIUM if set to left, AUTO if set to middle, SUBWOOFER if set to the right.
      */
-    public abstract ShootingType getShootingType();
-    public abstract CycleType getCycleType();
+    public default ShootingType getShootingType() {
+        if (shootPodium().getAsBoolean())
+            return ShootingType.PODIUM; //  (left)
+
+        if (shootSubwoofer().getAsBoolean())
+            return ShootingType.SUBWOOFER; // (right)
+
+        return ShootingType.AUTO;
+    }
+
+    /**
+     * Gets the current set cycle type from the top switch.
+     * @return SPEAKER if set to left, AMP if set to middle, TRAP if set to the right.
+     */
+    public default CycleType getCycleType() {
+        if (cycleSpeaker().getAsBoolean())
+            return CycleType.SPEAKER; // speaker position (left)
+
+        if (cycleTrap().getAsBoolean())
+            return CycleType.TRAP; // trap position (right)
+
+        return CycleType.AMP; // default middle position
+    }
 
 }
