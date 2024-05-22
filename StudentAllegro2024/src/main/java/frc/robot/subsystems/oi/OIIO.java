@@ -21,6 +21,12 @@ public interface OIIO {
         public boolean abort = false;
         public boolean eject = false;
         public boolean turtle = false;
+
+        public boolean cycleSpeaker = false;
+        public boolean cycleAmp = false;
+
+        public boolean shootPodium = false;
+        public boolean shootSubwoofer = false;
     }
 
     public abstract void updateInputs(OIIOInputsAutoLogged inputs);
@@ -33,5 +39,20 @@ public interface OIIO {
     public abstract Trigger abort();
     public abstract Trigger eject();
     public abstract Trigger turtle();
+    
+    public abstract Trigger cycleSpeaker();
+    public abstract Trigger cycleTrap();
+    public abstract Trigger cycleAmp();
+
+    public abstract Trigger shootPodium();
+    public abstract Trigger shootAuto();
+    public abstract Trigger shootSubwoofer();
+
+    /**
+     * Gets the current type of shooting from the bottom switch.
+     * @return PODIUM if set to left, AUTO if set to middle, SUBWOOFER if set to the right.
+     */
+    public abstract ShootingType getShootingType();
+    public abstract CycleType getCycleType();
 
 }

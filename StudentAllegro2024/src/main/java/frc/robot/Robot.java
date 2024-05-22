@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private final boolean SIMULATOR_INPUTS = true;
+  private final boolean SIMULATOR_INPUTS = false;
   private final boolean REAL_TIMING = true;
 
   private Command m_autonomousCommand;
