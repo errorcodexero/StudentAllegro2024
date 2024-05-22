@@ -34,6 +34,9 @@
         "IntakeShooterSubsystem": {
           "open": true
         },
+        "OISubsystem": {
+          "open": true
+        },
         "open": true
       }
     }
