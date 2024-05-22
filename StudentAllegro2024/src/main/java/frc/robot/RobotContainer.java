@@ -8,7 +8,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.SpinShooter1;
 import frc.robot.subsystems.IntakeShooterSubsystem;
-import frc.robot.subsystems.oi.OIIOHardware;
 import frc.robot.subsystems.oi.OISubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;

@@ -70,7 +70,7 @@ public class OISubsystem extends SubsystemBase {
    * Climbing Prepare Button Trigger
    * @return {@link Trigger} for the Prepare Button
    */
-  public Trigger prepare() {
+  public Trigger climbPrepare() {
     return io.climbPrepare();
   }
 
@@ -78,7 +78,55 @@ public class OISubsystem extends SubsystemBase {
    * Climbing Execute Button Trigger
    * @return {@link Trigger} for the Execute Button
    */
-  public Trigger execute() {
+  public Trigger climbExecute() {
     return io.climbExecute();
+  }
+
+  /**
+   * Cycle Mode Speaker Left Switch Trigger
+   * @return {@link Trigger} fired when cycle mode is set to speaker.
+   */
+  public Trigger cycleSpeaker() {
+      return io.cycleSpeaker();
+  }
+
+  /**
+   * Cycle Mode Trap Right Switch Trigger
+   * @return {@link Trigger} fired when cycle mode is set to trap.
+   */
+  public Trigger cycleTrap() {
+      return io.cycleTrap();
+  }
+
+  /**
+   * Cycle Mode Amp Default Middle Switch Trigger
+   * @return {@link Trigger} fired when cycle mode is set to amp.
+   */
+  public Trigger cycleAmp() {
+      return io.cycleAmp();
+  }
+
+  /**
+   * Shooting Mode Podium Left Switch Trigger
+   * @return {@link Trigger} fired when shooting mode is set to podium.
+   */
+  public Trigger shootPodium() {
+      return io.shootPodium();
+  }
+
+  /**
+   * Shooting Mode Auto Middle Switch Trigger
+   * @return {@link Trigger} fired when shooting mode is set to auto.
+   */
+  public Trigger shootAuto() {
+      return io.shootAuto();
+  }
+
+  /**
+   * Shooting Mode Subwoofer Right Switch Trigger
+   * @return  {@link Trigger} fired when shooting mode is set to subwoofer.
+   */
+  public Trigger shootSubwoofer() {
+      return io.shootSubwoofer();
   }
 }
