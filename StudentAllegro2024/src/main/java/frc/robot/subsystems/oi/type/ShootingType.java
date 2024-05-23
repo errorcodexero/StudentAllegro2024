@@ -1,4 +1,4 @@
-package frc.robot.subsystems.oi;
+package frc.robot.subsystems.oi.type;
 
 public enum ShootingType {
     PODIUM,
