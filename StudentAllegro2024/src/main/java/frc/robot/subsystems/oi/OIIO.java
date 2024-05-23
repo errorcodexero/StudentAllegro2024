@@ -7,6 +7,8 @@ package frc.robot.subsystems.oi;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.oi.type.CycleType;
+import frc.robot.subsystems.oi.type.ShootingType;
 
 /**
  * OI layer interface for different hardware implementations to be used.
@@ -40,12 +42,13 @@ public interface OIIO {
         inputs.climbPrepare = climbPrepare().getAsBoolean();
         inputs.climbExecute = climbExecute().getAsBoolean();
         inputs.eject = eject().getAsBoolean();
-        inputs.turtle = eject().getAsBoolean();
+        inputs.turtle = turtle().getAsBoolean();
         
         inputs.shootPodium = shootPodium().getAsBoolean();
         inputs.shootSubwoofer = shootSubwoofer().getAsBoolean();
         inputs.cycleAmp = cycleAmp().getAsBoolean();
         inputs.cycleSpeaker = cycleSpeaker().getAsBoolean();
+        // Other two not included here because they technically dont count as 'inputs' but 'outputs' in the current model.
     }
 
     public abstract Trigger shoot();
@@ -56,7 +59,7 @@ public interface OIIO {
     public abstract Trigger abort();
     public abstract Trigger eject();
     public abstract Trigger turtle();
-    
+
     public abstract Trigger cycleSpeaker();
     public abstract Trigger cycleTrap();
     public abstract Trigger cycleAmp();
@@ -68,7 +71,9 @@ public interface OIIO {
     /**
      * Gets the current type of shooting from the bottom switch.
      * @return PODIUM if set to left, AUTO if set to middle, SUBWOOFER if set to the right.
+     * @deprecated Must coordinate with the team as to how this should be implemened.
      */
+    @Deprecated
     public default ShootingType getShootingType() {
         if (shootPodium().getAsBoolean())
             return ShootingType.PODIUM; //  (left)
@@ -82,7 +87,9 @@ public interface OIIO {
     /**
      * Gets the current set cycle type from the top switch.
      * @return SPEAKER if set to left, AMP if set to middle, TRAP if set to the right.
+     * @deprecated Must coordinate with the team as to how this should be implemened.
      */
+    @Deprecated
     public default CycleType getCycleType() {
         if (cycleSpeaker().getAsBoolean())
             return CycleType.SPEAKER; // speaker position (left)

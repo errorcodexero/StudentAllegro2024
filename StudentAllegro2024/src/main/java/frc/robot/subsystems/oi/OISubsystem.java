@@ -14,6 +14,10 @@ public class OISubsystem extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs(getName(), inputs);
+
+    // Logging the current type of things, EXPERIMENTAL, WILL FINALIZE SOON
+    Logger.recordOutput("ShootingType", io.getShootingType());
+    Logger.recordOutput("CycleType", io.getCycleType());
   }
 
   /** Creates a new OISubsystem. */
@@ -31,14 +35,6 @@ public class OISubsystem extends SubsystemBase {
    */
   public OISubsystem(int port) {
     this(new OIIOHardware(port));
-  }
-
-  /**
-   * Abort Button Trigger
-   * @return {@link Trigger} for the abort button.
-   */
-  public Trigger abort() {
-    return io.abort();
   }
 
   /**
@@ -62,8 +58,33 @@ public class OISubsystem extends SubsystemBase {
    * @return {@link Trigger} for the unclimb button.
    * @deprecated This button isnt currently used on the robot.
    */
+  @Deprecated
   public Trigger unclimb() {
     return io.unclimb();
+  }
+
+  /**
+   * Turtle Button Trigger
+   * @return {@link Trigger} for the unclimb button.
+   */
+  public Trigger turtle() {
+    return io.turtle();
+  }
+
+  /**
+   * Eject Button Trigger
+   * @return {@link Trigger} for the unclimb button.
+   */
+  public Trigger eject() {
+    return io.eject();
+  }
+
+    /**
+   * Abort Button Trigger
+   * @return {@link Trigger} for the abort button.
+   */
+  public Trigger abort() {
+    return io.abort();
   }
 
   /**
@@ -85,7 +106,9 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Cycle Mode Speaker Left Switch Trigger
    * @return {@link Trigger} fired when cycle mode is set to speaker.
+   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
+  @Deprecated
   public Trigger cycleSpeaker() {
       return io.cycleSpeaker();
   }
@@ -93,7 +116,9 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Cycle Mode Trap Right Switch Trigger
    * @return {@link Trigger} fired when cycle mode is set to trap.
+   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
+  @Deprecated
   public Trigger cycleTrap() {
       return io.cycleTrap();
   }
@@ -101,7 +126,9 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Cycle Mode Amp Default Middle Switch Trigger
    * @return {@link Trigger} fired when cycle mode is set to amp.
+   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
+  @Deprecated
   public Trigger cycleAmp() {
       return io.cycleAmp();
   }
@@ -109,7 +136,9 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Shooting Mode Podium Left Switch Trigger
    * @return {@link Trigger} fired when shooting mode is set to podium.
+   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
+  @Deprecated
   public Trigger shootPodium() {
       return io.shootPodium();
   }
@@ -117,7 +146,9 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Shooting Mode Auto Middle Switch Trigger
    * @return {@link Trigger} fired when shooting mode is set to auto.
+   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
+  @Deprecated
   public Trigger shootAuto() {
       return io.shootAuto();
   }
@@ -125,7 +156,9 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Shooting Mode Subwoofer Right Switch Trigger
    * @return  {@link Trigger} fired when shooting mode is set to subwoofer.
+   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
+  @Deprecated
   public Trigger shootSubwoofer() {
       return io.shootSubwoofer();
   }
