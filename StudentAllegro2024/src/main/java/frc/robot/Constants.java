@@ -19,18 +19,18 @@ public final class Constants {
 
   public static class OI {
     public class Buttons {
-      public static int cycleSpeaker = 2; // these are flipped for the new OI (flipped for some reason)
-      public static int cycleTrap = 1;
+      public static int cycleSpeaker = 1;
+      public static int cycleTrap = 2;
       public static int climbPrepare = 3;
       public static int climbExecute = 4;
-      public static int collect = 5; // on 5 for the new OI, on 11 for the old one.
       public static int unclimb = 6;
       public static int shoot = 7;
       public static int turtle = 8;
       public static int abort = 9;
       public static int eject = 10;
-      public static int shootingPodium = 13; // same for these :(
-      public static int shootingSubwoofer = 12;
+      public static int collect = 11;
+      public static int shootingPodium = 12;
+      public static int shootingSubwoofer = 13;
     }
 
     public class Indicators {
