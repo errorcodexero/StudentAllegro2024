@@ -1,32 +1,30 @@
 package frc.robot.subsystems.oi;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.oi.type.ActionType;
+import frc.robot.subsystems.oi.type.ShootType;
 
 public class OISubsystem extends SubsystemBase {
 
   private final OIIO io;
   private final OIIOInputsAutoLogged inputs = new OIIOInputsAutoLogged();
 
-  @Override
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs(getName(), inputs);
+  private Supplier<ActionType> actionType;
+  private Supplier<ShootType> shootType;
 
-    // Logging the current type of things, EXPERIMENTAL, WILL FINALIZE SOON
-    Logger.recordOutput("ShootingType", io.getShootingType());
-    Logger.recordOutput("CycleType", io.getCycleType());
-  }
-
-  /** Creates a new OISubsystem. */
   /**
    * Creates a new OI.
    * @param io The IO layer implementation to use for the subsystem.
    */
   public OISubsystem(OIIO io) {
     this.io = io;
+    this.actionType = io.actionTypeSupplier();
+    this.shootType = io.shootTypeSupplier();
   }
 
   /**
@@ -37,38 +35,22 @@ public class OISubsystem extends SubsystemBase {
     this(new OIIOHardware(port));
   }
 
-  /**
-   * Shoot Button Trigger
-   * @return {@link Trigger} for the shoot button.
-   */
-  public Trigger shoot() {
-    return io.shoot();
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs(getName(), inputs);
+
+    // Logging the current type of things, EXPERIMENTAL, WILL FINALIZE SOON
+    Logger.recordOutput("ActionThype", actionType.get());
+    Logger.recordOutput("CycleType", shootType.get());
   }
 
   /**
-   * Collect Button Trigger
-   * @return {@link Trigger} for the intake collect button.
+   * Abort Button Trigger
+   * @return {@link Trigger} for the abort button.
    */
-  public Trigger collect() {
-    return io.collect();
-  }
-
-  /**
-   * Unclumb Button Trigger
-   * @return {@link Trigger} for the unclimb button.
-   * @deprecated This button isnt currently used on the robot.
-   */
-  @Deprecated
-  public Trigger unclimb() {
-    return io.unclimb();
-  }
-
-  /**
-   * Turtle Button Trigger
-   * @return {@link Trigger} for the unclimb button.
-   */
-  public Trigger turtle() {
-    return io.turtle();
+  public Trigger abort() {
+    return io.abort();
   }
 
   /**
@@ -79,12 +61,12 @@ public class OISubsystem extends SubsystemBase {
     return io.eject();
   }
 
-    /**
-   * Abort Button Trigger
-   * @return {@link Trigger} for the abort button.
+  /**
+   * Turtle Button Trigger
+   * @return {@link Trigger} for the unclimb button.
    */
-  public Trigger abort() {
-    return io.abort();
+  public Trigger turtle() {
+    return io.turtle();
   }
 
   /**
@@ -104,41 +86,59 @@ public class OISubsystem extends SubsystemBase {
   }
 
   /**
-   * Cycle Mode Speaker Left Switch Trigger
-   * @return {@link Trigger} fired when cycle mode is set to speaker.
-   * @deprecated Must coordinate with the team as to how this should be implemened.
+   * Unclumb Button Trigger
+   * @return {@link Trigger} for the unclimb button.
+   * @deprecated This button isnt currently used on the robot.
    */
   @Deprecated
+  public Trigger unclimb() {
+    return io.unclimb();
+  }
+
+  /**
+   * Shoot Button Trigger
+   * @return {@link Trigger} for the shoot button.
+   */
+  public Trigger shoot() {
+    return io.shoot();
+  }
+
+  /**
+   * Collect Button Trigger
+   * @return {@link Trigger} for the intake collect button.
+   */
+  public Trigger collect() {
+    return io.collect();
+  }
+
+  /**
+   * Cycle Mode Speaker Left Switch Trigger
+   * @return {@link Trigger} fired when cycle mode is set to speaker.
+   */
   public Trigger cycleSpeaker() {
-      return io.cycleSpeaker();
+      return io.actionSpeaker();
   }
 
   /**
    * Cycle Mode Trap Right Switch Trigger
    * @return {@link Trigger} fired when cycle mode is set to trap.
-   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
-  @Deprecated
   public Trigger cycleTrap() {
-      return io.cycleTrap();
+      return io.actionTrap();
   }
 
   /**
    * Cycle Mode Amp Default Middle Switch Trigger
    * @return {@link Trigger} fired when cycle mode is set to amp.
-   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
-  @Deprecated
   public Trigger cycleAmp() {
-      return io.cycleAmp();
+      return io.actionAmp();
   }
 
   /**
    * Shooting Mode Podium Left Switch Trigger
    * @return {@link Trigger} fired when shooting mode is set to podium.
-   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
-  @Deprecated
   public Trigger shootPodium() {
       return io.shootPodium();
   }
@@ -146,9 +146,7 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Shooting Mode Auto Middle Switch Trigger
    * @return {@link Trigger} fired when shooting mode is set to auto.
-   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
-  @Deprecated
   public Trigger shootAuto() {
       return io.shootAuto();
   }
@@ -156,10 +154,33 @@ public class OISubsystem extends SubsystemBase {
   /**
    * Shooting Mode Subwoofer Right Switch Trigger
    * @return  {@link Trigger} fired when shooting mode is set to subwoofer.
-   * @deprecated Must coordinate with the team as to how this should be implemened.
    */
-  @Deprecated
   public Trigger shootSubwoofer() {
       return io.shootSubwoofer();
+  }
+
+  /**
+   * Gets a supplier for the action switch state.
+   * @return A supplier that gives the current state of the action type switch. (SPEAKER, AMP, TRAP)
+   */
+  public Supplier<ActionType> actionTypeSupplier() {
+    return actionType;
+  }
+
+  /**
+   * Gets a supplier for the shooting switch state.
+   * @return A supplier that gives the current state of the shooting type switch. (PODIUM, AUTO, SUBWOOFER)
+   */
+  public Supplier<ShootType> shootTypeSupplier() {
+    return shootType;
+  }
+
+  /**
+   * Sets the state of an indicator light on the top of the OI.
+   * @param index The light to set.
+   * @param on The state to set it to.
+   */
+  public void setIndicator(int index, boolean on) {
+    io.setIndicator(index, on);
   }
 }

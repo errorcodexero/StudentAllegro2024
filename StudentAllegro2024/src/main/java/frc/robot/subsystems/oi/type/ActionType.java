@@ -1,7 +1,6 @@
 package frc.robot.subsystems.oi.type;
 
-
-public enum CycleType {
+public enum ActionType {
     SPEAKER,
     AMP,
     TRAP

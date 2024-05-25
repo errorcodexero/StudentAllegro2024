@@ -4,15 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.SpinShooter1;
 import frc.robot.subsystems.IntakeShooterSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,7 +24,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem();
 
-  private final OISubsystem panelSubsystem = new OISubsystem(0);
+  private final OISubsystem oiPanel = new OISubsystem(0);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -46,9 +46,30 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    gamepad_.x().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
+    oiPanel.shoot().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
 
-    panelSubsystem.abort().whileTrue(Commands.print("ABORTING! (not rly jk lol)"));
+    // Calls abort() method which returns a trigger that can be binded to commands (just like the gamepad above)
+    oiPanel.abort().whileTrue(Commands.print("ABORTING!"));
+
+    oiPanel.setIndicator(1, false);
+
+    oiPanel.climbPrepare().onTrue(Commands.runOnce(() -> {
+      oiPanel.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, true);
+      oiPanel.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, false);
+    }, oiPanel));
+
+    oiPanel.climbExecute().onTrue(Commands.runOnce(() -> {
+      oiPanel.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, false);
+      oiPanel.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, true);
+    }, oiPanel));
+
+    oiPanel.unclimb().whileTrue(Commands.runOnce(() -> {
+      oiPanel.setIndicator(Constants.OI.Indicators.unclimbEnabled, true);
+    }, oiPanel));
+
+    oiPanel.unclimb().whileFalse(Commands.runOnce(() -> {
+      oiPanel.setIndicator(Constants.OI.Indicators.unclimbEnabled, false);
+    }, oiPanel));
   }
 
   /**

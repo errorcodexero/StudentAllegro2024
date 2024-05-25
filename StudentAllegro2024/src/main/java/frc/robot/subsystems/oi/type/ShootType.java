@@ -1,6 +1,6 @@
 package frc.robot.subsystems.oi.type;
 
-public enum ShootingType {
+public enum ShootType {
     PODIUM,
     AUTO,
     SUBWOOFER
