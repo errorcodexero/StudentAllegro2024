@@ -176,12 +176,12 @@ public class OISubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the state of an indicator light on the top of the OI.
+   * Sets the state of an indicator light on the OI (buttons or top indicators).
    * @param index The light to set.
    * @param on The state to set it to.
    */
   public void setIndicator(int index, boolean on) {
     io.setIndicator(index, on);
   }
-  
+
 }
