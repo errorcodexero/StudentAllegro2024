@@ -6,8 +6,8 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.SpinShooter1;
-import frc.robot.subsystems.IntakeShooterSubsystem;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem();
+  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -42,7 +42,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    gamepad_.x().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
   }
 
   /**
