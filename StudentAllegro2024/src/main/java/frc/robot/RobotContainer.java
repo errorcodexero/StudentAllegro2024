@@ -4,13 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.SpinShooter1;
 import frc.robot.subsystems.IntakeShooterSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.oi.OISubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem();
+
+  private final OISubsystem oiPanel_ = new OISubsystem(2);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -42,7 +46,36 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    gamepad_.x().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
+    gamepad_.a().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
+    oiPanel_.shoot().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
+
+    // Calls abort() method which returns a trigger that can be binded to commands (just like the gamepad above)
+    oiPanel_.abort().whileTrue(Commands.print("ABORTING!"));
+
+    // Testing Indicators
+    oiPanel_.setIndicator(1, true);
+    oiPanel_.setIndicator(2, false);
+    oiPanel_.setIndicator(3, true);
+    oiPanel_.setIndicator(4, false);
+
+    // Button Interactivity Testing
+    oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, true);
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, false);
+    }, oiPanel_));
+
+    oiPanel_.climbExecute().onTrue(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, false);
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, true);
+    }, oiPanel_));
+
+    oiPanel_.unclimb().whileTrue(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.unclimbEnabled, true);
+    }, oiPanel_));
+
+    oiPanel_.unclimb().whileFalse(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.unclimbEnabled, false);
+    }, oiPanel_));
   }
 
   /**
