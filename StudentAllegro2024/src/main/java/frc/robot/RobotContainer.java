@@ -47,16 +47,19 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    gamepad_.a().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
     oiPanel.shoot().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
 
     // Calls abort() method which returns a trigger that can be binded to commands (just like the gamepad above)
     oiPanel.abort().whileTrue(Commands.print("ABORTING!"));
 
+    // Testing Indicators
     oiPanel.setIndicator(1, true);
     oiPanel.setIndicator(2, false);
     oiPanel.setIndicator(3, true);
     oiPanel.setIndicator(4, false);
 
+    // Button Interactivity Testing
     oiPanel.climbPrepare().onTrue(Commands.runOnce(() -> {
       oiPanel.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, true);
       oiPanel.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, false);
