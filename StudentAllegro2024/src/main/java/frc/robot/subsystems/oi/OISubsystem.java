@@ -41,7 +41,7 @@ public class OISubsystem extends SubsystemBase {
     Logger.processInputs(getName(), inputs);
 
     // Logging the current type of things, EXPERIMENTAL, WILL FINALIZE SOON
-    Logger.recordOutput("ActionThype", actionType.get());
+    Logger.recordOutput("ActionType", actionType.get());
     Logger.recordOutput("CycleType", shootType.get());
   }
 
@@ -183,4 +183,5 @@ public class OISubsystem extends SubsystemBase {
   public void setIndicator(int index, boolean on) {
     io.setIndicator(index, on);
   }
+  
 }

@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -51,7 +52,10 @@ public class RobotContainer {
     // Calls abort() method which returns a trigger that can be binded to commands (just like the gamepad above)
     oiPanel.abort().whileTrue(Commands.print("ABORTING!"));
 
-    oiPanel.setIndicator(1, false);
+    oiPanel.setIndicator(1, true);
+    oiPanel.setIndicator(2, false);
+    oiPanel.setIndicator(3, true);
+    oiPanel.setIndicator(4, false);
 
     oiPanel.climbPrepare().onTrue(Commands.runOnce(() -> {
       oiPanel.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, true);
