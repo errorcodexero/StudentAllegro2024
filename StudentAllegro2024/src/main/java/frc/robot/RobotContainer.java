@@ -24,7 +24,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem();
 
-  private final OISubsystem oiPanel = new OISubsystem(0);
+  private final OISubsystem oiPanel_ = new OISubsystem(2);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -47,35 +47,35 @@ public class RobotContainer {
    */
   private void configureBindings() {
     gamepad_.a().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
-    oiPanel.shoot().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
+    oiPanel_.shoot().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
 
     // Calls abort() method which returns a trigger that can be binded to commands (just like the gamepad above)
-    oiPanel.abort().whileTrue(Commands.print("ABORTING!"));
+    oiPanel_.abort().whileTrue(Commands.print("ABORTING!"));
 
     // Testing Indicators
-    oiPanel.setIndicator(1, true);
-    oiPanel.setIndicator(2, false);
-    oiPanel.setIndicator(3, true);
-    oiPanel.setIndicator(4, false);
+    oiPanel_.setIndicator(1, true);
+    oiPanel_.setIndicator(2, false);
+    oiPanel_.setIndicator(3, true);
+    oiPanel_.setIndicator(4, false);
 
     // Button Interactivity Testing
-    oiPanel.climbPrepare().onTrue(Commands.runOnce(() -> {
-      oiPanel.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, true);
-      oiPanel.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, false);
-    }, oiPanel));
+    oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, true);
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, false);
+    }, oiPanel_));
 
-    oiPanel.climbExecute().onTrue(Commands.runOnce(() -> {
-      oiPanel.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, false);
-      oiPanel.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, true);
-    }, oiPanel));
+    oiPanel_.climbExecute().onTrue(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, false);
+      oiPanel_.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, true);
+    }, oiPanel_));
 
-    oiPanel.unclimb().whileTrue(Commands.runOnce(() -> {
-      oiPanel.setIndicator(Constants.OI.Indicators.unclimbEnabled, true);
-    }, oiPanel));
+    oiPanel_.unclimb().whileTrue(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.unclimbEnabled, true);
+    }, oiPanel_));
 
-    oiPanel.unclimb().whileFalse(Commands.runOnce(() -> {
-      oiPanel.setIndicator(Constants.OI.Indicators.unclimbEnabled, false);
-    }, oiPanel));
+    oiPanel_.unclimb().whileFalse(Commands.runOnce(() -> {
+      oiPanel_.setIndicator(Constants.OI.Indicators.unclimbEnabled, false);
+    }, oiPanel_));
   }
 
   /**
