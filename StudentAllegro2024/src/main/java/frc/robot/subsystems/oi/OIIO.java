@@ -14,7 +14,10 @@ import frc.robot.subsystems.oi.type.ActionType;
  */
 public interface OIIO {
 
-    @AutoLog
+    /**
+     * The object with all of the logged inputs to AdvantageKit
+     */
+    @AutoLog // Automatically loads to and from logs during running, and replaying.
     public class OIIOInputs {
         public boolean abort = false;
         public boolean eject = false;
@@ -32,6 +35,10 @@ public interface OIIO {
         public boolean shootSubwoofer = false;
     }
 
+    /**
+     * The method to actually update the inputs to the correct values, must be called in the subsystem periodic method for correct logging.
+     * @param inputs The inputs object to update.
+     */
     public default void updateInputs(OIIOInputsAutoLogged inputs) {
         inputs.abort = abort().getAsBoolean();
         inputs.eject = eject().getAsBoolean();
