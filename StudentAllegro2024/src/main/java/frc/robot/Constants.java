@@ -26,6 +26,8 @@ public final class Constants {
       public static final double gearRatio = 1.0;
 
       public static final double intakeTarget = 0.0;
+
+      public static final double keepSpinningIntakeTarget = 0.0;
     }
 
     public static class UpDownConstants{
