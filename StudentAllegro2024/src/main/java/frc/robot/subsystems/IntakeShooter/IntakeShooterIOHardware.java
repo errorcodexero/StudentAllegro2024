@@ -14,10 +14,13 @@ import EncoderMapper.EncoderMapper;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeShooterConstants.FeederConstants;
+import frc.robot.Constants.IntakeShooterConstants.Shooter1Constants;
+import frc.robot.Constants.IntakeShooterConstants.Shooter2Constants;
+import frc.robot.Constants.IntakeShooterConstants.TiltConstants;
+import frc.robot.Constants.IntakeShooterConstants.UpDownConstants;
 
-public class IntakeShooterIOHardware extends SubsystemBase implements IntakeShooterIO{
+public class IntakeShooterIOHardware implements IntakeShooterIO{
   /** Creates a new ExampleSubsystem. */
   private TalonFX feeder_;
   private TalonFX up_down_;
@@ -85,7 +88,6 @@ public class IntakeShooterIOHardware extends SubsystemBase implements IntakeShoo
     interrupt_.setInterruptEdges(true, true);            
     interrupt_.enable();
   }
-
   private void interruptHandler(Boolean rising, Boolean falling) {
 
     Logger.recordOutput("rising",rising);
@@ -105,16 +107,24 @@ public class IntakeShooterIOHardware extends SubsystemBase implements IntakeShoo
     return feeder_;
   }
 
+  public void stopFeeder(){
+    feeder_.stopMotor();
+  }
+
   public void spinFeeder(double rps){
-    feeder_.setControl(new VelocityVoltage(rps));
+    feeder_.setControl(new VelocityVoltage(rps * FeederConstants.gearRatio));
   }
   
   public TalonFX getUpDown(){
     return up_down_;
   }
 
+  public void stopUpDown(){
+    up_down_.stopMotor();
+  }
+
   public void moveUpDown(double revs){
-    up_down_.setControl(new MotionMagicVoltage(revs));
+    up_down_.setControl(new MotionMagicVoltage(revs * UpDownConstants.gearRatio));
   }
 
   public void moveUpDownRevs(double revs){
@@ -133,24 +143,36 @@ public class IntakeShooterIOHardware extends SubsystemBase implements IntakeShoo
     return shooter1_;
   }
 
+  public void stopShooter1(){
+    shooter1_.stopMotor();
+  }
+
   public void spinShooter1(double rps){
-    shooter1_.setControl(new VelocityVoltage(rps));
+    shooter1_.setControl(new VelocityVoltage(rps * Shooter1Constants.gearRatio));
   }
 
   public TalonFX getShooter2(){
     return shooter2_;
   }
 
+  public void stopShooter2(){
+    shooter2_.stopMotor();
+  }
+
   public void spinShooter2(double rps){
-    shooter2_.setControl(new VelocityVoltage(rps));
+    shooter2_.setControl(new VelocityVoltage(rps * Shooter2Constants.gearRatio));
   }
 
   public TalonFX getTilt(){
     return tilt_;
   }
 
+  public void stopTilt(){
+    tilt_.stopMotor();
+  }
+
   public void moveTilt(double revs){
-    up_down_.setControl(new MotionMagicVoltage(revs));
+    up_down_.setControl(new MotionMagicVoltage(revs * TiltConstants.gearRatio));
   }
 
   public void moveTiltRevs(double revs){
@@ -165,8 +187,11 @@ public class IntakeShooterIOHardware extends SubsystemBase implements IntakeShoo
     moveUpDown(rads/(2 * Math.PI));
   }
 
-  @Override
-  public void periodic() {
+  public boolean hasNote(){
+    return is_note_present_;
+  }
+
+  public void update(IntakeShooterIOInputsAutoLogged inputs) {
     timesSeenSensor_ += sensor_edge_seen_ ? 1 : 0;
     is_note_present_ = timesSeenSensor_ % 2 == 1;
 
@@ -176,9 +201,11 @@ public class IntakeShooterIOHardware extends SubsystemBase implements IntakeShoo
     if(tilt_.getPosition().getValueAsDouble() % 1 - angle_ > 1/180){
       updateMotorPosition();
     }
+
+    updateInputs(inputs);
   }
 
-  public void updateInputs (IntakeShooterIOInputsAutoLogged inputs){
+  private void updateInputs (IntakeShooterIOInputsAutoLogged inputs){
     inputs.feederPosition = feeder_.getPosition().getValueAsDouble();
     inputs.feederCurrent = feeder_.getSupplyCurrent().getValueAsDouble();
     inputs.feederAcceleration = feeder_.getAcceleration().getValueAsDouble();
@@ -217,10 +244,5 @@ public class IntakeShooterIOHardware extends SubsystemBase implements IntakeShoo
 
   private void updateMotorPosition(){
     tilt_.setPosition(angle_/360.0);
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
   }
 }

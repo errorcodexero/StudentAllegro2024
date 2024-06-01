@@ -1,7 +1,5 @@
 package frc.robot.subsystems.IntakeShooter;
 
-import javax.swing.AbstractAction;
-
 import org.littletonrobotics.junction.AutoLog;
 
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -45,7 +43,7 @@ public abstract interface IntakeShooterIO {
         public boolean hasNote;
     }
 
-    abstract void updateInputs(IntakeShooterIOInputsAutoLogged inputs_);
+    abstract void update(IntakeShooterIOInputsAutoLogged inputs_);
 
     abstract TalonFX getFeeder();
 
@@ -78,4 +76,16 @@ public abstract interface IntakeShooterIO {
     abstract void moveTiltDegrees(double degs);
 
     abstract void moveTiltRadians(double rads);
+
+    abstract void stopFeeder();
+    
+    abstract void stopUpDown();
+
+    abstract void stopShooter1();
+
+    abstract void stopShooter2();
+
+    abstract void stopTilt();
+
+    abstract boolean hasNote();
 }

@@ -22,30 +22,47 @@ public final class Constants {
       public static final double kP = 0.0;
       public static final double kD = 0.0;
       public static final double kV = 0.0;
+
+      public static final double gearRatio = 1.0;
+
+      public static final double intakeTarget = 0.0;
     }
 
     public static class UpDownConstants{
       public static final double kP = 0.0;
       public static final double kD = 0.0;
       public static final double kV = 0.0;
+
+      public static final double gearRatio = 1.0;
+
+      public static final double intakeTarget = 0.0;
     }
 
     public static class Shooter1Constants{
       public static final double kP = 0.0;
       public static final double kD = 0.0;
       public static final double kV = 0.0;
+
+      public static final double gearRatio = 1.0;
     }
 
     public static class Shooter2Constants{
       public static final double kP = 0.0;
       public static final double kD = 0.0;
       public static final double kV = 0.0;
+
+      public static final double gearRatio = 1.0;
     }
 
     public static class TiltConstants{
       public static final double kP = 0.0;
       public static final double kD = 0.0;
       public static final double kV = 0.0;
+
+      public static final double gearRatio = 1.0;
+      
+      public static final double intakeTarget = 0.0;
+      public static final double upDownCanMoveIntakeTarget = 0.0;
     }
   }
 }
