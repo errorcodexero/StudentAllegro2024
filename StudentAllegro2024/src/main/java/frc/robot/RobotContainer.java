@@ -10,9 +10,18 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.SpinShooter1;
-import frc.robot.subsystems.IntakeShooterSubsystem;
+
+import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
+
+import com.revrobotics.CANSparkFlex;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.subsystems.oi.OISubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +31,7 @@ import frc.robot.subsystems.oi.OISubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem();
+  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
   private final OISubsystem oiPanel_ = new OISubsystem(2);
 
@@ -46,8 +55,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    gamepad_.a().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
-    oiPanel_.shoot().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
 
     // Calls abort() method which returns a trigger that can be binded to commands (just like the gamepad above)
     oiPanel_.abort().whileTrue(Commands.print("ABORTING!"));
