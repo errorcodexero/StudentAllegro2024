@@ -59,6 +59,8 @@ public abstract interface IntakeShooterIO {
 
     abstract void moveUpDown(double revs);
 
+    abstract void moveUpDownPurePID(double degs);
+
     abstract void moveUpDownRevs(double revs);
 
     abstract void moveUpDownDegrees(double degs);
@@ -70,6 +72,8 @@ public abstract interface IntakeShooterIO {
     abstract void spinShooter2(double rps);
 
     abstract void moveTilt(double revs);
+
+    abstract void moveTiltPurePID(double degs);
 
     abstract void moveTiltRevs(double revs);
 
@@ -88,4 +92,6 @@ public abstract interface IntakeShooterIO {
     abstract void stopTilt();
 
     abstract boolean hasNote();
+
+    abstract boolean sensorVal();
 }
