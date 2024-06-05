@@ -100,6 +100,18 @@ public class XeroTalon extends SubsystemBase {
         motor_.setControl(req);
     }
 
+    public double getPosition(){
+        return motor_.getPosition().getValueAsDouble();
+    }
+
+    public double getVelocity(){
+        return motor_.getVelocity().getValueAsDouble();
+    }
+
+    public double getAcceleration(){
+        return motor_.getAcceleration().getValueAsDouble();
+    }
+
     public void setPIDs(Slot0Configs PIDs){
         this.pids_ = PIDs;
     }
