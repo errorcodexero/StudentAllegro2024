@@ -24,8 +24,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private final boolean SIMULATOR_INPUTS = true;
-  private final boolean REAL_TIMING = true;
 
   private Command m_autonomousCommand;
 
@@ -39,12 +37,12 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     Logger.recordMetadata("StudentAllegro2024", "StudentAllegro2024"); // Set a metadata value
 
-    if (isReal() || SIMULATOR_INPUTS) {
+    if (isReal() || Constants.AKitConstants.recordSimulatedInputs) {
         Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     } else {
-        setUseTiming(REAL_TIMING); // Run as fast as possible
+        setUseTiming(Constants.AKitConstants.useRealTiming); // Run as fast as possible
         String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
         Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
