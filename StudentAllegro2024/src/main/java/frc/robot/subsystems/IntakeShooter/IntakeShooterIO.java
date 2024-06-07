@@ -94,4 +94,24 @@ public abstract interface IntakeShooterIO {
     abstract boolean hasNote();
 
     abstract boolean sensorVal();
+
+    abstract double getFeederPosition();
+    
+    abstract double getFeederVelocity();
+
+    abstract double getUpDownPosition();
+
+    abstract double getUpDownVelocity();
+
+    abstract double getShooter1Position();
+
+    abstract double getShooter1Velocity();
+
+    abstract double getShooter2Position();
+
+    abstract double getShooter2Velocity();
+
+    abstract double getTiltPosition();
+    
+    abstract double getTiltVelocity();
 }

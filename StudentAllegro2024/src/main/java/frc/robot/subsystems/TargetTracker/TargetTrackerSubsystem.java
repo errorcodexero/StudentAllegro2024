@@ -1,9 +1,5 @@
 package frc.robot.subsystems.TargetTracker;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.wpilibj.shuffleboard.SuppliedValueWidget;
-
 public class TargetTrackerSubsystem {
     public class TTShooter{
         public double getShooterVel(){

@@ -15,10 +15,10 @@ import EncoderMapper.EncoderMapper;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants.IntakeShooterConstants.FeederConstants;
-import frc.robot.Constants.IntakeShooterConstants.ShooterConstants;
-import frc.robot.Constants.IntakeShooterConstants.TiltConstants;
-import frc.robot.Constants.IntakeShooterConstants.UpDownConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.ShooterConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.TiltConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.UpDownConstants;
 
 public class IntakeShooterIOHardware implements IntakeShooterIO{
   /** Creates a new ExampleSubsystem. */
@@ -42,7 +42,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   private double angle_;
   private int timesSeenSensor_ = 0;
 
-  private boolean sensor_for_logging = false;
+  private boolean sensor_for_logging_ = false;
 
   public IntakeShooterIOHardware() {
     feeder_ = new TalonFX(TiltConstants.CANID);
@@ -59,27 +59,26 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     feeder_.setInverted(FeederConstants.inverted);
 
     Slot0Configs upDownPIDS = new Slot0Configs();
-    upDownPIDS.kP = 0.0;
-    upDownPIDS.kV = 0.0;
+    upDownPIDS.kP = UpDownConstants.kP;
+    upDownPIDS.kD = UpDownConstants.kD;
+    upDownPIDS.kV = UpDownConstants.kV;
     upDown_.setPosition(117.0/360.0);
     upDown_.getConfigurator().apply(upDownPIDS);
     upDown_.setInverted(UpDownConstants.inverted);
 
-    Slot0Configs shooter1PIDS = new Slot0Configs();
-    shooter1PIDS.kP = 0.0;
-    shooter1PIDS.kV = 0.0;
-    shooter1_.getConfigurator().apply(shooter1PIDS);
-    shooter1_.setInverted(ShooterConstants.inverted);
-
-    Slot0Configs shooter2PIDS = new Slot0Configs();
-    shooter2PIDS.kP = 0.0;
-    shooter2PIDS.kV = 0.0;
-    shooter2_.getConfigurator().apply(shooter2PIDS);
-    shooter2_.setInverted(!ShooterConstants.inverted);
+    Slot0Configs shooterPIDS = new Slot0Configs();
+    shooterPIDS.kP = ShooterConstants.kP;
+    shooterPIDS.kD = ShooterConstants.kD;
+    shooterPIDS.kV = ShooterConstants.kV;
+    shooter1_.getConfigurator().apply(shooterPIDS);
+    shooter1_.setInverted(ShooterConstants.inverted1);
+    shooter2_.getConfigurator().apply(shooterPIDS);
+    shooter2_.setInverted(ShooterConstants.inverted2);
 
     Slot0Configs tiltPIDS = new Slot0Configs();
-    tiltPIDS.kP = 0.0;
-    tiltPIDS.kV = 0.0;
+    tiltPIDS.kP = TiltConstants.kP;
+    tiltPIDS.kD = TiltConstants.kD;
+    tiltPIDS.kV = TiltConstants.kV;
     tilt_.getConfigurator().apply(tiltPIDS);
     tilt_.setInverted(TiltConstants.inverted);
 
@@ -100,11 +99,11 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
 
     if (falling == noteSensorInverted_) {
       sensor_edge_seen_ = true;
-      sensor_for_logging = false;
+      sensor_for_logging_ = false;
     }
 
     if(rising == noteSensorInverted_){
-      sensor_for_logging = true;
+      sensor_for_logging_ = true;
     }
   }
 
@@ -118,6 +117,14 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
 
   public void spinFeeder(double rps){
     feeder_.setControl(new VelocityVoltage(rps * FeederConstants.gearRatio));
+  }
+
+  public double getFeederPosition(){
+    return feeder_.getPosition().getValueAsDouble() * 360 / FeederConstants.gearRatio;
+  }
+
+  public double getFeederVelocity(){
+    return feeder_.getVelocity().getValueAsDouble() * 360 / FeederConstants.gearRatio;
   }
   
   public TalonFX getUpDown(){
@@ -148,6 +155,14 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     moveUpDown(rads/(2 * Math.PI));
   }
 
+  public double getUpDownPosition(){
+    return upDown_.getPosition().getValueAsDouble() * 360 / UpDownConstants.gearRatio;
+  }
+
+  public double getUpDownVelocity(){
+    return upDown_.getVelocity().getValueAsDouble() * 360 / UpDownConstants.gearRatio;
+  }
+
   public TalonFX getShooter1(){
     return shooter1_;
   }
@@ -160,6 +175,14 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     shooter1_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio));
   }
 
+  public double getShooter1Position(){
+    return shooter1_.getPosition().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
+  }
+
+  public double getShooter1Velocity(){
+    return shooter1_.getVelocity().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
+  }
+
   public TalonFX getShooter2(){
     return shooter2_;
   }
@@ -170,6 +193,14 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
 
   public void spinShooter2(double rps){
     shooter2_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio));
+  }
+
+  public double getShooter2Position(){
+    return shooter2_.getPosition().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
+  }
+
+  public double getShooter2Velocity(){
+    return shooter2_.getVelocity().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
   }
 
   public TalonFX getTilt(){
@@ -200,12 +231,20 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     moveTilt(rads/(2 * Math.PI));
   }
 
+  public double getTiltPosition(){
+    return tilt_.getPosition().getValueAsDouble() * 360 / TiltConstants.gearRatio;
+  }
+
+  public double getTiltVelocity(){
+    return tilt_.getVelocity().getValueAsDouble() * 360 / TiltConstants.gearRatio;
+  }
+
   public boolean hasNote(){
     return is_note_present_;
   }
 
   public boolean sensorVal(){
-    return sensor_for_logging;
+    return sensor_for_logging_;
   }
 
   public void update(IntakeShooterIOInputsAutoLogged inputs) {
@@ -255,7 +294,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
 
     inputs.encoderPosition = encoderMapper_.toRobot(absoluteEncoder_.getVoltage());
 
-    inputs.sensorVal = sensor_for_logging;
+    inputs.sensorVal = sensor_for_logging_;
     inputs.hasNote = is_note_present_;
   }
 
