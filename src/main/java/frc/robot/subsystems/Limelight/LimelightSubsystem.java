@@ -19,8 +19,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
     }
 
-    public void setLed() {
-        
+    public void setLed(int mode) {
+        io_.setLed(mode);
     }
     
 }

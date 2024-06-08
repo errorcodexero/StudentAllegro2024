@@ -12,6 +12,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.Limelight.LimelightConstants;
+import frc.robot.subsystems.Limelight.LimelightSubsystem;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 
 import frc.robot.subsystems.oi.OIConstants;
@@ -29,6 +31,7 @@ public class RobotContainer {
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
   private final OISubsystem oiPanel_ = new OISubsystem(2);
+  private final LimelightSubsystem ll_ = new LimelightSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -59,11 +62,13 @@ public class RobotContainer {
     oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {
       oiPanel_.setIndicator(OIConstants.Indicators.climbPrepareEnabled, true);
       oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, false);
+      ll_.setLed(LimelightConstants.LedModes.FORCE_BLINK);
     }, oiPanel_));
 
     oiPanel_.climbExecute().onTrue(Commands.runOnce(() -> {
       oiPanel_.setIndicator(OIConstants.Indicators.climbPrepareEnabled, false);
       oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, true);
+      ll_.setLed(LimelightConstants.LedModes.FORCE_OFF);
     }, oiPanel_));
 
     oiPanel_.unclimb().whileTrue(Commands.runOnce(() -> {
