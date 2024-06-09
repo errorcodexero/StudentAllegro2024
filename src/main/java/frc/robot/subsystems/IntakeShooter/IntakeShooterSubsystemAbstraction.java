@@ -1,6 +1,5 @@
 package frc.robot.subsystems.IntakeShooter;
 
-import XeroTalon.XeroTalon;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -19,12 +18,12 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+import org.xero1425.EncoderMapper.EncoderMapper;
+import org.xero1425.XeroAKInput.XeroAKInput;
+import org.xero1425.XeroTalon.XeroTalon;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.PositionVoltage;
-
-import AKInput.AKInput;
-import EncoderMapper.EncoderMapper;
 
 public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
 
@@ -159,9 +158,9 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
         interrupt_.setInterruptEdges(true, true);            
         interrupt_.enable();
 
-        encInputIndicies_ = AKInput.add(IntakeShooterConstants.name, "Encoder Value", encoderMapper_.toRobot(absoluteEncoder_.getVoltage()));
-        sensorInputIndicies_ = AKInput.add(IntakeShooterConstants.name, "Sensor Value", sensorForLogging_);
-        hasNoteInputIndicies_ = AKInput.add(IntakeShooterConstants.name, "Has Note", hasNote_);
+        encInputIndicies_ = XeroAKInput.add(IntakeShooterConstants.name, "Encoder Value", encoderMapper_.toRobot(absoluteEncoder_.getVoltage()));
+        sensorInputIndicies_ = XeroAKInput.add(IntakeShooterConstants.name, "Sensor Value", sensorForLogging_);
+        hasNoteInputIndicies_ = XeroAKInput.add(IntakeShooterConstants.name, "Has Note", hasNote_);
     }
     private void interruptHandler(Boolean rising, Boolean falling) {
 
@@ -195,9 +194,9 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
     }
 
     private void updateInputs(){
-        AKInput.update(encInputIndicies_, encoderMapper_.toRobot(absoluteEncoder_.getVoltage()));
-        AKInput.update(sensorInputIndicies_, sensorForLogging_);
-        AKInput.update(hasNoteInputIndicies_, hasNote_);
+        XeroAKInput.update(encInputIndicies_, encoderMapper_.toRobot(absoluteEncoder_.getVoltage()));
+        XeroAKInput.update(sensorInputIndicies_, sensorForLogging_);
+        XeroAKInput.update(hasNoteInputIndicies_, hasNote_);
     }
 
     @Override
