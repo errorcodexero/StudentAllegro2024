@@ -10,9 +10,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.SpinShooter1;
-import frc.robot.subsystems.IntakeShooterSubsystem;
+
+import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.Limelight.LimelightConstants;
+import frc.robot.subsystems.Limelight.LimelightSubsystem;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
+
+import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,9 +28,10 @@ import frc.robot.subsystems.oi.OISubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem();
+  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
   private final OISubsystem oiPanel_ = new OISubsystem(2);
+  private final LimelightSubsystem ll_ = new LimelightSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -46,35 +53,30 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    gamepad_.a().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
-    oiPanel_.shoot().whileTrue(new SpinShooter1(intake_shooter_, 20.0));
 
-    // Calls abort() method which returns a trigger that can be binded to commands (just like the gamepad above)
-    oiPanel_.abort().whileTrue(Commands.print("ABORTING!"));
-
-    // Testing Indicators
-    oiPanel_.setIndicator(1, true);
     oiPanel_.setIndicator(2, false);
     oiPanel_.setIndicator(3, true);
     oiPanel_.setIndicator(4, false);
 
     // Button Interactivity Testing
     oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {
-      oiPanel_.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, true);
-      oiPanel_.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, false);
+      oiPanel_.setIndicator(OIConstants.Indicators.climbPrepareEnabled, true);
+      oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, false);
+      ll_.setLed(LimelightConstants.LedModes.FORCE_BLINK);
     }, oiPanel_));
 
     oiPanel_.climbExecute().onTrue(Commands.runOnce(() -> {
-      oiPanel_.setIndicator(Constants.OI.Indicators.climbPrepareEnabled, false);
-      oiPanel_.setIndicator(Constants.OI.Indicators.climbExecuteEnabled, true);
+      oiPanel_.setIndicator(OIConstants.Indicators.climbPrepareEnabled, false);
+      oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, true);
+      ll_.setLed(LimelightConstants.LedModes.FORCE_OFF);
     }, oiPanel_));
 
     oiPanel_.unclimb().whileTrue(Commands.runOnce(() -> {
-      oiPanel_.setIndicator(Constants.OI.Indicators.unclimbEnabled, true);
+      oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, true);
     }, oiPanel_));
 
     oiPanel_.unclimb().whileFalse(Commands.runOnce(() -> {
-      oiPanel_.setIndicator(Constants.OI.Indicators.unclimbEnabled, false);
+      oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, false);
     }, oiPanel_));
   }
 

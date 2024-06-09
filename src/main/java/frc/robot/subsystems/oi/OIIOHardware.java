@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.subsystems.oi.type.ActionType;
 import frc.robot.subsystems.oi.type.ShootType;
 
@@ -19,52 +18,52 @@ public class OIIOHardware extends CommandGenericHID implements OIIO {
     
     @Override
     public Trigger abort() {
-        return button(Constants.OI.Buttons.abort);
+        return button(OIConstants.Buttons.abort);
     }
     
     @Override
     public Trigger eject() {
-        return button(Constants.OI.Buttons.eject);
+        return button(OIConstants.Buttons.eject);
     }
     
     @Override
     public Trigger turtle() {
-        return button(Constants.OI.Buttons.turtle);
+        return button(OIConstants.Buttons.turtle);
     }
     
     @Override
     public Trigger climbPrepare() {
-        return button(Constants.OI.Buttons.climbPrepare);
+        return button(OIConstants.Buttons.climbPrepare);
     }
     
     @Override
     public Trigger climbExecute() {
-        return button(Constants.OI.Buttons.climbExecute);
+        return button(OIConstants.Buttons.climbExecute);
     }
 
     @Override
     public Trigger unclimb() {
-        return button(Constants.OI.Buttons.unclimb);
+        return button(OIConstants.Buttons.unclimb);
     }
 
     @Override
     public Trigger shoot() {
-        return button(Constants.OI.Buttons.shoot);
+        return button(OIConstants.Buttons.shoot);
     }
 
     @Override
     public Trigger collect() {
-        return button(Constants.OI.Buttons.collect);
+        return button(OIConstants.Buttons.collect);
     }
 
     @Override
     public Trigger actionSpeaker() {
-        return button(Constants.OI.Buttons.cycleSpeaker); // flipped to the left
+        return button(OIConstants.Buttons.cycleSpeaker); // flipped to the left
     }
 
     @Override
     public Trigger actionTrap() {
-        return button(Constants.OI.Buttons.cycleTrap); // flipped to the right
+        return button(OIConstants.Buttons.cycleTrap); // flipped to the right
     }
 
     @Override
@@ -74,7 +73,7 @@ public class OIIOHardware extends CommandGenericHID implements OIIO {
 
     @Override
     public Trigger shootPodium() {
-        return button(Constants.OI.Buttons.shootingPodium);
+        return button(OIConstants.Buttons.shootingPodium);
     }
 
     @Override
@@ -84,7 +83,7 @@ public class OIIOHardware extends CommandGenericHID implements OIIO {
 
     @Override
     public Trigger shootSubwoofer() {
-        return button(Constants.OI.Buttons.shootingSubwoofer);
+        return button(OIConstants.Buttons.shootingSubwoofer);
     }
 
     @Override
