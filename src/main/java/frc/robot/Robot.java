@@ -5,13 +5,13 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
+import org.xero1425.XeroAKInput.XeroAKInput;
+import org.xero1425.XeroRobot.XeroRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import AKInput.AKInput;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends LoggedRobot {
+public class Robot extends XeroRobot {
   private final boolean SIMULATOR_INPUTS = true;
   private final boolean REAL_TIMING = true;
 
@@ -71,7 +71,7 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    AKInput.periodic();
+    XeroAKInput.periodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

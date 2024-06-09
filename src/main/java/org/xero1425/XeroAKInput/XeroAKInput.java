@@ -1,4 +1,4 @@
-package AKInput;
+package org.xero1425.XeroAKInput;
 
 import java.util.ArrayList;
 
@@ -87,7 +87,7 @@ final class AddInputIOInputs implements LoggableInputs{
 }
 
 
-public class AKInput{
+public class XeroAKInput{
 
     private static ArrayList<String> sub_names = new ArrayList<String>();
     private static ArrayList<AddInputIOInputs> sub_inputs = new ArrayList<AddInputIOInputs>();

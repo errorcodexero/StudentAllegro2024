@@ -385,7 +385,7 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
 
         switch (shootingType_.get()) {
             case AUTO:
-                shooterShootTarget_ = shootingTargets_.getShooterVel();
+                shooterShootTarget_ = shootingTargets_.getShooterVel_();
                 tiltShootTarget_ = shootingTargets_.getTiltPos();
                 upDownShootTarget_ = shootingTargets_.getUpDownPos();
                 break;

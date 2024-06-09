@@ -1,6 +1,7 @@
-package XeroTalon;
+package org.xero1425.XeroTalon;
 
 import org.littletonrobotics.junction.Logger;
+import org.xero1425.XeroAKInput.XeroAKInput;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
@@ -10,7 +11,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import AKInput.AKInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class XeroTalon extends SubsystemBase {
@@ -34,11 +34,11 @@ public class XeroTalon extends SubsystemBase {
         this.gearRatio = gearRatio;
         this.gearRadius = gearRadius;
         this.motor_name = motor_name;
-        inputIndicies[0] = AKInput.add(sub_name, motor_name + " Position", 0.0);
-        inputIndicies[1] = AKInput.add(sub_name, motor_name + " Velocity", 0.0);
-        inputIndicies[2] = AKInput.add(sub_name, motor_name + " Acceleration", 0.0);
-        inputIndicies[3] = AKInput.add(sub_name, motor_name + " Current", 0.0);
-        inputIndicies[4] = AKInput.add(sub_name, motor_name + " Voltage", 0.0);
+        inputIndicies[0] = XeroAKInput.add(sub_name, motor_name + " Position", 0.0);
+        inputIndicies[1] = XeroAKInput.add(sub_name, motor_name + " Velocity", 0.0);
+        inputIndicies[2] = XeroAKInput.add(sub_name, motor_name + " Acceleration", 0.0);
+        inputIndicies[3] = XeroAKInput.add(sub_name, motor_name + " Current", 0.0);
+        inputIndicies[4] = XeroAKInput.add(sub_name, motor_name + " Voltage", 0.0);
     }
 
     public XeroTalon(int CANID, String sub_name, String motor_name, double gearRatio, double gearRadius){
@@ -72,11 +72,11 @@ public class XeroTalon extends SubsystemBase {
     }
 
     private void updateInputs() {
-        AKInput.update(inputIndicies[0], motor_.getPosition().getValueAsDouble());
-        AKInput.update(inputIndicies[1], motor_.getVelocity().getValueAsDouble());
-        AKInput.update(inputIndicies[2], motor_.getAcceleration().getValueAsDouble());
-        AKInput.update(inputIndicies[3], motor_.getSupplyCurrent().getValueAsDouble());
-        AKInput.update(inputIndicies[4], motor_.getMotorVoltage().getValueAsDouble());
+        XeroAKInput.update(inputIndicies[0], motor_.getPosition().getValueAsDouble());
+        XeroAKInput.update(inputIndicies[1], motor_.getVelocity().getValueAsDouble());
+        XeroAKInput.update(inputIndicies[2], motor_.getAcceleration().getValueAsDouble());
+        XeroAKInput.update(inputIndicies[3], motor_.getSupplyCurrent().getValueAsDouble());
+        XeroAKInput.update(inputIndicies[4], motor_.getMotorVoltage().getValueAsDouble());
     }
 
     public TalonFX getMotor(){

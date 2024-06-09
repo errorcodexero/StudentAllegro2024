@@ -4,15 +4,14 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+import org.xero1425.XeroTimer.XeroTimer;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.UpDownConstants;
+import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem.TTShooter;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.ShooterConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.TiltConstants;
-import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem.TTShooter;
 import frc.robot.subsystems.oi.type.ActionType;
 import frc.robot.subsystems.oi.type.ShootType;
 
@@ -52,7 +51,13 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         WaitingForSensorStart,
         WaitingForSensorEnd,
         End,
-        Done
+        Done, WaitingForTrampReady
+    }
+
+    private enum PrepShootState{
+        Prep,
+        MovingToTransfer,
+        Done 
     }
 
     private IntakeShooterIOInputsAutoLogged inputs_ = new IntakeShooterIOInputsAutoLogged();
@@ -61,6 +66,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     private IntakeState intakeState_;
     private StowState stowState_;
     private TransferState transferState_;
+    private PrepShootState prepShootState_;
     private Supplier<ActionType> intakeNextAction_;
     private Supplier<ShootType> shootingType_;
     private TTShooter shootingTargets_;
@@ -69,9 +75,9 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     private double shooterShootTarget_;
     private Supplier<Boolean> DBReady_;
     private Supplier<Boolean> aprilTagReady_;
+    private Supplier<Boolean> trampTransferReady_;
     private double intakeFeederStartPosSeenNote_;
     private double transferShooterStartPosSeenNote_;
-    private boolean runOnceShootPrep_ = true;
     private boolean runOnceEject_ = true;
     private boolean weAreShooting_ = false;
 
@@ -80,6 +86,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         intakeNextAction_ = actionType;
         shootingType_ = shootType;
         shootingTargets_ = shootingTargets;
+        state_ = State.Idle;
     }
 
     public boolean tiltReady(){
@@ -104,6 +111,10 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Logger.recordOutput("Stow State", stowState_);
         switch (state_) {
             case Idle:
+                intakeState_ = IntakeState.Start;
+                stowState_ = StowState.Start;
+                transferState_ = TransferState.WaitingForTrampReady;
+                prepShootState_ = PrepShootState.Prep;
                 break;
             case Intake:
                 try {
@@ -265,30 +276,45 @@ public class IntakeShooterSubsystem extends SubsystemBase{
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
         state_ = State.PrepForShoot;
-
-        switch (shootingType_.get()) {
-            case AUTO:
-                shooterShootTarget_ = shootingTargets_.getShooterVel();
-                tiltShootTarget_ = shootingTargets_.getTiltPos();
-                upDownShootTarget_ = shootingTargets_.getUpDownPos();
+        switch(prepShootState_){
+            case Prep:
+                switch (shootingType_.get()) {
+                    case AUTO:
+                        shooterShootTarget_ = shootingTargets_.getShooterVel_();
+                        tiltShootTarget_ = shootingTargets_.getTiltPos();
+                        upDownShootTarget_ = shootingTargets_.getUpDownPos();
+                        break;
+                    case PODIUM:
+                        shooterShootTarget_ = ShooterConstants.podShootTarget;
+                        tiltShootTarget_ = TiltConstants.podShootTarget;
+                        upDownShootTarget_ = UpDownConstants.podShootTarget;
+                        break;
+                    case SUBWOOFER:
+                        shooterShootTarget_ = ShooterConstants.subShootTarget;
+                        tiltShootTarget_ = TiltConstants.subShootTarget;
+                        upDownShootTarget_ = UpDownConstants.subShootTarget;
+                        break;
+                }
+                io_.spinShooter1(shooterShootTarget_);
+                io_.spinShooter2(shooterShootTarget_);
+                io_.moveTiltDegrees(tiltShootTarget_);
+                io_.moveUpDownDegrees(upDownShootTarget_);
+                if(intakeNextAction_.get() != ActionType.SPEAKER){
+                    io_.moveUpDownDegrees(UpDownConstants.transferTarget);
+                    io_.moveTiltDegrees(TiltConstants.transferTarget);
+                    prepShootState_ = PrepShootState.MovingToTransfer;
+                }
                 break;
-            case PODIUM:
-                shooterShootTarget_ = ShooterConstants.podShootTarget;
-                tiltShootTarget_ = TiltConstants.podShootTarget;
-                upDownShootTarget_ = UpDownConstants.podShootTarget;
+            case MovingToTransfer:
+                boolean upDownDone = Math.abs(io_.getUpDownPosition() - UpDownConstants.transferTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
+                boolean tiltDone = Math.abs(io_.getTiltPosition() - TiltConstants.transferTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getTiltVelocity()) < IntakeShooterConstants.otherOKThresh;
+                if(upDownDone && tiltDone){
+                    prepShootState_ = PrepShootState.Done;
+                    state_ = State.Transfer;
+                }
                 break;
-            case SUBWOOFER:
-                shooterShootTarget_ = ShooterConstants.subShootTarget;
-                tiltShootTarget_ = TiltConstants.subShootTarget;
-                upDownShootTarget_ = UpDownConstants.subShootTarget;
-                break;
-        }
-        if(runOnceShootPrep_ || shootingType_.get() == ShootType.AUTO){
-            io_.spinShooter1(shooterShootTarget_);
-            io_.spinShooter2(shooterShootTarget_);
-            io_.moveTiltDegrees(tiltShootTarget_);
-            io_.moveUpDownDegrees(upDownShootTarget_);
-            runOnceShootPrep_ = false;
+            default:
+                prepShootState_ = PrepShootState.Prep;
         }
     }
 
@@ -297,21 +323,19 @@ public class IntakeShooterSubsystem extends SubsystemBase{
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
         state_ = State.Shoot;
-        runOnceShootPrep_ = false;
         boolean shooter1Good = Math.abs(io_.getShooter1Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean shooter2Good = Math.abs(io_.getShooter2Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean upDownGood = Math.abs(io_.getUpDownPosition() - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
         boolean tiltGood = Math.abs(io_.getTiltPosition() - tiltShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getTiltVelocity()) < IntakeShooterConstants.otherOKThresh;
-        Command wait = new Command(){};
-        boolean waitSecsDone = false;
+        XeroTimer wait = new XeroTimer(IntakeShooterConstants.shootSecs);
+        
         if(aprilTagReady_.get() && DBReady_.get() && shooter1Good && shooter2Good && upDownGood && tiltGood){
             io_.spinFeeder(FeederConstants.shootTarget);
-            wait = Commands.waitSeconds(IntakeShooterConstants.shootSecs);
+            wait.start();
             weAreShooting_ = true;
         }
         if(weAreShooting_){
-            waitSecsDone = wait.isFinished();
-            if(waitSecsDone){
+            if(wait.isExpired()){
                 io_.stopFeeder();
                 io_.stopShooter1();
                 io_.stopShooter2();
@@ -323,11 +347,14 @@ public class IntakeShooterSubsystem extends SubsystemBase{
 
 
     public void transfer() throws InvalidAlgorithmParameterException{
-        if(state_ != State.Transfer && state_ != State.Intake){
+        if(state_ != State.Transfer){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
-        state_ = State.Transfer;
         switch(transferState_){
+            case WaitingForTrampReady:
+                if(trampTransferReady_.get()){
+                    transferState_ = TransferState.Start;
+                }
             case Start:
                 io_.spinShooter1(ShooterConstants.transferTargetVel);
                 io_.spinShooter2(ShooterConstants.transferTargetVel);
@@ -376,17 +403,15 @@ public class IntakeShooterSubsystem extends SubsystemBase{
 
     public void eject(){
         state_ = State.Eject;
-        boolean ejectDone = false;
-        Command wait = new Command(){};
+        XeroTimer wait = new XeroTimer(IntakeShooterConstants.ejectSecs);
         if(runOnceEject_){
             abort();
             io_.spinShooter1(ShooterConstants.ejectTarget);
             io_.spinShooter2(ShooterConstants.ejectTarget);
             io_.spinFeeder(ShooterConstants.ejectTarget);
-            wait = Commands.waitSeconds(IntakeShooterConstants.ejectSecs);
+            wait.start();
         }
-        ejectDone = wait.isFinished();
-        if(ejectDone){
+        if(wait.isExpired()){
             runOnceEject_ = true;
             state_ = State.Stow;
         }
