@@ -12,7 +12,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
-import frc.robot.subsystems.Limelight.LimelightConstants;
 import frc.robot.subsystems.Limelight.LimelightSubsystem;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 
