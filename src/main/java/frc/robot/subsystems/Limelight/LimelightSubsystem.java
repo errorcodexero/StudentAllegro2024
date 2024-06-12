@@ -1,10 +1,13 @@
 package frc.robot.subsystems.Limelight;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimelightSubsystem extends SubsystemBase {
 
     private final LimelightIO io_;
+    private final LimelightIOInputsAutoLogged inputs_;
 
     /**
      * Creates a Limelight Subsystem,
@@ -30,11 +33,15 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public LimelightSubsystem(LimelightIO io) {
         io_ = io;
+        inputs_ = new LimelightIOInputsAutoLogged();
     }
 
     @Override
     public void periodic() {
-        io_.update();
+        io_.updateState();
+        io_.updateInputs(inputs_);
+
+        Logger.processInputs(getName(), inputs_);
     }
     
     /**
