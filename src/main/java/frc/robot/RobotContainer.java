@@ -58,26 +58,34 @@ public class RobotContainer {
     oiPanel_.setIndicator(3, true);
     oiPanel_.setIndicator(4, false);
 
-    // Button Interactivity Testing
+    // For testing. when abort button is pressed the LimeLight LED turns off
+    oiPanel_.abort().onTrue(Commands.runOnce(() -> {
+      ll_.setLed(LimelightConstants.LedModes.FORCE_OFF);
+    }));
+
     oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {
       oiPanel_.setIndicator(OIConstants.Indicators.climbPrepareEnabled, true);
       oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, false);
+
+      // On the climb prepare, the limelight led blinks
       ll_.setLed(LimelightConstants.LedModes.FORCE_BLINK);
-    }, oiPanel_));
+    }));
 
     oiPanel_.climbExecute().onTrue(Commands.runOnce(() -> {
       oiPanel_.setIndicator(OIConstants.Indicators.climbPrepareEnabled, false);
       oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, true);
-      ll_.setLed(LimelightConstants.LedModes.FORCE_OFF);
-    }, oiPanel_));
+
+      // On the climb execute, the limelight led turns on
+      ll_.setLed(LimelightConstants.LedModes.FORCE_ON);
+    }));
 
     oiPanel_.unclimb().whileTrue(Commands.runOnce(() -> {
       oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, true);
-    }, oiPanel_));
+    }));
 
     oiPanel_.unclimb().whileFalse(Commands.runOnce(() -> {
       oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, false);
-    }, oiPanel_));
+    }));
   }
 
   /**
