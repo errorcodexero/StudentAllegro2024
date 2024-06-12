@@ -1,17 +1,20 @@
 package frc.robot.subsystems.Limelight;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
 public class LimelightHardware implements LimelightIO {
 
-    private final NetworkTable llTable_ = NetworkTableInstance.getDefault().getTable("limelight");
-    private final NetworkTableEntry llLed_ = llTable_.getEntry("ledMode");
-
     @Override
-    public void setLed(int mode) {
-        llLed_.setNumber(mode);
+    public void forceOff() {
+        LimelightHelpers.setLEDMode_ForceOff(null);
     }
     
+    @Override
+    public void forceBlink() {
+        LimelightHelpers.setLEDMode_ForceBlink(null);
+    }
+
+    @Override
+    public void forceOn() {
+        LimelightHelpers.setLEDMode_ForceOn(null);
+    }
+   
 }
