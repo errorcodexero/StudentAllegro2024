@@ -59,7 +59,7 @@ public class RobotContainer {
 
     // For testing. when abort button is pressed the LimeLight LED turns off
     oiPanel_.abort().onTrue(Commands.runOnce(() -> {
-      ll_.setLedOff();
+      ll_.forceLedOff();
     }));
 
     oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {
@@ -67,7 +67,7 @@ public class RobotContainer {
       oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, false);
 
       // On the climb prepare, the limelight led blinks
-      ll_.setLedBlink();
+      ll_.forceLedBlink();
     }));
 
     oiPanel_.climbExecute().onTrue(Commands.runOnce(() -> {
@@ -75,7 +75,7 @@ public class RobotContainer {
       oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, true);
 
       // On the climb execute, the limelight led turns on
-      ll_.setLedOn();
+      ll_.forceLedOn();
     }));
 
     oiPanel_.unclimb().whileTrue(Commands.runOnce(() -> {
