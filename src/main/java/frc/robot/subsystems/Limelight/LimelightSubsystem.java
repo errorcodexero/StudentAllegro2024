@@ -6,11 +6,12 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.subsystems.Limelight.LimelightIO.LimelightIOInputs;
 
 public class LimelightSubsystem extends SubsystemBase {
 
     private final LimelightIO io_;
-    private final LimelightIOInputsAutoLogged inputs_;
+    private final LimelightIOInputs inputs_;
 
     /**
      * Creates a Limelight Subsystem,
@@ -36,7 +37,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public LimelightSubsystem(LimelightIO io) {
         io_ = io;
-        inputs_ = new LimelightIOInputsAutoLogged();
+        inputs_ = new LimelightIOInputs();
     }
 
     @Override

@@ -1,8 +1,9 @@
 package frc.robot.subsystems.Limelight;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
 
 public class LimelightHardware implements LimelightIO {
 
@@ -48,22 +49,51 @@ public class LimelightHardware implements LimelightIO {
     }
 
     @Override
-    public void updateInputs(LimelightIOInputsAutoLogged inputs) {
+    public void updateInputs(LimelightIOInputs inputs) {
         inputs.tX = LimelightHelpers.getTX(name_);
         inputs.tY = LimelightHelpers.getTY(name_);
         inputs.tArea = LimelightHelpers.getTA(name_);
         inputs.tValid = LimelightHelpers.getTV(name_);
 
-        ObjectWriter jsonWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        // Individual lists to add values from every fid into in order.
+        ArrayList<Double> fidIdList = new ArrayList<>();
+        ArrayList<String> fidFamilyList = new ArrayList<>();
+        ArrayList<Double> fidTxList = new ArrayList<>();
+        ArrayList<Double> fidTyList = new ArrayList<>();
+        ArrayList<Double> fidTxPixelList = new ArrayList<>();
+        ArrayList<Double> fidTyPixelList = new ArrayList<>();
+        ArrayList<Double> fidTAreaList = new ArrayList<>();
 
-        try {
-            inputs.fids = jsonWriter.writeValueAsString(LimelightHelpers.getLatestResults(name_).targetingResults.targets_Fiducials);
-        } catch (JsonProcessingException e) {
-            inputs.fids = "";
-            e.printStackTrace();
+        LimelightTarget_Fiducial[] fids = LimelightHelpers.getLatestResults(name_).targetingResults.targets_Fiducials;
+
+        // Adds to all of the lists in order from all of the seen fiducials
+        for (LimelightTarget_Fiducial fid : fids) {
+            fidIdList.add(fid.fiducialID);
+            fidFamilyList.add(fid.fiducialFamily);
+            fidTxList.add(fid.tx);
+            fidTyList.add(fid.ty);
+            fidTxPixelList.add(fid.tx_pixels);
+            fidTyPixelList.add(fid.ty_pixels);
+            fidTAreaList.add(fid.ta);
         }
 
+        // Coverts and saves those values as normal arrays of primitives.
+        inputs.fiducialID = listToDoubleArray(fidIdList);
+        inputs.fiducialFamily = listToStringArray(fidFamilyList);
+        inputs.fiducialTX = listToDoubleArray(fidTxList);
+        inputs.fiducialTY = listToDoubleArray(fidTyList);
+        inputs.fiducialTXPixels = listToDoubleArray(fidTxPixelList);
+        inputs.fiducialTYPixels = listToDoubleArray(fidTyPixelList);
+        inputs.fiducialTArea = listToDoubleArray(fidTAreaList);
         
+    }
+
+    private double[] listToDoubleArray(List<Double> doubles) {
+        return doubles.stream().mapToDouble(Double::doubleValue).toArray();
+    }
+
+    private String[] listToStringArray(List<String> strings) {
+        return strings.toArray(new String[0]);
     }
    
 }
