@@ -1,19 +1,12 @@
 package frc.robot.subsystems.Limelight;
 
-import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
-import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class LimelightHardware implements LimelightIO {
 
     private final String name_;
-
-    private LimelightResults currentResults_;
-    private LimelightTarget_Fiducial[] fiducials_;
-
-    private double tX_;
-    private double tY_;
-    private double tArea_;
-    private boolean tValid_;
 
     /**
      * Creates a new Limelight implementation, this implementation is using the Limelight Lib with a Limelight.
@@ -22,7 +15,6 @@ public class LimelightHardware implements LimelightIO {
      */
     public LimelightHardware(String name) {
         name_ = name;
-        updateState(); // I dont know if this is needed,
     }
 
 
@@ -56,56 +48,22 @@ public class LimelightHardware implements LimelightIO {
     }
 
     @Override
-    public double getTX() {
-        return tX_;
-    }
+    public void updateInputs(LimelightIOInputsAutoLogged inputs) {
+        inputs.tX = LimelightHelpers.getTX(name_);
+        inputs.tY = LimelightHelpers.getTY(name_);
+        inputs.tArea = LimelightHelpers.getTA(name_);
+        inputs.tValid = LimelightHelpers.getTV(name_);
 
+        ObjectWriter jsonWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
-    @Override
-    public double getTY() {
-        return tY_;
-    }
-
-
-    @Override
-    public double getTArea() {
-        return tArea_;
-    }
-
-
-    @Override
-    public boolean isValidTarget() {
-        return tValid_;
-    }
-
-    @Override
-    public boolean hasAprilTag(int id) { // if fids has the id at all (can see it)
-        for (LimelightTarget_Fiducial fud : fiducials_) {
-            if (fud.fiducialID == id)
-                return true;
+        try {
+            inputs.fids = jsonWriter.writeValueAsString(LimelightHelpers.getLatestResults(name_).targetingResults.targets_Fiducials);
+        } catch (JsonProcessingException e) {
+            inputs.fids = "";
+            e.printStackTrace();
         }
 
-        return false;
-    }
-
-    @Override
-    public void updateState() {
-        currentResults_ = LimelightHelpers.getLatestResults(name_);
-
-        fiducials_ = currentResults_.targetingResults.targets_Fiducials;
-
-        tX_ = LimelightHelpers.getTX(name_);
-        tY_ = LimelightHelpers.getTY(name_);
-        tArea_ = LimelightHelpers.getTA(name_);
-        tValid_ = LimelightHelpers.getTV(name_);
-    }
-
-    @Override
-    public void updateInputs(LimelightIOInputsAutoLogged inputs) {
-        inputs.tX = tX_;
-        inputs.tY = tY_;
-        inputs.tArea = tArea_;
-        inputs.tValid = tValid_;
+        
     }
    
 }

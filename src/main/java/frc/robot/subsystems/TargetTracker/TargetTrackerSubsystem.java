@@ -8,9 +8,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Limelight.LimelightSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTrackerConstants.AprilTags;
 
 public class TargetTrackerSubsystem extends SubsystemBase {
+
+    private LimelightSubsystem ll_;
 
     private int targetNumber_;
     private Pose2d targetPose2d_;
@@ -20,8 +23,9 @@ public class TargetTrackerSubsystem extends SubsystemBase {
      */
     private Pose2d robotPose2d_ = new Pose2d();
 
-    public TargetTrackerSubsystem() {
+    public TargetTrackerSubsystem(LimelightSubsystem ll) {
 
+        this.ll_ = ll;
         targetNumber_ = AprilTags.getSpeakerCenter(DriverStation.getAlliance());
         targetPose2d_ = getAprilTagPose2d(targetNumber_);
 
