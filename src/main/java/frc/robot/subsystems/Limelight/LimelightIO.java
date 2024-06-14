@@ -3,6 +3,7 @@ package frc.robot.subsystems.Limelight;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
 
 public interface LimelightIO {
@@ -19,14 +20,10 @@ public interface LimelightIO {
         
         @Override
         public void toLog(LogTable table) {
-            table.put("TX", tX);
-            table.put("TY", tY);
-            table.put("TArea", tArea);
-            table.put("TValid", tValid);
 
-            // Fiducial Information
-
-            table.put(fiducialListRoot + "/NumFids", fiducials.length);
+            // Creates arrays to be graphed in advantagescope.
+            Translation2d[] graphablePoints = new Translation2d[fiducials.length];
+            Translation2d[] graphablePointsPixels = new Translation2d[fiducials.length];
             
             for (int i = 0; i < fiducials.length; i++) {
                 LimelightTarget_Fiducial fid = fiducials[i];
@@ -41,6 +38,10 @@ public interface LimelightIO {
                 table.put(fidEntry("TArea", i), fid.ta);
                 table.put(fidEntry("TS", i), fid.ts);
 
+                // Adds the opint to the graphable array.
+                graphablePoints[i] = new Translation2d(fid.tx, fid.ty);
+                graphablePointsPixels[i] = new Translation2d(fid.tx_pixels, fid.ty_pixels);
+
                 // Poses
                 table.put(fidEntry("CameraPoseTargetSpace", i), fid.getCameraPose_TargetSpace());
                 table.put(fidEntry("RobotPoseFieldSpace", i), fid.getRobotPose_FieldSpace());
@@ -49,6 +50,17 @@ public interface LimelightIO {
                 table.put(fidEntry("TargetPoseRobotSpace", i), fid.getTargetPose_RobotSpace());
                 
             }
+
+            // Fiducial Information
+            table.put(fiducialListRoot + "/NumFids", fiducials.length);
+            table.put(fiducialListRoot + "/GraphablePoints", graphablePoints);
+            table.put(fiducialListRoot + "/GraphablePointsPixels", graphablePointsPixels);
+
+            // General Information
+            table.put("TX", tX);
+            table.put("TY", tY);
+            table.put("TArea", tArea);
+            table.put("TValid", tValid);
 
         }
         @Override
