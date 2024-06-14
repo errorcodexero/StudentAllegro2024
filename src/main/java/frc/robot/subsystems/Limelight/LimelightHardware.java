@@ -54,38 +54,7 @@ public class LimelightHardware implements LimelightIO {
         inputs.tY = LimelightHelpers.getTY(name_);
         inputs.tArea = LimelightHelpers.getTA(name_);
         inputs.tValid = LimelightHelpers.getTV(name_);
-
-        // Individual lists to add values from every fid into in order.
-        ArrayList<Double> fidIdList = new ArrayList<>();
-        ArrayList<String> fidFamilyList = new ArrayList<>();
-        ArrayList<Double> fidTxList = new ArrayList<>();
-        ArrayList<Double> fidTyList = new ArrayList<>();
-        ArrayList<Double> fidTxPixelList = new ArrayList<>();
-        ArrayList<Double> fidTyPixelList = new ArrayList<>();
-        ArrayList<Double> fidTAreaList = new ArrayList<>();
-
-        LimelightTarget_Fiducial[] fids = LimelightHelpers.getLatestResults(name_).targetingResults.targets_Fiducials;
-
-        // Adds to all of the lists in order from all of the seen fiducials
-        for (LimelightTarget_Fiducial fid : fids) {
-            fidIdList.add(fid.fiducialID);
-            fidFamilyList.add(fid.fiducialFamily);
-            fidTxList.add(fid.tx);
-            fidTyList.add(fid.ty);
-            fidTxPixelList.add(fid.tx_pixels);
-            fidTyPixelList.add(fid.ty_pixels);
-            fidTAreaList.add(fid.ta);
-        }
-
-        // Coverts and saves those values as normal arrays of primitives.
-        inputs.fiducialID = listToDoubleArray(fidIdList);
-        inputs.fiducialFamily = listToStringArray(fidFamilyList);
-        inputs.fiducialTX = listToDoubleArray(fidTxList);
-        inputs.fiducialTY = listToDoubleArray(fidTyList);
-        inputs.fiducialTXPixels = listToDoubleArray(fidTxPixelList);
-        inputs.fiducialTYPixels = listToDoubleArray(fidTyPixelList);
-        inputs.fiducialTArea = listToDoubleArray(fidTAreaList);
-        
+        inputs.fiducials = LimelightHelpers.getLatestResults(name_).targetingResults.targets_Fiducials;
     }
 
     private double[] listToDoubleArray(List<Double> doubles) {

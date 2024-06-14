@@ -179,6 +179,49 @@ public class LimelightHelpers {
         {
             return toPose2D(targetPose_RobotSpace);
         }
+
+        // Setters added by the team.
+
+        /**
+         * Sets a pose. ONLY TO BE USED FOR LOGGING REPLAY!!!
+         * @param pose
+         */
+        public void setCameraPose_TargetSpace(Pose3d pose)
+        {
+            cameraPose_TargetSpace = fromPose3D(pose);
+        }
+        /**
+         * Sets a pose. ONLY TO BE USED FOR LOGGING REPLAY!!!
+         * @param pose
+         */
+        public void setRobotPose_FieldSpace(Pose3d pose)
+        {
+            robotPose_FieldSpace = fromPose3D(pose);
+        }
+        /**
+         * Sets a pose. ONLY TO BE USED FOR LOGGING REPLAY!!!
+         * @param pose
+         */
+        public void setRobotPose_TargetSpace(Pose3d pose)
+        {
+            robotPose_TargetSpace = fromPose3D(pose);
+        }
+        /**
+         * Sets a pose. ONLY TO BE USED FOR LOGGING REPLAY!!!
+         * @param pose
+         */
+        public void setTargetPose_CameraSpace(Pose3d pose)
+        {
+            targetPose_CameraSpace = fromPose3D(pose);
+        }
+        /**
+         * Sets a pose. ONLY TO BE USED FOR LOGGING REPLAY!!!
+         * @param pose
+         */
+        public void setTargetPose_RobotSpace(Pose3d pose)
+        {
+            targetPose_RobotSpace = fromPose3D(pose);
+        }
         
         @JsonProperty("ta")
         public double ta;
@@ -205,6 +248,7 @@ public class LimelightHelpers {
             targetPose_CameraSpace = new double[6];
             targetPose_RobotSpace = new double[6];
         }
+
     }
 
     public static class LimelightTarget_Barcode {
@@ -502,6 +546,29 @@ public class LimelightHelpers {
         Rotation2d r2d = new Rotation2d(Units.degreesToRadians(inData[5]));
         return new Pose2d(tran2d, r2d);
     }
+
+    /**
+     * Converts from a pose3d, to an encoded double array for logging. Added by the team.
+     * @param pose The pose to convert.
+     * @return The encoded double array.
+     */
+    private static double[] fromPose3D(Pose3d pose) {
+        Translation3d translation = pose.getTranslation();
+        Rotation3d rotation = pose.getRotation();
+
+        double[] data = new double[6];
+        data[0] = translation.getX();
+        data[1] = translation.getY();
+        data[2] = translation.getZ();
+        data[3] = Units.radiansToDegrees(rotation.getX());
+        data[4] = Units.radiansToDegrees(rotation.getY());
+        data[5] = Units.radiansToDegrees(rotation.getZ());
+
+        return data;
+
+    }
+
+    
 
     private static double extractArrayEntry(double[] inData, int position){
         if(inData.length < position+1)

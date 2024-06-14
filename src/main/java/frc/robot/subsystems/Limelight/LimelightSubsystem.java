@@ -163,12 +163,11 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return The fidicial, null if not found.
      */
     private Optional<LimelightTarget_Fiducial> findFid(int id) {
-        // TODO IMPLEMENT WITH NEW LOGGIN STRUCTURE, WORK IN PROGRESS
-        // for (LimelightTarget_Fiducial fid : inputs_.fids) {
-        //     if (fid.fiducialID == id) {
-        //         return Optional.of(fid);
-        //     }
-        // }
+        for (LimelightTarget_Fiducial fid : inputs_.fiducials) {
+            if (fid.fiducialID == id) {
+                return Optional.of(fid);
+            }
+        }
 
         return Optional.empty();
     }
