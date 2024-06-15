@@ -4,7 +4,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.xero1425.XeroTimer.XeroTimer;
+import org.xero1425.util.XeroTimer;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
@@ -156,7 +156,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-    public void forceChangeState(State state){
+    public void setState(State state){
         state_ = state;
     }
 

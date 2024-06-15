@@ -5,16 +5,13 @@
 package frc.robot.subsystems.IntakeShooter;
 
 import org.littletonrobotics.junction.Logger;
+import org.xero1425.util.EncoderMapper;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-<<<<<<< HEAD
-=======
-import EncoderMapper.EncoderMapper;
->>>>>>> parent of af3e687 (quick push)
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;

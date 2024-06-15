@@ -18,9 +18,9 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.xero1425.EncoderMapper.EncoderMapper;
-import org.xero1425.XeroAKInput.XeroAKInput;
-import org.xero1425.XeroTalon.XeroTalon;
+import org.xero1425.AKAbstraction.XeroAKInput;
+import org.xero1425.AKAbstraction.XeroTalon;
+import org.xero1425.util.EncoderMapper;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -261,7 +261,7 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
         }
     }
 
-    public void forceChangeState(State state){
+    public void setState(State state){
         state_ = state;
     }
 
