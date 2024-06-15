@@ -14,7 +14,7 @@ public class ShootCommand extends Command {
 
     @Override
     public void initialize(){
-        if(sub_.getState() == State.PrepShoot){
+        if(sub_.getState().equals(State.PrepShoot)){
             sub_.setState(State.Shoot);
         }
     }

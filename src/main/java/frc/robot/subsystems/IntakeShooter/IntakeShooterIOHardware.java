@@ -254,7 +254,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     double eval = absoluteEncoder_.getVoltage();
     angle_ = encoderMapper_.toRobot(eval);
 
-    if(tilt_.getPosition().getValueAsDouble() % 1 - angle_ > 1/180){
+    if(Math.abs(getTiltPosition() % 360 - angle_) > 1/180){
       updateMotorPosition();
     }
 

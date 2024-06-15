@@ -14,7 +14,7 @@ public class CancelIntakeCommand extends Command {
 
     @Override
     public void initialize(){
-        if(sub_.getState() == State.Intake)
+        if(sub_.getState().equals(State.Intake))
         sub_.cancelIntake();
     }
 }
