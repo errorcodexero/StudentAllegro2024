@@ -9,7 +9,6 @@ import org.xero1425.util.XeroTimer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.UpDownConstants;
-import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem.TTShooter;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.ShooterConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.TiltConstants;
 import frc.robot.subsystems.oi.type.ActionType;
@@ -69,7 +68,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     private PrepShootState prepShootState_;
     private Supplier<ActionType> intakeNextAction_;
     private Supplier<ShootType> shootingType_;
-    private TTShooter shootingTargets_;
+    private Supplier<Double> distFromTarget_;
     private double upDownShootTarget_;
     private double tiltShootTarget_;
     private double shooterShootTarget_;
@@ -81,12 +80,13 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     private boolean runOnceEject_ = true;
     private boolean weAreShooting_ = false;
 
-    public IntakeShooterSubsystem (IntakeShooterIO io, Supplier<ActionType> actionType, Supplier<ShootType> shootType, TTShooter shootingTargets){
+    public IntakeShooterSubsystem (IntakeShooterIO io, Supplier<ActionType> actionType, Supplier<ShootType> shootType, Supplier<Double> distFromTarget, Supplier<Boolean> aprilTagReady){
         io_ = io;
         intakeNextAction_ = actionType;
         shootingType_ = shootType;
-        shootingTargets_ = shootingTargets;
+        distFromTarget_ = distFromTarget;
         state_ = State.Idle;
+        aprilTagReady_ = aprilTagReady;
     }
 
     public boolean tiltReady(){
@@ -280,9 +280,9 @@ public class IntakeShooterSubsystem extends SubsystemBase{
             case Prep:
                 switch (shootingType_.get()) {
                     case AUTO:
-                        shooterShootTarget_ = shootingTargets_.getShooterVel_();
-                        tiltShootTarget_ = shootingTargets_.getTiltPos();
-                        upDownShootTarget_ = shootingTargets_.getUpDownPos();
+                        shooterShootTarget_ = (2.0 * distFromTarget_.get()) + 65.0;
+                        upDownShootTarget_ = distFromTarget_.get() < UpDownConstants.autoShootTargetSwitchSpot ? UpDownConstants.autoShootTargetClose : UpDownConstants.autoShootTargetFar;
+                        tiltShootTarget_ = Math.atan2(IntakeShooterConstants.speakerHeight, distFromTarget_.get());
                         break;
                     case PODIUM:
                         shooterShootTarget_ = ShooterConstants.podShootTarget;
