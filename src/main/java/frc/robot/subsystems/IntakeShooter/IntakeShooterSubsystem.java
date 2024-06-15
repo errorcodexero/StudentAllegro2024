@@ -282,7 +282,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                     case AUTO:
                         shooterShootTarget_ = (2.0 * distFromTarget_.get()) + 65.0;
                         upDownShootTarget_ = distFromTarget_.get() < UpDownConstants.autoShootTargetSwitchSpot ? UpDownConstants.autoShootTargetClose : UpDownConstants.autoShootTargetFar;
-                        tiltShootTarget_ = Math.atan2(IntakeShooterConstants.speakerHeight, distFromTarget_.get());
+                        tiltShootTarget_ = Math.atan2(IntakeShooterConstants.speakerHeight, distFromTarget_.get()) + upDownShootTarget_ - 90.0;
                         break;
                     case PODIUM:
                         shooterShootTarget_ = ShooterConstants.podShootTarget;
