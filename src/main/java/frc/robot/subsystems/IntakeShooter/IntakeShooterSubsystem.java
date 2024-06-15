@@ -18,11 +18,12 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     public enum State{
         Idle,
         Intake,
-        PrepForShoot,
+        PrepShoot,
         Shoot,
         Transfer,
         Eject,
         Stow,
+        Aborted
     }
 
     private enum IntakeState{
@@ -61,22 +62,28 @@ public class IntakeShooterSubsystem extends SubsystemBase{
 
     private IntakeShooterIOInputsAutoLogged inputs_ = new IntakeShooterIOInputsAutoLogged();
     private IntakeShooterIO io_;
+
     private State state_;
     private IntakeState intakeState_;
     private StowState stowState_;
     private TransferState transferState_;
     private PrepShootState prepShootState_;
+
     private Supplier<ActionType> intakeNextAction_;
     private Supplier<ShootType> shootingType_;
     private Supplier<Double> distFromTarget_;
+
     private double upDownShootTarget_;
     private double tiltShootTarget_;
     private double shooterShootTarget_;
+
     private Supplier<Boolean> DBReady_;
     private Supplier<Boolean> aprilTagReady_;
     private Supplier<Boolean> trampTransferReady_;
+
     private double intakeFeederStartPosSeenNote_;
     private double transferShooterStartPosSeenNote_;
+
     private boolean runOnceEject_ = true;
     private boolean weAreShooting_ = false;
 
@@ -92,13 +99,17 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     public boolean tiltReady(){
         boolean upDownGood = Math.abs(io_.getUpDownPosition() - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean tiltGood = Math.abs(io_.getTiltPosition() - tiltShootTarget_) < IntakeShooterConstants.shootOKThresh;
-        return (state_ == State.Shoot || state_ == State.PrepForShoot) && upDownGood && tiltGood;
+        return (state_ == State.Shoot || state_ == State.PrepShoot) && upDownGood && tiltGood;
     }
 
     public boolean shooterReady(){
         boolean shooter1Good = Math.abs(io_.getShooter1Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean shooter2Good = Math.abs(io_.getShooter2Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         return shooter1Good && shooter2Good;
+    }
+
+    public State getState(){
+        return state_;
     }
     
     @Override
@@ -123,7 +134,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                     e.printStackTrace();
                 }
                 break;
-            case PrepForShoot:
+            case PrepShoot:
                 try {
                     prepShoot();
                 } catch (InvalidAlgorithmParameterException e) {
@@ -149,6 +160,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 break;
             case Eject:
                 eject();
+                break;
+            case Aborted:
                 break;
             default:
                 state_ = State.Idle;
@@ -248,7 +261,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 tiltDone = Math.abs(io_.getTiltPosition() - TiltConstants.subShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getTiltVelocity()) < 5;
                 upDownDone = Math.abs(io_.getUpDownPosition() - UpDownConstants.subShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getUpDownVelocity()) < 5;
                 if(tiltDone && upDownDone){
-                    state_ = State.PrepForShoot;
+                    state_ = State.PrepShoot;
                 }
                 break;
             case MoveToTransferStart:
@@ -272,10 +285,10 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     }
 
     public void prepShoot() throws InvalidAlgorithmParameterException{
-        if(state_ != State.PrepForShoot && state_ != State.Intake){
+        if(state_ != State.PrepShoot && state_ != State.Intake){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
-        state_ = State.PrepForShoot;
+        state_ = State.PrepShoot;
         switch(prepShootState_){
             case Prep:
                 switch (shootingType_.get()) {
@@ -319,7 +332,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     }
 
     public void shoot() throws InvalidAlgorithmParameterException{
-        if(state_ != State.PrepForShoot && state_ != State.Shoot){
+        if(state_ != State.PrepShoot && state_ != State.Shoot){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
         state_ = State.Shoot;
@@ -399,6 +412,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         io_.stopShooter1();
         io_.stopShooter2();
         io_.stopTilt();
+        state_ = State.Aborted;
     }
 
     public void eject(){

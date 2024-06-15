@@ -14,6 +14,8 @@ public class IntakeCommand extends Command {
 
     @Override
     public void initialize(){
-        sub_.setState(State.Intake);
+        if(sub_.getState() == State.Idle){
+            sub_.setState(State.Intake);
+        }
     }
 }

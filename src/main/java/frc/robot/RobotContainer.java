@@ -14,6 +14,12 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.IntakeShooter.Commands.AbortCommand;
+import frc.robot.subsystems.IntakeShooter.Commands.CancelIntakeCommand;
+import frc.robot.subsystems.IntakeShooter.Commands.EjectCommand;
+import frc.robot.subsystems.IntakeShooter.Commands.IntakeCommand;
+import frc.robot.subsystems.IntakeShooter.Commands.ShootCommand;
+import frc.robot.subsystems.IntakeShooter.Commands.TurtleCommand;
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -28,7 +34,7 @@ public class RobotContainer {
   private final OISubsystem oiPanel_ = new OISubsystem(2);
   private final TargetTrackerSubsystem tt_ = new TargetTrackerSubsystem();
 
-  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware(), oiPanel_.actionTypeSupplier(), oiPanel_.shootTypeSupplier(), tt_.getDistanceFromTarget(), tt_.getATSeen());
+  private final IntakeShooterSubsystem intakeShooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware(), oiPanel_.actionTypeSupplier(), oiPanel_.shootTypeSupplier(), tt_.getDistanceFromTarget(), tt_.getATSeen());
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -71,13 +77,15 @@ public class RobotContainer {
       oiPanel_.setIndicator(OIConstants.Indicators.climbExecuteEnabled, true);
     }, oiPanel_));
 
-    oiPanel_.unclimb().whileTrue(Commands.runOnce(() -> {
-      oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, true);
-    }, oiPanel_));
+    //INTAKE SHOOTER BINDINGS
+    gamepad_.rightBumper().onTrue(new IntakeCommand(intakeShooter_));
+    gamepad_.rightBumper().onFalse(new CancelIntakeCommand(intakeShooter_));
 
-    oiPanel_.unclimb().whileFalse(Commands.runOnce(() -> {
-      oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, false);
-    }, oiPanel_));
+    gamepad_.a().onTrue(new ShootCommand(intakeShooter_));
+
+    oiPanel_.eject().onTrue(new EjectCommand(intakeShooter_));
+    oiPanel_.abort().onTrue(new AbortCommand(intakeShooter_));
+    oiPanel_.turtle().onTrue(new TurtleCommand(intakeShooter_));
   }
 
   /**
@@ -87,6 +95,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(intake_shooter_);
+    return Autos.exampleAuto(intakeShooter_);
   }
 }
