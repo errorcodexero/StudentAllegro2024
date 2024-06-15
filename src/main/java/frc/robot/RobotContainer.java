@@ -15,6 +15,7 @@ import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 
+import com.revrobotics.CANSparkFlex;
 
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
@@ -30,7 +31,7 @@ public class RobotContainer {
   private final OISubsystem oiPanel_ = new OISubsystem(2);
   private final TargetTrackerSubsystem tt_ = new TargetTrackerSubsystem();
 
-  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware(), oiPanel_.actionTypeSupplier(), oiPanel_.shootTypeSupplier(), tt_.getDistanceFromTarget());
+  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware(), oiPanel_.actionTypeSupplier(), oiPanel_.shootTypeSupplier(), tt_.getTTShooter());
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =

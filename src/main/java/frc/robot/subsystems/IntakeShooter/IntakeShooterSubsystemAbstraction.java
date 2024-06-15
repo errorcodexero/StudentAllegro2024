@@ -10,6 +10,7 @@ import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.UpDownConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.ShooterConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.TiltConstants;
+import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem.TTShooter;
 import frc.robot.subsystems.oi.type.ActionType;
 import frc.robot.subsystems.oi.type.ShootType;
 
@@ -17,9 +18,9 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.xero1425.AKAbstraction.XeroAKInput;
-import org.xero1425.AKAbstraction.XeroTalon;
-import org.xero1425.util.EncoderMapper;
+import org.xero1425.EncoderMapper.EncoderMapper;
+import org.xero1425.XeroAKInput.XeroAKInput;
+import org.xero1425.XeroTalon.XeroTalon;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -94,7 +95,7 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
     private Supplier<ActionType> intakeNextAction_;
     private Supplier<ShootType> shootingType_;
 
-    private Supplier<Double> distFromTarget_;
+    private TTShooter shootingTargets_;
     private double upDownShootTarget_;
     private double tiltShootTarget_;
     private double shooterShootTarget_;
@@ -112,7 +113,7 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
     private int[] sensorInputIndicies_;
     private int[] hasNoteInputIndicies_;
 
-    public IntakeShooterSubsystemAbstraction (Supplier<ActionType> actionType, Supplier<ShootType> shootType, Supplier<Double> distFromTarget){
+    public IntakeShooterSubsystemAbstraction (Supplier<ActionType> actionType, Supplier<ShootType> shootType, TTShooter shootingTargets){
         feeder_ = new XeroTalon(FeederConstants.CANID, IntakeShooterConstants.name, "Feeder", FeederConstants.gearRatio, FeederConstants.inverted);
         Slot0Configs feederPIDS = new Slot0Configs();
         feederPIDS.kP = FeederConstants.kP;
@@ -145,7 +146,7 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
 
         intakeNextAction_ = actionType;
         shootingType_ = shootType;
-        distFromTarget_ = distFromTarget;
+        shootingTargets_ = shootingTargets;
 
         noteSensor_ = new DigitalInput(1);
         noteSensorInverted_ = true;
@@ -383,9 +384,9 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
 
         switch (shootingType_.get()) {
             case AUTO:
-                shooterShootTarget_ = ShooterConstants.autoShootTarget;
-                tiltShootTarget_ = Math.atan2(IntakeShooterConstants.speakerHeight, distFromTarget_.get());
-                upDownShootTarget_ = UpDownConstants.autoShootTarget;
+                shooterShootTarget_ = shootingTargets_.getShooterVel_();
+                tiltShootTarget_ = shootingTargets_.getTiltPos();
+                upDownShootTarget_ = shootingTargets_.getUpDownPos();
                 break;
             case PODIUM:
                 shooterShootTarget_ = ShooterConstants.podShootTarget;

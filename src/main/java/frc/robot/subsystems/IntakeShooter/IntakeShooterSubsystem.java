@@ -4,11 +4,12 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
-import org.xero1425.util.XeroTimer;
+import org.xero1425.XeroTimer.XeroTimer;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.UpDownConstants;
+import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem.TTShooter;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.ShooterConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.TiltConstants;
 import frc.robot.subsystems.oi.type.ActionType;
@@ -68,7 +69,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     private PrepShootState prepShootState_;
     private Supplier<ActionType> intakeNextAction_;
     private Supplier<ShootType> shootingType_;
-    private Supplier<Double> distFromTarget_;
+    private TTShooter shootingTargets_;
     private double upDownShootTarget_;
     private double tiltShootTarget_;
     private double shooterShootTarget_;
@@ -80,11 +81,11 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     private boolean runOnceEject_ = true;
     private boolean weAreShooting_ = false;
 
-    public IntakeShooterSubsystem (IntakeShooterIO io, Supplier<ActionType> actionType, Supplier<ShootType> shootType, Supplier<Double> distFromTarget){
+    public IntakeShooterSubsystem (IntakeShooterIO io, Supplier<ActionType> actionType, Supplier<ShootType> shootType, TTShooter shootingTargets){
         io_ = io;
         intakeNextAction_ = actionType;
         shootingType_ = shootType;
-        distFromTarget_ = distFromTarget;
+        shootingTargets_ = shootingTargets;
         state_ = State.Idle;
     }
 
@@ -155,15 +156,12 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-    /**
-     * Should be used to set the state. Because the state starts the actions, this can be used to start any action in this subsystem. 
-     * @param state
-     */
-    public void setState(State state){
+    public void forceChangeState(State state){
         state_ = state;
     }
 
-    private void stow(){
+    public void stow(){
+        state_ = State.Stow;
         switch (stowState_) {
             case Start:
                 abort();
@@ -190,10 +188,11 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         intakeState_ = IntakeState.Cancelling;
     }
 
-    private void intake() throws InvalidAlgorithmParameterException{
-        if(state_ != State.Intake){
+    public void intake() throws InvalidAlgorithmParameterException{
+        if(state_ != State.Intake && state_ != State.Idle){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
+        state_ = State.Intake;
         boolean tiltDone;
         boolean upDownDone;
         switch(intakeState_){
@@ -272,17 +271,18 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Logger.recordOutput("Intake State", intakeState_);
     }
 
-    private void prepShoot() throws InvalidAlgorithmParameterException{
-        if(state_ != State.PrepForShoot){
+    public void prepShoot() throws InvalidAlgorithmParameterException{
+        if(state_ != State.PrepForShoot && state_ != State.Intake){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
+        state_ = State.PrepForShoot;
         switch(prepShootState_){
             case Prep:
                 switch (shootingType_.get()) {
                     case AUTO:
-                        shooterShootTarget_ = ShooterConstants.autoShootTarget;
-                        upDownShootTarget_ = UpDownConstants.autoShootTarget;
-                        tiltShootTarget_ = Math.atan2(IntakeShooterConstants.speakerHeight, distFromTarget_.get());
+                        shooterShootTarget_ = shootingTargets_.getShooterVel_();
+                        tiltShootTarget_ = shootingTargets_.getTiltPos();
+                        upDownShootTarget_ = shootingTargets_.getUpDownPos();
                         break;
                     case PODIUM:
                         shooterShootTarget_ = ShooterConstants.podShootTarget;
@@ -318,10 +318,11 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-    private void shoot() throws InvalidAlgorithmParameterException{
-        if(state_ != State.Shoot){
+    public void shoot() throws InvalidAlgorithmParameterException{
+        if(state_ != State.PrepForShoot && state_ != State.Shoot){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
+        state_ = State.Shoot;
         boolean shooter1Good = Math.abs(io_.getShooter1Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean shooter2Good = Math.abs(io_.getShooter2Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean upDownGood = Math.abs(io_.getUpDownPosition() - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
@@ -345,7 +346,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     }
 
 
-    private void transfer() throws InvalidAlgorithmParameterException{
+    public void transfer() throws InvalidAlgorithmParameterException{
         if(state_ != State.Transfer){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
@@ -400,7 +401,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         io_.stopTilt();
     }
 
-    private void eject(){
+    public void eject(){
+        state_ = State.Eject;
         XeroTimer wait = new XeroTimer(IntakeShooterConstants.ejectSecs);
         if(runOnceEject_){
             abort();
