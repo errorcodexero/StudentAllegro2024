@@ -5,8 +5,8 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LogFileUtil;
-import org.xero1425.XeroAKInput.XeroAKInput;
-import org.xero1425.XeroRobot.XeroRobot;
+import org.xero1425.AKAbstraction.XeroAKInput;
+import org.xero1425.util.XeroRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
