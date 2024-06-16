@@ -1,11 +1,10 @@
 package frc.robot.subsystems.Limelight;
 
-import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 
 public class LimelightHardware implements LimelightIO {
 
     private final String name_;
-    private final boolean demoFids = true;
 
     /**
      * Creates a new Limelight implementation, this implementation is using the Limelight Lib with a Limelight.
@@ -52,33 +51,10 @@ public class LimelightHardware implements LimelightIO {
         inputs.tY = LimelightHelpers.getTY(name_);
         inputs.tArea = LimelightHelpers.getTA(name_);
         inputs.tValid = LimelightHelpers.getTV(name_);
+        inputs.jsonDump = LimelightHelpers.getJSONDump(name_);
 
-        if (demoFids) {
-
-            LimelightTarget_Fiducial[] demoFids = new LimelightTarget_Fiducial[3];
-            demoFids[0] = new LimelightTarget_Fiducial();
-            demoFids[0].fiducialID = 1;
-            demoFids[0].fiducialFamily = "april";
-            demoFids[0].tx = 25.1;
-            demoFids[0].ty = 50.1;
-
-            demoFids[1] = new LimelightTarget_Fiducial();
-            demoFids[1].fiducialID = 2;
-            demoFids[1].fiducialFamily = "april";
-            demoFids[1].tx = 50.2;
-            demoFids[1].ty = 100.2;
-
-            demoFids[2] = new LimelightTarget_Fiducial();
-            demoFids[2].fiducialID = 3;
-            demoFids[2].fiducialFamily = "april";
-            demoFids[2].tx = 100.3;
-            demoFids[2].ty = 200.3;
-
-            inputs.fiducials = demoFids;
-        } else {
-            inputs.fiducials = LimelightHelpers.getLatestResults(name_).targetingResults.targets_Fiducials;
-        }
-        
+        LimelightResults results = LimelightHelpers.getLatestResults(name_);
+        inputs.fiducials = results.targetingResults.targets_Fiducials;
     }
 
 }

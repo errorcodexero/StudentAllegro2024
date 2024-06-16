@@ -4,19 +4,24 @@ import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
 
 public interface LimelightIO {
 
     public class LimelightIOInputs implements LoggableInputs {
+        // General Values That Will be Replayed
         public double tX = 0.0;
         public double tY = 0.0;
         public double tArea = 0.0;
         public boolean tValid = false;
+        public String jsonDump = "";
 
-        public LimelightTarget_Fiducial[] fiducials = {};
+        // Values for easier usage within code, and for graph visualization.
+        public LimelightResults parsedResults;
+        public LimelightTarget_Fiducial[] fiducials;
         
-        private final String fiducialListRoot = "Fiducials";
+        private final String fiducialListRoot = "Fiducials"; // The root for list of fiducials in logging.
         
         @Override
         public void toLog(LogTable table) {
@@ -38,11 +43,11 @@ public interface LimelightIO {
                 table.put(fidEntry("TArea", i), fid.ta);
                 table.put(fidEntry("TS", i), fid.ts);
 
-                // Adds the opint to the graphable array.
+                // Adds the point to the graphable array.
                 graphablePoints[i] = new Translation2d(fid.tx, fid.ty);
                 graphablePointsPixels[i] = new Translation2d(fid.tx_pixels, fid.ty_pixels);
 
-                // Poses
+                // Logs the calculated poses from the limelight.
                 table.put(fidEntry("CameraPoseTargetSpace", i), fid.getCameraPose_TargetSpace());
                 table.put(fidEntry("RobotPoseFieldSpace", i), fid.getRobotPose_FieldSpace());
                 table.put(fidEntry("RobotPoseTargetSpace", i), fid.getRobotPose_TargetSpace());
@@ -51,49 +56,29 @@ public interface LimelightIO {
                 
             }
 
-            // Fiducial Information
-            table.put(fiducialListRoot + "/NumFids", fiducials.length);
+            // Logged values for graph visualization.
             table.put(fiducialListRoot + "/GraphablePoints", graphablePoints);
             table.put(fiducialListRoot + "/GraphablePointsPixels", graphablePointsPixels);
 
-            // General Information
+            // Logs values that will be replayed.
             table.put("TX", tX);
             table.put("TY", tY);
             table.put("TArea", tArea);
             table.put("TValid", tValid);
+            table.put("JsonDump", jsonDump);
 
         }
         @Override
         public void fromLog(LogTable table) {
+            // Loads values from the log.
             tX = table.get("TX", tX);
             tY = table.get("TY", tY);
             tArea = table.get("TArea", tArea);
             tValid = table.get("TValid", tValid);
 
-            int numFids = table.get(fiducialListRoot + "/NumFids", 0);
-
-            for(int i = 0; i < numFids; i++) {
-                
-                // Creates and saves Fiducial objects into the list based on the logged values.
-                LimelightTarget_Fiducial fid = new LimelightTarget_Fiducial();
-                fid.fiducialID     = table.get(fidEntry("ID", i), fid.fiducialID);
-                fid.fiducialFamily = table.get(fidEntry("Family", i), fid.fiducialFamily);
-                fid.tx             = table.get(fidEntry("TX", i), fid.tx);
-                fid.ty             = table.get(fidEntry("TY", i), fid.ty);
-                fid.tx_pixels      = table.get(fidEntry("TXPixels", i), fid.tx_pixels);
-                fid.ty_pixels      = table.get(fidEntry("TYPixels", i), fid.ty_pixels);
-                fid.ta             = table.get(fidEntry("TArea", i), fid.ta);
-                fid.ts             = table.get(fidEntry("TS", i), fid.ts);
-
-                // Poses
-                fid.setCameraPose_TargetSpace(table.get(fidEntry("CameraPoseTargetSpace", i), fid.getCameraPose_TargetSpace()));
-                fid.setRobotPose_FieldSpace(table.get(fidEntry("RobotPoseFieldSpace", i), fid.getRobotPose_FieldSpace()));
-                fid.setRobotPose_TargetSpace(table.get(fidEntry("RobotPoseTargetSpace", i), fid.getRobotPose_TargetSpace()));
-                fid.setTargetPose_CameraSpace(table.get(fidEntry("TargetPoseCameraSpace", i), fid.getTargetPose_CameraSpace()));
-                fid.setTargetPose_RobotSpace(table.get(fidEntry("TargetPoseRobotSpace", i), fid.getTargetPose_RobotSpace()));
-                
-            }
-
+            // Parses the json dump from the log, this is only to be run during replay, meaning it has no effect on robot performance.
+            parsedResults = ReplayLimelightHelpers.parseJson(table.get("JsonDump", jsonDump));
+            fiducials = parsedResults.targetingResults.targets_Fiducials;
         }
 
         /**
@@ -108,11 +93,30 @@ public interface LimelightIO {
 
     }
 
+    /**
+     * Forces the indicator light on the limelight to be off.
+     */
     public abstract void forceOff();
+
+    /**
+     * Forces the indicator light on the limelight to blink.
+     */
     public abstract void forceBlink();
+
+    /**
+     * Forces the indicator light on the limelight to be on.
+     */
     public abstract void forceOn();
+
+    /**
+     * Resets the indicator light on the limelight to be controlled by its own software/pipelines.
+     */
     public abstract void resetLed();
     
+    /**
+     * Updates the inputs object with values from the hardware.
+     * @param inputs The inputs to update
+     */
     public abstract void updateInputs(LimelightIOInputs inputs);
 
 }

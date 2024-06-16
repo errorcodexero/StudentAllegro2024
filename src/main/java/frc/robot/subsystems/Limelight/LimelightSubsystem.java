@@ -43,7 +43,6 @@ public class LimelightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         io_.updateInputs(inputs_);
-
         Logger.processInputs(getName(), inputs_);
     }
 
@@ -93,16 +92,16 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the vision targets X position on the camera.
-     * @return X position of the vision target
+     * Gets the vision targets X offset.
+     * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
     public double getTX() {
         return inputs_.tX;
     }
 
     /**
-     * Gets the vision targets X position on the camera.
-     * @return Y position of the vision target
+     * Gets the vision targets Y offset.
+     * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
     public double getTY() {
         return inputs_.tY;
@@ -110,16 +109,16 @@ public class LimelightSubsystem extends SubsystemBase {
 
     /**
      * Gets the vision targets area on the camera.
-     * @return How much of the camera the target covers.
+     * @return How much of the camera the target covers. This range is configured in the limelight tuning.
      */
     public double getTArea() {
         return inputs_.tArea;
     }
 
     /**
-     * Gets a specific apriltag's X position on the camera.
+     * Gets a specific apriltag's X offset.
      * @param id The id of the apriltag.
-     * @return Its X position.
+     * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
     public Optional<Double> getAprilTX(int id) {
         Optional<LimelightTarget_Fiducial> fid = findFid(id);
@@ -131,9 +130,9 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets a specific apriltag's Y position on the camera.
+     * Gets a specific apriltag's Y offset.
      * @param id The id of the apriltag.
-     * @return Its Y position.
+     * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
     public Optional<Double> getAprilTY(int id) {
         Optional<LimelightTarget_Fiducial> fid = findFid(id);
@@ -147,7 +146,7 @@ public class LimelightSubsystem extends SubsystemBase {
     /**
      * Gets a specific apriltag's area on the camera.
      * @param id The id of the apriltag.
-     * @return How much of the camera the tag covers.
+     * @return How much of the camera the tag covers. This range is configured in the limelight tuning.
      */
     public Optional<Double> getAprilTArea(int id) {
         Optional<LimelightTarget_Fiducial> fid = findFid(id);
