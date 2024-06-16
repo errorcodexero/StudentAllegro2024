@@ -3,6 +3,7 @@ package frc.robot.subsystems.Limelight;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
@@ -15,11 +16,13 @@ public interface LimelightIO {
         public double tY = 0.0;
         public double tArea = 0.0;
         public boolean tValid = false;
+        public int fiducialID = 0;
+        public Pose3d predictedBotPose;
         public String jsonDump = "";
 
         // Values for easier usage within code, and for graph visualization.
-        public LimelightResults parsedResults;
-        public LimelightTarget_Fiducial[] fiducials;
+        public LimelightResults parsedResults = new LimelightResults();
+        public LimelightTarget_Fiducial[] fiducials = {};
         
         private final String fiducialListRoot = "Fiducials"; // The root for list of fiducials in logging.
         
@@ -60,11 +63,15 @@ public interface LimelightIO {
             table.put(fiducialListRoot + "/GraphablePoints", graphablePoints);
             table.put(fiducialListRoot + "/GraphablePointsPixels", graphablePointsPixels);
 
+            table.put("TargetGraphablePoint", new double[] {tX, });
+
             // Logs values that will be replayed.
             table.put("TX", tX);
             table.put("TY", tY);
             table.put("TArea", tArea);
             table.put("TValid", tValid);
+            table.put("FiducialID", fiducialID);
+            table.put("PredictedBotPose", predictedBotPose);
             table.put("JsonDump", jsonDump);
 
         }
@@ -75,9 +82,12 @@ public interface LimelightIO {
             tY = table.get("TY", tY);
             tArea = table.get("TArea", tArea);
             tValid = table.get("TValid", tValid);
+            fiducialID = table.get("FiducialID", fiducialID);
+            predictedBotPose = table.get("PredictedBotPose", predictedBotPose);
+            jsonDump = table.get("JsonDump", jsonDump);
 
             // Parses the json dump from the log, this is only to be run during replay, meaning it has no effect on robot performance.
-            parsedResults = ReplayLimelightHelpers.parseJson(table.get("JsonDump", jsonDump));
+            parsedResults = ReplayLimelightHelpers.parseJson(jsonDump);
             fiducials = parsedResults.targetingResults.targets_Fiducials;
         }
 
@@ -112,6 +122,11 @@ public interface LimelightIO {
      * Resets the indicator light on the limelight to be controlled by its own software/pipelines.
      */
     public abstract void resetLed();
+
+    /**
+     * Sets the id for tx/ty targeting. Ignore other targets.
+     */
+    public abstract void setPriorityTagID(int id);
     
     /**
      * Updates the inputs object with values from the hardware.

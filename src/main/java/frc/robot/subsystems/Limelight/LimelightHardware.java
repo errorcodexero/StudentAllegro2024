@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Limelight;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 
 public class LimelightHardware implements LimelightIO {
@@ -46,11 +47,18 @@ public class LimelightHardware implements LimelightIO {
     }
 
     @Override
+    public void setPriorityTagID(int id) {
+        LimelightHelpers.setPriorityTagID(name_, id);
+    }
+
+    @Override
     public void updateInputs(LimelightIOInputs inputs) {
         inputs.tX = LimelightHelpers.getTX(name_);
         inputs.tY = LimelightHelpers.getTY(name_);
         inputs.tArea = LimelightHelpers.getTA(name_);
         inputs.tValid = LimelightHelpers.getTV(name_);
+        inputs.fiducialID = (int) LimelightHelpers.getFiducialID(name_);
+        inputs.predictedBotPose = LimelightHelpers.getBotPose3d(name_);
         inputs.jsonDump = LimelightHelpers.getJSONDump(name_);
 
         LimelightResults results = LimelightHelpers.getLatestResults(name_);

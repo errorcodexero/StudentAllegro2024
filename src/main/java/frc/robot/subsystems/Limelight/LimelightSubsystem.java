@@ -92,7 +92,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the vision targets X offset.
+     * Gets the vision targets X offset. Make sure to check if the robot is seeing a tag, and its the one you want first. Otherwise this data will be innaccurate.
      * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
     public double getTX() {
@@ -100,7 +100,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the vision targets Y offset.
+     * Gets the vision targets Y offset. Make sure to check if the robot is seeing a tag, and its the one you want first. Otherwise this data will be innaccurate.
      * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
     public double getTY() {
@@ -108,7 +108,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the vision targets area on the camera.
+     * Gets the vision targets area on the camera. Make sure to check if the robot is seeing a tag, and its the one you want first. Otherwise this data will be innaccurate.
      * @return How much of the camera the target covers. This range is configured in the limelight tuning.
      */
     public double getTArea() {
@@ -116,7 +116,15 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets a specific apriltag's X offset.
+     * Gets the id of the primary in-view Fiducial/Apriltag
+     * @return
+     */
+    public int getFiducialID() {
+        return inputs_.fiducialID;
+    }
+
+    /**
+     * Gets a specific apriltag's X offset. Make sure to check if the robot can see the tag first. Otherwise this data will be innaccurate.
      * @param id The id of the apriltag.
      * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
@@ -130,7 +138,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets a specific apriltag's Y offset.
+     * Gets a specific apriltag's Y offset. Make sure to check if the robot can see the tag first. Otherwise this data will be innaccurate.
      * @param id The id of the apriltag.
      * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
@@ -144,7 +152,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets a specific apriltag's area on the camera.
+     * Gets a specific apriltag's area on the camera. Make sure to check if the robot can see the tag first. Otherwise this data will be innaccurate.
      * @param id The id of the apriltag.
      * @return How much of the camera the tag covers. This range is configured in the limelight tuning.
      */
@@ -163,7 +171,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     private Optional<LimelightTarget_Fiducial> findFid(int id) {
         for (LimelightTarget_Fiducial fid : inputs_.fiducials) {
-            if (fid.fiducialID == id) {
+            if (fid.fiducialID == (double) id) {
                 return Optional.of(fid);
             }
         }

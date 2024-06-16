@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -13,6 +15,7 @@ import frc.robot.commands.Autos;
 
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Limelight.LimelightSubsystem;
+import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 
 import frc.robot.subsystems.oi.OIConstants;
@@ -31,6 +34,8 @@ public class RobotContainer {
 
   private final OISubsystem oiPanel_ = new OISubsystem(2);
   private final LimelightSubsystem ll_ = new LimelightSubsystem();
+
+  private final TargetTrackerSubsystem targetTracker_ = new TargetTrackerSubsystem(ll_);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -85,6 +90,7 @@ public class RobotContainer {
     oiPanel_.unclimb().whileFalse(Commands.runOnce(() -> {
       oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, false);
     }));
+
   }
 
   /**

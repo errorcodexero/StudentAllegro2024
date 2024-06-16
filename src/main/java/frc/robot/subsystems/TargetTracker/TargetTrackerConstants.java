@@ -5,6 +5,10 @@ import java.util.Optional;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class TargetTrackerConstants {
+
+    public static final double CAMERA_ANGLE = 20.0; // The angle that the camera is positioned.
+    public static final double CAMERA_HEIGHT = 0.1; // The height that the camera is at from the floor.
+
     public static class AprilTags {
         public static final int BLUE_SOURCE_SIDE = 1;
         public static final int BLUE_SOURCE_END = 2;
@@ -16,12 +20,12 @@ public class TargetTrackerConstants {
         public static final int BLUE_SPEAKER_SIDE = 8;
         public static final int RED_SOURCE_END = 9;
         public static final int RED_SOURCE_SIDE = 10;
-        public static final int RED_STAGE_LEFT = 11 ;
-        public static final int RED_STAGE_RIGHT = 12 ;
-        public static final int RED_CENTER_STAGE = 13 ;
-        public static final int BLUE_CENTER_STAGE = 14 ;
-        public static final int BLUE_STAGE_LEFT = 15 ;
-        public static final int BLUE_STAGE_RIGHT = 16 ;
+        public static final int RED_STAGE_LEFT = 11;
+        public static final int RED_STAGE_RIGHT = 12;
+        public static final int RED_CENTER_STAGE = 13;
+        public static final int BLUE_CENTER_STAGE = 14;
+        public static final int BLUE_STAGE_LEFT = 15;
+        public static final int BLUE_STAGE_RIGHT = 16;
 
         /**
          * Gets the april tag id of the speaker center for the specified alliance.
@@ -29,10 +33,13 @@ public class TargetTrackerConstants {
          * @return The id for the april tag
          */
         public static int getSpeakerCenter(Optional<Alliance> alliance) {
+            if (alliance.isEmpty()) {
+                return 15;
+            }
+
             return switch (alliance.get()) {
                 case Blue -> BLUE_SPEAKER_CENTER;
                 case Red -> RED_SPEAKER_CENTER;
-                default -> 0;
             };
         }
     }
