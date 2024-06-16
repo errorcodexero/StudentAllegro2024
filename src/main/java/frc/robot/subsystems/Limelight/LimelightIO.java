@@ -63,7 +63,7 @@ public interface LimelightIO {
             table.put(fiducialListRoot + "/GraphablePoints", graphablePoints);
             table.put(fiducialListRoot + "/GraphablePointsPixels", graphablePointsPixels);
 
-            table.put("TargetGraphablePoint", new double[] {tX, });
+            table.put("TargetGraphablePoint", new double[] {tX, tY});
 
             // Logs values that will be replayed.
             table.put("TX", tX);
