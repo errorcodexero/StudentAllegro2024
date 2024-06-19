@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem.State;
 
+@Deprecated
 public class CancelIntakeCommand extends Command {
 
     private IntakeShooterSubsystem sub_;

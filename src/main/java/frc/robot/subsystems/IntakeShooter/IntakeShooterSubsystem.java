@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.xero1425.util.XeroTimer;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.UpDownConstants;
@@ -108,6 +109,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         return shooter1Good && shooter2Good;
     }
 
+    @Deprecated
     public State getState(){
         return state_;
     }
@@ -129,37 +131,37 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 break;
             case Intake:
                 try {
-                    intake();
+                    intakePeriodic();
                 } catch (InvalidAlgorithmParameterException e) {
                     e.printStackTrace();
                 }
                 break;
             case PrepShoot:
                 try {
-                    prepShoot();
+                    prepShootPeriodic();
                 } catch (InvalidAlgorithmParameterException e) {
                     e.printStackTrace();
                 }
                 break;
             case Shoot:
                 try {
-                    shoot();
+                    shootPeriodic();
                 } catch (InvalidAlgorithmParameterException e) {
                     e.printStackTrace();
                 }
                 break;
             case Stow:
-                stow();
+                stowPeriodic();
                 break;
             case Transfer:
                 try {
-                    transfer();
+                    transferPeriodic();
                 } catch (InvalidAlgorithmParameterException e) {
                     e.printStackTrace();
                 }
                 break;
             case Eject:
-                eject();
+                ejectPeriodic();
                 break;
             case Aborted:
                 break;
@@ -169,11 +171,22 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
+    @Deprecated
     public void setState(State state){
         state_ = state;
     }
 
-    public void stow(){
+    public Command stow(){
+        return new Command() {
+            @Override
+            public void initialize() {
+                super.initialize();
+                state_ = State.Stow;
+            }
+        };
+    }
+
+    private void stowPeriodic(){
         state_ = State.Stow;
         switch (stowState_) {
             case Start:
@@ -197,15 +210,34 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-    public void cancelIntake(){
-        intakeState_ = IntakeState.Cancelling;
+    public Command intake(){
+        return new Command() {
+            @Override
+            public void initialize() {
+                super.initialize();
+                if(state_.equals(State.Idle)){
+                    state_ = State.Intake;
+                }
+            }
+        };
     }
 
-    public void intake() throws InvalidAlgorithmParameterException{
-        if(state_ != State.Intake && state_ != State.Idle){
+    public Command cancelIntake(){
+        return new Command() {
+            @Override
+            public void initialize() {
+                super.initialize();
+                if(state_.equals(State.Intake)){
+                    intakeState_ = IntakeState.Cancelling;
+                }
+            }
+        };
+    }
+
+    private void intakePeriodic() throws InvalidAlgorithmParameterException{
+        if(state_ != State.Intake){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
-        state_ = State.Intake;
         boolean tiltDone;
         boolean upDownDone;
         switch(intakeState_){
@@ -284,7 +316,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Logger.recordOutput("Intake State", intakeState_);
     }
 
-    public void prepShoot() throws InvalidAlgorithmParameterException{
+    //No setter because this state should not be set by the OI and instead by intake. 
+    public void prepShootPeriodic() throws InvalidAlgorithmParameterException{
         if(state_ != State.PrepShoot && state_ != State.Intake){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
@@ -331,18 +364,30 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-    public void shoot() throws InvalidAlgorithmParameterException{
-        if(state_ != State.PrepShoot && state_ != State.Shoot){
+    public Command shoot(){
+        return new Command() {
+            @Override
+            public void initialize() {
+                super.initialize();
+                if(state_.equals(State.PrepShoot)){
+                    state_ = State.Shoot;
+                }
+            }
+        };
+    }
+
+    private void shootPeriodic() throws InvalidAlgorithmParameterException{
+        if(state_ != State.Shoot){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
-        state_ = State.Shoot;
         boolean shooter1Good = Math.abs(io_.getShooter1Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean shooter2Good = Math.abs(io_.getShooter2Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean upDownGood = Math.abs(io_.getUpDownPosition() - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
         boolean tiltGood = Math.abs(io_.getTiltPosition() - tiltShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getTiltVelocity()) < IntakeShooterConstants.otherOKThresh;
-        XeroTimer wait = new XeroTimer(IntakeShooterConstants.shootSecs);
+        XeroTimer wait = null; //So VS code doesnt get amd at me
         
         if(aprilTagReady_.get() && DBReady_.get() && shooter1Good && shooter2Good && upDownGood && tiltGood){
+            wait = new XeroTimer(IntakeShooterConstants.shootSecs);
             io_.spinFeeder(FeederConstants.shootTarget);
             wait.start();
             weAreShooting_ = true;
@@ -358,8 +403,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-
-    public void transfer() throws InvalidAlgorithmParameterException{
+    //Should not get called by OI, no setter. Should get state changed by intake. 
+    private void transferPeriodic() throws InvalidAlgorithmParameterException{
         if(state_ != State.Transfer){
             throw new InvalidAlgorithmParameterException("Wrong State!");
         }
@@ -406,26 +451,42 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-    public void abort(){
-        io_.stopFeeder();
-        io_.stopUpDown();
-        io_.stopShooter1();
-        io_.stopShooter2();
-        io_.stopTilt();
-        state_ = State.Aborted;
+    public Command abort(){
+        return new Command() {
+            @Override
+            public void initialize() {
+                super.initialize();
+                io_.stopFeeder();
+                io_.stopUpDown();
+                io_.stopShooter1();
+                io_.stopShooter2();
+                io_.stopTilt();
+                state_ = State.Aborted;
+            }
+        };
     }
 
-    public void eject(){
-        state_ = State.Eject;
-        XeroTimer wait = new XeroTimer(IntakeShooterConstants.ejectSecs);
+    public Command eject(){
+        return new Command() {
+            @Override
+            public void initialize() {
+                super.initialize();
+                state_ = State.Eject;
+            }
+        };
+    }
+
+    private void ejectPeriodic(){
+        XeroTimer ejectTimer = null;
         if(runOnceEject_){
+            ejectTimer = new XeroTimer(IntakeShooterConstants.ejectSecs);
             abort();
             io_.spinShooter1(ShooterConstants.ejectTarget);
             io_.spinShooter2(ShooterConstants.ejectTarget);
             io_.spinFeeder(ShooterConstants.ejectTarget);
-            wait.start();
+            ejectTimer.start();
         }
-        if(wait.isExpired()){
+        if(ejectTimer.isExpired()){
             runOnceEject_ = true;
             state_ = State.Stow;
         }

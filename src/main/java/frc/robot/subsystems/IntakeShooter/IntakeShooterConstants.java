@@ -74,7 +74,7 @@ public final class IntakeShooterConstants {
       public static final double gearRatio = 1.0;
       
       public static final double intakeTarget = 50.0;
-      public static final double upDownCanMoveIntakeTarget = 0.0;
+      public static final double upDownCanMoveIntakeTarget = -25.0;
       public static final double podShootTarget = -67.0;
       public static final double subShootTarget = -65.0;
       public static final double transferTarget = 0.0;

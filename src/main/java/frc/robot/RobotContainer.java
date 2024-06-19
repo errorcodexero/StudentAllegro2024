@@ -14,12 +14,6 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
-import frc.robot.subsystems.IntakeShooter.Commands.AbortCommand;
-import frc.robot.subsystems.IntakeShooter.Commands.CancelIntakeCommand;
-import frc.robot.subsystems.IntakeShooter.Commands.EjectCommand;
-import frc.robot.subsystems.IntakeShooter.Commands.IntakeCommand;
-import frc.robot.subsystems.IntakeShooter.Commands.ShootCommand;
-import frc.robot.subsystems.IntakeShooter.Commands.TurtleCommand;
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -78,14 +72,14 @@ public class RobotContainer {
     }, oiPanel_));
 
     //INTAKE SHOOTER BINDINGS
-    gamepad_.rightBumper().onTrue(new IntakeCommand(intakeShooter_));
-    gamepad_.rightBumper().onFalse(new CancelIntakeCommand(intakeShooter_));
+    gamepad_.rightBumper().onTrue(intakeShooter_.intake());
+    gamepad_.rightBumper().onFalse(intakeShooter_.cancelIntake());
 
-    gamepad_.a().onTrue(new ShootCommand(intakeShooter_));
+    gamepad_.a().onTrue(intakeShooter_.shoot());
 
-    oiPanel_.eject().onTrue(new EjectCommand(intakeShooter_));
-    oiPanel_.abort().onTrue(new AbortCommand(intakeShooter_));
-    oiPanel_.turtle().onTrue(new TurtleCommand(intakeShooter_));
+    oiPanel_.eject().onTrue(intakeShooter_.eject());
+    oiPanel_.abort().onTrue(intakeShooter_.abort());
+    oiPanel_.turtle().onTrue(intakeShooter_.stow());
   }
 
   /**

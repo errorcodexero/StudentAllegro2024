@@ -3,6 +3,7 @@ package frc.robot.subsystems.IntakeShooter.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 
+@Deprecated
 public class AbortCommand extends Command {
 
     private IntakeShooterSubsystem sub_;
