@@ -1,4 +1,0 @@
-OneNoteAuto
-FourNoteAuto
-ThreeNoteAuto
-DoNothingAuto
