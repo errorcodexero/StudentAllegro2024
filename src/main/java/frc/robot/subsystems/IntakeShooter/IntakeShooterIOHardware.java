@@ -124,7 +124,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public double getFeederVelocity(){
-    return feeder_.getVelocity().getValueAsDouble() * 360 / FeederConstants.gearRatio;
+    return feeder_.getVelocity().getValueAsDouble() / FeederConstants.gearRatio;
   }
   
   public TalonFX getUpDown(){
@@ -180,7 +180,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public double getShooter1Velocity(){
-    return shooter1_.getVelocity().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
+    return shooter1_.getVelocity().getValueAsDouble() / ShooterConstants.gearRatio;
   }
 
   public TalonFX getShooter2(){
@@ -200,7 +200,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public double getShooter2Velocity(){
-    return shooter2_.getVelocity().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
+    return shooter2_.getVelocity().getValueAsDouble() / ShooterConstants.gearRatio;
   }
 
   public TalonFX getTilt(){

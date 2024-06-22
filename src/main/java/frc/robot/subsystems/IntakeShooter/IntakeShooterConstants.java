@@ -28,7 +28,7 @@ public final class IntakeShooterConstants {
 
       public static final boolean inverted = false;
 
-      public static final double gearRatio = 1.0;
+      public static final double gearRatio = 66.0;
 
       public static final double intakeTarget = -11.0;
       public static final double autoShootTargetClose = 90.0;
@@ -52,7 +52,7 @@ public final class IntakeShooterConstants {
       public static final boolean inverted1 = false;
       public static final boolean inverted2 = false;
 
-      public static final double gearRatio = 1.0;
+      public static final double gearRatio = 0.6;
 
       public static final double podShootTarget = 70.0;
       public static final double subShootTarget = 65.0;
@@ -71,7 +71,7 @@ public final class IntakeShooterConstants {
 
       public static final boolean inverted = false;
 
-      public static final double gearRatio = 1.0;
+      public static final double gearRatio = 21.33;
       
       public static final double intakeTarget = 50.0;
       public static final double upDownCanMoveIntakeTarget = -25.0;

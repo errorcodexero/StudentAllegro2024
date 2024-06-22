@@ -187,10 +187,10 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     }
 
     private void stowPeriodic(){
-        state_ = State.Stow;
         switch (stowState_) {
             case Start:
-                abort();
+                abort(); // bc abort chnages state, i need to change it back. 
+                state_ = State.Stow;
                 io_.moveUpDownDegrees(UpDownConstants.stowTarget);
                 stowState_ = StowState.End;
                 break;
@@ -204,6 +204,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 if(upDownDone && tiltDone){
                     state_ = State.Idle;
                 }
+                break;
             default:
                 stowState_ = StowState.Start;
                 break;
@@ -244,6 +245,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
             case Start:
                 io_.moveTiltDegrees(TiltConstants.intakeTarget);
                 intakeState_ = IntakeState.MoveToIntakeStart;
+                break;
             case MoveToIntakeStart:
                 if(Math.abs(io_.getTiltPosition() - TiltConstants.upDownCanMoveIntakeTarget) < IntakeShooterConstants.otherOKThresh){
                     intakeState_ = IntakeState.MoveToIntake;
@@ -266,6 +268,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 break;
             case Cancelling:
                 state_ = State.Stow;
+                break;
             case HasNoteIdle:
                 if(Math.abs(intakeFeederStartPosSeenNote_ + FeederConstants.keepSpinningIntakeTarget - io_.getFeederPosition()) < 2.0){
                     io_.stopFeeder();
@@ -413,6 +416,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 if(trampTransferReady_.get()){
                     transferState_ = TransferState.Start;
                 }
+                break;
             case Start:
                 io_.spinShooter1(ShooterConstants.transferTargetVel);
                 io_.spinShooter2(ShooterConstants.transferTargetVel);
@@ -480,7 +484,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         XeroTimer ejectTimer = null;
         if(runOnceEject_){
             ejectTimer = new XeroTimer(IntakeShooterConstants.ejectSecs);
-            abort();
+            abort(); 
+            state_ = State.Eject; // bc abort chnages state, i need to change it back. 
             io_.spinShooter1(ShooterConstants.ejectTarget);
             io_.spinShooter2(ShooterConstants.ejectTarget);
             io_.spinFeeder(ShooterConstants.ejectTarget);
