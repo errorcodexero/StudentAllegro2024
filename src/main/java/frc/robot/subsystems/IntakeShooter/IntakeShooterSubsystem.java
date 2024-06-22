@@ -259,6 +259,10 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 if(tiltDone && upDownDone){
                     intakeState_ = IntakeState.WaitingForNote;
                 }
+                if(io_.hasNote()){
+                    intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
+                    intakeState_ = IntakeState.HasNoteIdle;
+                }
                 break;
             case WaitingForNote:
                 if(io_.hasNote()){
