@@ -34,8 +34,8 @@ public final class IntakeShooterConstants {
       public static final double autoShootTargetClose = 90.0;
       public static final double autoShootTargetFar = 118.0;
       public static final double autoShootTargetSwitchSpot = 2.5;
-      public static final double podShootTarget = 118.0;
-      public static final double subShootTarget = 100.0;
+      public static final double podiumShootTarget = 118.0;
+      public static final double subwooferShootTarget = 100.0;
       public static final double tiltCanMoveIntakeTarget = 30.0;
       public static final double transferTarget = 90.0;
       public static final double stowTarget = 118.0;
@@ -54,8 +54,8 @@ public final class IntakeShooterConstants {
 
       public static final double gearRatio = 0.6;
 
-      public static final double podShootTarget = 70.0;
-      public static final double subShootTarget = 65.0;
+      public static final double podiumShootTarget = 70.0;
+      public static final double subwooferShootTarget = 65.0;
       public static final double autoShootTarget = 80.0;
       public static final double transferTargetVel = 58.0;
       public static final double transferTargetPos = 540.0;
@@ -75,8 +75,8 @@ public final class IntakeShooterConstants {
       
       public static final double intakeTarget = 50.0;
       public static final double upDownCanMoveIntakeTarget = -25.0;
-      public static final double podShootTarget = -67.0;
-      public static final double subShootTarget = -65.0;
+      public static final double podiumShootTarget = -67.0;
+      public static final double subwooferShootTarget = -65.0;
       public static final double transferTarget = 0.0;
       public static final double stowTarget = -71.0;
     }

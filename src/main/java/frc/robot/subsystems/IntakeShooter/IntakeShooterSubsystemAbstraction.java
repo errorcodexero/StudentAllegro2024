@@ -331,7 +331,7 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
                     switch (intakeNextAction_.get()) {
                         case SPEAKER:
                             intakeState_ = IntakeState.MoveToShootStart;
-                            upDown_.motionMagicGotoDegrees(UpDownConstants.subShootTarget);
+                            upDown_.motionMagicGotoDegrees(UpDownConstants.subwooferShootTarget);
                             break;
                         default:
                             intakeState_ = IntakeState.MoveToTransferStart;
@@ -343,14 +343,14 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
             case MoveToShootStart:
                 if(Math.abs(upDown_.getPosition() - UpDownConstants.tiltCanMoveIntakeTarget) < IntakeShooterConstants.otherOKThresh){
                     intakeState_ = IntakeState.MoveToShoot;
-                    tilt_.motionMagicGotoDegrees(TiltConstants.subShootTarget);
-                    shooter1_.setVelocity(ShooterConstants.subShootTarget);
-                    shooter2_.setVelocity(ShooterConstants.subShootTarget);
+                    tilt_.motionMagicGotoDegrees(TiltConstants.subwooferShootTarget);
+                    shooter1_.setVelocity(ShooterConstants.subwooferShootTarget);
+                    shooter2_.setVelocity(ShooterConstants.subwooferShootTarget);
                 }
                 break;
             case MoveToShoot:
-                tiltDone = Math.abs(tilt_.getPosition() - TiltConstants.subShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(tilt_.getVelocity()) < IntakeShooterConstants.otherOKThresh;
-                upDownDone = Math.abs(upDown_.getPosition() - UpDownConstants.subShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(upDown_.getVelocity()) < IntakeShooterConstants.otherOKThresh;
+                tiltDone = Math.abs(tilt_.getPosition() - TiltConstants.subwooferShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(tilt_.getVelocity()) < IntakeShooterConstants.otherOKThresh;
+                upDownDone = Math.abs(upDown_.getPosition() - UpDownConstants.subwooferShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(upDown_.getVelocity()) < IntakeShooterConstants.otherOKThresh;
                 if(tiltDone && upDownDone){
                     state_ = State.PrepForShoot;
                 }
@@ -388,14 +388,14 @@ public class IntakeShooterSubsystemAbstraction extends SubsystemBase{
                 upDownShootTarget_ = UpDownConstants.autoShootTargetFar;
                 break;
             case PODIUM:
-                shooterShootTarget_ = ShooterConstants.podShootTarget;
-                tiltShootTarget_ = TiltConstants.podShootTarget;
-                upDownShootTarget_ = UpDownConstants.podShootTarget;
+                shooterShootTarget_ = ShooterConstants.podiumShootTarget;
+                tiltShootTarget_ = TiltConstants.podiumShootTarget;
+                upDownShootTarget_ = UpDownConstants.podiumShootTarget;
                 break;
             case SUBWOOFER:
-                shooterShootTarget_ = ShooterConstants.subShootTarget;
-                tiltShootTarget_ = TiltConstants.subShootTarget;
-                upDownShootTarget_ = UpDownConstants.subShootTarget;
+                shooterShootTarget_ = ShooterConstants.subwooferShootTarget;
+                tiltShootTarget_ = TiltConstants.subwooferShootTarget;
+                upDownShootTarget_ = UpDownConstants.subwooferShootTarget;
                 break;
         }
         if(runOnceShootPrep_ || shootingType_.get() == ShootType.AUTO){

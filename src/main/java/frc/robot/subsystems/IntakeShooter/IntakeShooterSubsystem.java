@@ -43,7 +43,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
 
     private enum StowState{
         Start,
-        End,
+        MovingStart,
+        MovingEnd,
         Done
     }
 
@@ -192,15 +193,17 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 abort(); // bc abort chnages state, i need to change it back. 
                 state_ = State.Stow;
                 io_.moveUpDownDegrees(UpDownConstants.stowTarget);
-                stowState_ = StowState.End;
+                stowState_ = StowState.MovingEnd;
                 break;
-            case End:
-                boolean upDownPastZone = Math.abs(io_.getUpDownPosition() - UpDownConstants.tiltCanMoveIntakeTarget) < IntakeShooterConstants.otherOKThresh;
-                boolean upDownDone = Math.abs(io_.getUpDownPosition() - UpDownConstants.stowTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
-                boolean tiltDone = Math.abs(io_.getTiltPosition() - TiltConstants.stowTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getTiltVelocity()) < IntakeShooterConstants.otherOKThresh;
+            case MovingStart:
+                boolean upDownPastZone = io_.getUpDownPosition() > UpDownConstants.tiltCanMoveIntakeTarget;
                 if(upDownPastZone){
                     io_.moveTiltDegrees(TiltConstants.stowTarget);
                 }
+                break;
+            case MovingEnd:
+                boolean upDownDone = Math.abs(io_.getUpDownPosition() - UpDownConstants.stowTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
+                boolean tiltDone = Math.abs(io_.getTiltPosition() - TiltConstants.stowTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getTiltVelocity()) < IntakeShooterConstants.otherOKThresh;
                 if(upDownDone && tiltDone){
                     state_ = State.Idle;
                 }
@@ -259,11 +262,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 if(tiltDone && upDownDone){
                     intakeState_ = IntakeState.WaitingForNote;
                 }
-                if(io_.hasNote()){
-                    intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
-                    intakeState_ = IntakeState.HasNoteIdle;
-                }
-                break;
+                //Should fall through so I can check for a note while going down. 
             case WaitingForNote:
                 if(io_.hasNote()){
                     intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
@@ -274,14 +273,14 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 state_ = State.Stow;
                 break;
             case HasNoteIdle:
-                if(Math.abs(intakeFeederStartPosSeenNote_ + FeederConstants.keepSpinningIntakeTarget - io_.getFeederPosition()) < 2.0){
+                if(intakeFeederStartPosSeenNote_ + FeederConstants.keepSpinningIntakeTarget - io_.getFeederPosition() < IntakeShooterConstants.otherOKThresh){
                     io_.stopFeeder();
                     switch (intakeNextAction_.get()) {
                         case SPEAKER:
                             intakeState_ = IntakeState.MoveToShootStart;
-                            io_.moveUpDownDegrees(UpDownConstants.subShootTarget);
+                            io_.moveUpDownDegrees(UpDownConstants.subwooferShootTarget);
                             break;
-                        default:
+                        case AMP, TRAP:
                             intakeState_ = IntakeState.MoveToTransferStart;
                             io_.moveUpDownDegrees(UpDownConstants.transferTarget);
                             break;
@@ -289,18 +288,19 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 }
                 break;
             case MoveToShootStart:
-                if(Math.abs(io_.getUpDownPosition() - UpDownConstants.tiltCanMoveIntakeTarget) < IntakeShooterConstants.otherOKThresh){
+                if(io_.getUpDownPosition() > UpDownConstants.tiltCanMoveIntakeTarget){
                     intakeState_ = IntakeState.MoveToShoot;
-                    io_.moveTiltDegrees(TiltConstants.subShootTarget);
-                    io_.spinShooter1(ShooterConstants.subShootTarget);
-                    io_.spinShooter2(ShooterConstants.subShootTarget);
+                    io_.moveTiltDegrees(TiltConstants.subwooferShootTarget);
+                    io_.spinShooter1(ShooterConstants.subwooferShootTarget);
+                    io_.spinShooter2(ShooterConstants.subwooferShootTarget);
                 }
                 break;
             case MoveToShoot:
-                tiltDone = Math.abs(io_.getTiltPosition() - TiltConstants.subShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getTiltVelocity()) < 5;
-                upDownDone = Math.abs(io_.getUpDownPosition() - UpDownConstants.subShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getUpDownVelocity()) < 5;
+                tiltDone = Math.abs(io_.getTiltPosition() - TiltConstants.subwooferShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getTiltVelocity()) < 5;
+                upDownDone = Math.abs(io_.getUpDownPosition() - UpDownConstants.subwooferShootTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getUpDownVelocity()) < 5;
                 if(tiltDone && upDownDone){
                     state_ = State.PrepShoot;
+                    intakeState_ = IntakeState.Done;
                 }
                 break;
             case MoveToTransferStart:
@@ -338,14 +338,14 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                         tiltShootTarget_ = Math.atan2(IntakeShooterConstants.speakerHeight, distFromTarget_.get()) + upDownShootTarget_ - 90.0;
                         break;
                     case PODIUM:
-                        shooterShootTarget_ = ShooterConstants.podShootTarget;
-                        tiltShootTarget_ = TiltConstants.podShootTarget;
-                        upDownShootTarget_ = UpDownConstants.podShootTarget;
+                        shooterShootTarget_ = ShooterConstants.podiumShootTarget;
+                        tiltShootTarget_ = TiltConstants.podiumShootTarget;
+                        upDownShootTarget_ = UpDownConstants.podiumShootTarget;
                         break;
                     case SUBWOOFER:
-                        shooterShootTarget_ = ShooterConstants.subShootTarget;
-                        tiltShootTarget_ = TiltConstants.subShootTarget;
-                        upDownShootTarget_ = UpDownConstants.subShootTarget;
+                        shooterShootTarget_ = ShooterConstants.subwooferShootTarget;
+                        tiltShootTarget_ = TiltConstants.subwooferShootTarget;
+                        upDownShootTarget_ = UpDownConstants.subwooferShootTarget;
                         break;
                 }
                 io_.spinShooter1(shooterShootTarget_);
