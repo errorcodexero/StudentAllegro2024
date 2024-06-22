@@ -31,7 +31,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Start,
         MoveToIntakeStart,
         MovingToIntake,
-        WaitingForNote,
+        MovingAndWaiting,
         Cancelling,
         HasNoteIdle,
         MoveToShootStart,
@@ -251,12 +251,12 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 break;
             case MoveToIntakeStart:
                 if(Math.abs(io_.getTiltPosition() - TiltConstants.upDownCanMoveIntakeTarget) < IntakeShooterConstants.otherOKThresh){
-                    intakeState_ = IntakeState.WaitingForNote;
+                    intakeState_ = IntakeState.MovingAndWaiting;
                     io_.moveUpDownDegrees(UpDownConstants.intakeTarget);
                     io_.spinFeeder(FeederConstants.intakeTarget);
                 }
                 break;
-            case MovingToIntake, WaitingForNote:
+            case MovingAndWaiting:
                 if(io_.hasNote()){
                     intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
                     intakeState_ = IntakeState.HasNoteIdle;
