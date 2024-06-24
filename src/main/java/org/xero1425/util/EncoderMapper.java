@@ -36,12 +36,9 @@ public class EncoderMapper
     /// \param encoder the encoder value
     /// \returns the robot value
     public double toRobot(double encoder) {
-        double ret ;
-        double offset; 
-
         encoder = clamp(encoder, emax_, emin_) ;
-        offset = normalize(ec_ - (rc_ - rmin_) / kEncoder2Robot_, emax_, emin_) ;
-        ret = normalize((encoder - offset) * kEncoder2Robot_ + rmin_, rmax_, rmin_) ;
+        double offset = normalize(ec_ - (rc_ - rmin_) / kEncoder2Robot_, emax_, emin_) ;
+        double ret = normalize((encoder - offset) * kEncoder2Robot_ + rmin_, rmax_, rmin_) ;
         
         return ret ;
     }
@@ -61,22 +58,13 @@ public class EncoderMapper
     }    
 
     private double normalize(double value, double vmax, double vmin) {
-        if (vmax < vmin)
-        {
+        if (vmax < vmin){
             double temp = vmax ;
             vmax = vmin ;
             vmin = temp ;
         }
 
-        while (value < vmin)
-        {
-            value += (vmax - vmin) ;
-        }
-
-        while (value > vmax)
-        {
-            value -= (vmax - vmin) ;
-        }
+        value = (value % (vmax - vmin)) + vmin;
 
         return value ;
     }

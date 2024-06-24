@@ -1,6 +1,5 @@
 package frc.robot.subsystems.IntakeShooter;
 
-import java.security.InvalidAlgorithmParameterException;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -32,7 +31,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         MoveToIntakeStart,
         MovingToIntake,
         MovingAndWaiting,
-        Cancelling,
+        Cancel,
         HasNoteIdle,
         MoveToShootStart,
         MoveToShoot,
@@ -124,47 +123,25 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Logger.recordOutput("Transfer State", transferState_);
         Logger.recordOutput("Stow State", stowState_);
         switch (state_) {
-            case Idle:
-                intakeState_ = IntakeState.Start;
-                stowState_ = StowState.Start;
-                transferState_ = TransferState.WaitingForTrampReady;
-                prepShootState_ = PrepShootState.Prep;
+            case Idle, Aborted:
                 break;
             case Intake:
-                try {
-                    intakePeriodic();
-                } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
-                }
+                intakePeriodic();
                 break;
             case PrepShoot:
-                try {
-                    prepShootPeriodic();
-                } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
-                }
+                prepShootPeriodic();
                 break;
             case Shoot:
-                try {
-                    shootPeriodic();
-                } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
-                }
+                shootPeriodic();
                 break;
             case Stow:
                 stowPeriodic();
                 break;
             case Transfer:
-                try {
-                    transferPeriodic();
-                } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
-                }
+                transferPeriodic();
                 break;
             case Eject:
                 ejectPeriodic();
-                break;
-            case Aborted:
                 break;
             default:
                 state_ = State.Idle;
@@ -206,6 +183,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 boolean tiltDone = Math.abs(io_.getTiltPosition() - TiltConstants.stowTarget) < IntakeShooterConstants.otherOKThresh && Math.abs(io_.getTiltVelocity()) < IntakeShooterConstants.otherOKThresh;
                 if(upDownDone && tiltDone){
                     state_ = State.Idle;
+                    stowState_ = StowState.Done;
+                    intakeState_ = IntakeState.Done;
                 }
                 break;
             default:
@@ -232,16 +211,13 @@ public class IntakeShooterSubsystem extends SubsystemBase{
             public void initialize() {
                 super.initialize();
                 if(state_.equals(State.Intake)){
-                    intakeState_ = IntakeState.Cancelling;
+                    intakeState_ = IntakeState.Cancel;
                 }
             }
         };
     }
 
-    private void intakePeriodic() throws InvalidAlgorithmParameterException{
-        if(state_ != State.Intake){
-            throw new InvalidAlgorithmParameterException("Wrong State!");
-        }
+    private void intakePeriodic(){
         boolean tiltDone;
         boolean upDownDone;
         switch(intakeState_){
@@ -257,12 +233,13 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 }
                 break;
             case MovingAndWaiting:
+                intakeState_ = IntakeState.Done;
                 if(io_.hasNote()){
                     intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
                     intakeState_ = IntakeState.HasNoteIdle;
                 }
                 break;
-            case Cancelling:
+            case Cancel:
                 state_ = State.Stow;
                 break;
             case HasNoteIdle:
@@ -313,15 +290,10 @@ public class IntakeShooterSubsystem extends SubsystemBase{
             default:
                 intakeState_ = IntakeState.MoveToIntakeStart;
         }
-        Logger.recordOutput("Intake State", intakeState_);
     }
 
     //No setter because this state should not be set by the OI and instead by intake. 
-    public void prepShootPeriodic() throws InvalidAlgorithmParameterException{
-        if(state_ != State.PrepShoot && state_ != State.Intake){
-            throw new InvalidAlgorithmParameterException("Wrong State!");
-        }
-        state_ = State.PrepShoot;
+    public void prepShootPeriodic(){
         switch(prepShootState_){
             case Prep:
                 switch (shootingType_.get()) {
@@ -371,15 +343,13 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 super.initialize();
                 if(state_.equals(State.PrepShoot)){
                     state_ = State.Shoot;
+                    prepShootState_ = PrepShootState.Done;
                 }
             }
         };
     }
 
-    private void shootPeriodic() throws InvalidAlgorithmParameterException{
-        if(state_ != State.Shoot){
-            throw new InvalidAlgorithmParameterException("Wrong State!");
-        }
+    private void shootPeriodic(){
         boolean shooter1Good = Math.abs(io_.getShooter1Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean shooter2Good = Math.abs(io_.getShooter2Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         boolean upDownGood = Math.abs(io_.getUpDownPosition() - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
@@ -403,11 +373,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         }
     }
 
-    //Should not get called by OI, no setter. Should get state changed by intake. 
-    private void transferPeriodic() throws InvalidAlgorithmParameterException{
-        if(state_ != State.Transfer){
-            throw new InvalidAlgorithmParameterException("Wrong State!");
-        }
+    //Should not get called by OI, no setter. Should get state changed by intake or PrepShoot. 
+    private void transferPeriodic(){
         switch(transferState_){
             case WaitingForTrampReady:
                 if(trampTransferReady_.get()){

@@ -37,7 +37,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   private EncoderMapper encoderMapper_;
 
   // This is true if the sensor is currently detecting a note
-  private boolean is_note_present_;
+  private boolean isNotePresent_;
 
   private double angle_;
   private int timesSeenSensor_ = 0;
@@ -240,7 +240,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public boolean hasNote(){
-    return is_note_present_;
+    return isNotePresent_;
   }
 
   public boolean sensorVal(){
@@ -249,13 +249,13 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
 
   public void update(IntakeShooterIOInputsAutoLogged inputs) {
     timesSeenSensor_ += sensor_edge_seen_ ? 1 : 0;
-    is_note_present_ = timesSeenSensor_ % 2 == 1;
+    isNotePresent_ = timesSeenSensor_ % 2 == 1;
 
-    double eval = absoluteEncoder_.getVoltage();
-    angle_ = encoderMapper_.toRobot(eval);
+    double encVal = absoluteEncoder_.getVoltage();
+    angle_ = encoderMapper_.toRobot(encVal); //bad?
 
-    if(Math.abs(getTiltPosition() % 360 - angle_) > 1/180){
-      updateMotorPosition();
+    if(Math.abs(getTiltPosition() % 360 - angle_) > 2){
+      tilt_.setPosition(angle_/360.0);
     }
 
     updateInputs(inputs);
@@ -295,10 +295,6 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     inputs.encoderPosition = encoderMapper_.toRobot(absoluteEncoder_.getVoltage());
 
     inputs.sensorVal = sensor_for_logging_;
-    inputs.hasNote = is_note_present_;
-  }
-
-  private void updateMotorPosition(){
-    tilt_.setPosition(angle_/360.0);
+    inputs.hasNote = isNotePresent_;
   }
 }
