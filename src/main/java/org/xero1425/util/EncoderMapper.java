@@ -64,7 +64,7 @@ public class EncoderMapper
             vmin = temp ;
         }
 
-        value = (value % (vmax - vmin)) + vmin;
+        value = (value % (vmax - vmin)) + vmin - (vmin % (vmax - vmin));
 
         return value ;
     }

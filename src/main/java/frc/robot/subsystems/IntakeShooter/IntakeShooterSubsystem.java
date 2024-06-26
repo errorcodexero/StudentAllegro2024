@@ -94,6 +94,10 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         shootingType_ = shootType;
         distFromTarget_ = distFromTarget;
         state_ = State.Idle;
+        intakeState_ = IntakeState.Start;
+        stowState_ = StowState.Start;
+        transferState_ = TransferState.Start;
+        prepShootState_ = PrepShootState.Prep;
         aprilTagReady_ = aprilTagReady;
     }
 
@@ -233,7 +237,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 }
                 break;
             case MovingAndWaiting:
-                intakeState_ = IntakeState.Done;
+                intakeState_ = IntakeState.Done; //get arid of later
                 if(io_.hasNote()){
                     intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
                     intakeState_ = IntakeState.HasNoteIdle;
