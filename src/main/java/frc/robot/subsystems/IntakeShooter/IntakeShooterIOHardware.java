@@ -5,25 +5,25 @@
 package frc.robot.subsystems.IntakeShooter;
 
 import org.littletonrobotics.junction.Logger;
+import org.xero1425.util.EncoderMapper;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import EncoderMapper.EncoderMapper;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants.IntakeShooterConstants.FeederConstants;
-import frc.robot.Constants.IntakeShooterConstants.Shooter1Constants;
-import frc.robot.Constants.IntakeShooterConstants.Shooter2Constants;
-import frc.robot.Constants.IntakeShooterConstants.TiltConstants;
-import frc.robot.Constants.IntakeShooterConstants.UpDownConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.ShooterConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.TiltConstants;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.UpDownConstants;
 
 public class IntakeShooterIOHardware implements IntakeShooterIO{
   /** Creates a new ExampleSubsystem. */
   private TalonFX feeder_;
-  private TalonFX up_down_;
+  private TalonFX upDown_;
   private TalonFX shooter1_;
   private TalonFX shooter2_;
   private TalonFX tilt_;
@@ -37,46 +37,50 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   private EncoderMapper encoderMapper_;
 
   // This is true if the sensor is currently detecting a note
-  private boolean is_note_present_;
+  private boolean isNotePresent_;
 
   private double angle_;
   private int timesSeenSensor_ = 0;
 
-  private boolean sensor_for_logging = false;
+  private boolean sensor_for_logging_ = false;
 
   public IntakeShooterIOHardware() {
-    feeder_ = new TalonFX(1);
-    up_down_ = new TalonFX(2);
-    shooter1_ = new TalonFX(3);
-    shooter2_ = new TalonFX(4);
-    tilt_ = new TalonFX(5);
+    feeder_ = new TalonFX(TiltConstants.CANID);
+    upDown_ = new TalonFX(UpDownConstants.CANID);
+    shooter1_ = new TalonFX(ShooterConstants.CANID1);
+    shooter2_ = new TalonFX(ShooterConstants.CANID2);
+    tilt_ = new TalonFX(TiltConstants.CANID);
 
     Slot0Configs feederPIDS = new Slot0Configs();
     feederPIDS.kP = FeederConstants.kP;
     feederPIDS.kD = FeederConstants.kD;
     feederPIDS.kV = FeederConstants.kV;
     feeder_.getConfigurator().apply(feederPIDS);
+    feeder_.setInverted(FeederConstants.inverted);
 
     Slot0Configs upDownPIDS = new Slot0Configs();
-    upDownPIDS.kP = 0.0;
-    upDownPIDS.kV = 0.0;
-    up_down_.setPosition(117.0/360.0);
-    up_down_.getConfigurator().apply(upDownPIDS);
+    upDownPIDS.kP = UpDownConstants.kP;
+    upDownPIDS.kD = UpDownConstants.kD;
+    upDownPIDS.kV = UpDownConstants.kV;
+    upDown_.setPosition(117.0/360.0);
+    upDown_.getConfigurator().apply(upDownPIDS);
+    upDown_.setInverted(UpDownConstants.inverted);
 
-    Slot0Configs shooter1PIDS = new Slot0Configs();
-    shooter1PIDS.kP = 0.0;
-    shooter1PIDS.kV = 0.0;
-    shooter1_.getConfigurator().apply(shooter1PIDS);
-
-    Slot0Configs shooter2PIDS = new Slot0Configs();
-    shooter2PIDS.kP = 0.0;
-    shooter2PIDS.kV = 0.0;
-    shooter2_.getConfigurator().apply(shooter2PIDS);
+    Slot0Configs shooterPIDS = new Slot0Configs();
+    shooterPIDS.kP = ShooterConstants.kP;
+    shooterPIDS.kD = ShooterConstants.kD;
+    shooterPIDS.kV = ShooterConstants.kV;
+    shooter1_.getConfigurator().apply(shooterPIDS);
+    shooter1_.setInverted(ShooterConstants.inverted1);
+    shooter2_.getConfigurator().apply(shooterPIDS);
+    shooter2_.setInverted(ShooterConstants.inverted2);
 
     Slot0Configs tiltPIDS = new Slot0Configs();
-    tiltPIDS.kP = 0.0;
-    tiltPIDS.kV = 0.0;
+    tiltPIDS.kP = TiltConstants.kP;
+    tiltPIDS.kD = TiltConstants.kD;
+    tiltPIDS.kV = TiltConstants.kV;
     tilt_.getConfigurator().apply(tiltPIDS);
+    tilt_.setInverted(TiltConstants.inverted);
 
     noteSensor_ = new DigitalInput(1);
     noteSensorInverted_ = true;
@@ -93,13 +97,13 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     Logger.recordOutput("rising",rising);
     Logger.recordOutput("falling", falling);
 
-    if(rising == noteSensorInverted_){
-      sensor_for_logging = true;
-    }
-
     if (falling == noteSensorInverted_) {
       sensor_edge_seen_ = true;
-      sensor_for_logging = false;
+      sensor_for_logging_ = false;
+    }
+
+    if(rising == noteSensorInverted_){
+      sensor_for_logging_ = true;
     }
   }
 
@@ -114,17 +118,29 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   public void spinFeeder(double rps){
     feeder_.setControl(new VelocityVoltage(rps * FeederConstants.gearRatio));
   }
+
+  public double getFeederPosition(){
+    return feeder_.getPosition().getValueAsDouble() * 360 / FeederConstants.gearRatio;
+  }
+
+  public double getFeederVelocity(){
+    return feeder_.getVelocity().getValueAsDouble() / FeederConstants.gearRatio;
+  }
   
   public TalonFX getUpDown(){
-    return up_down_;
+    return upDown_;
   }
 
   public void stopUpDown(){
-    up_down_.stopMotor();
+    upDown_.stopMotor();
   }
 
   public void moveUpDown(double revs){
-    up_down_.setControl(new MotionMagicVoltage(revs * UpDownConstants.gearRatio));
+    upDown_.setControl(new MotionMagicVoltage(revs * UpDownConstants.gearRatio));
+  }
+
+  public void moveUpDownPurePID(double degs){
+    upDown_.setControl(new PositionVoltage(degs / 360));
   }
 
   public void moveUpDownRevs(double revs){
@@ -139,6 +155,14 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     moveUpDown(rads/(2 * Math.PI));
   }
 
+  public double getUpDownPosition(){
+    return upDown_.getPosition().getValueAsDouble() * 360 / UpDownConstants.gearRatio;
+  }
+
+  public double getUpDownVelocity(){
+    return upDown_.getVelocity().getValueAsDouble() * 360 / UpDownConstants.gearRatio;
+  }
+
   public TalonFX getShooter1(){
     return shooter1_;
   }
@@ -148,7 +172,15 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void spinShooter1(double rps){
-    shooter1_.setControl(new VelocityVoltage(rps * Shooter1Constants.gearRatio));
+    shooter1_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio));
+  }
+
+  public double getShooter1Position(){
+    return shooter1_.getPosition().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
+  }
+
+  public double getShooter1Velocity(){
+    return shooter1_.getVelocity().getValueAsDouble() / ShooterConstants.gearRatio;
   }
 
   public TalonFX getShooter2(){
@@ -160,7 +192,15 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void spinShooter2(double rps){
-    shooter2_.setControl(new VelocityVoltage(rps * Shooter2Constants.gearRatio));
+    shooter2_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio));
+  }
+
+  public double getShooter2Position(){
+    return shooter2_.getPosition().getValueAsDouble() * 360 / ShooterConstants.gearRatio;
+  }
+
+  public double getShooter2Velocity(){
+    return shooter2_.getVelocity().getValueAsDouble() / ShooterConstants.gearRatio;
   }
 
   public TalonFX getTilt(){
@@ -172,34 +212,50 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void moveTilt(double revs){
-    up_down_.setControl(new MotionMagicVoltage(revs * TiltConstants.gearRatio));
+    tilt_.setControl(new MotionMagicVoltage(revs * TiltConstants.gearRatio));
+  }
+
+  public void moveTiltPurePID(double degs){
+    tilt_.setControl(new PositionVoltage(degs / 360));
   }
 
   public void moveTiltRevs(double revs){
-    moveUpDown(revs);
+    moveTilt(revs);
   }
 
   public void moveTiltDegrees(double degs){
-    moveUpDown(degs / 360.0);
+    moveTilt(degs / 360.0);
   }
 
   public void moveTiltRadians(double rads){
-    moveUpDown(rads/(2 * Math.PI));
+    moveTilt(rads/(2 * Math.PI));
+  }
+
+  public double getTiltPosition(){
+    return tilt_.getPosition().getValueAsDouble() * 360 / TiltConstants.gearRatio;
+  }
+
+  public double getTiltVelocity(){
+    return tilt_.getVelocity().getValueAsDouble() * 360 / TiltConstants.gearRatio;
   }
 
   public boolean hasNote(){
-    return is_note_present_;
+    return isNotePresent_;
+  }
+
+  public boolean sensorVal(){
+    return sensor_for_logging_;
   }
 
   public void update(IntakeShooterIOInputsAutoLogged inputs) {
     timesSeenSensor_ += sensor_edge_seen_ ? 1 : 0;
-    is_note_present_ = timesSeenSensor_ % 2 == 1;
+    isNotePresent_ = timesSeenSensor_ % 2 == 1;
 
-    double eval = absoluteEncoder_.getVoltage();
-    angle_ = encoderMapper_.toRobot(eval);
+    double encVal = absoluteEncoder_.getVoltage();
+    angle_ = encoderMapper_.toRobot(encVal); //bad?
 
-    if(tilt_.getPosition().getValueAsDouble() % 1 - angle_ > 1/180){
-      updateMotorPosition();
+    if(Math.abs(getTiltPosition() % 360 - angle_) > 2){
+      tilt_.setPosition(angle_/360.0);
     }
 
     updateInputs(inputs);
@@ -212,11 +268,11 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     inputs.feederVelocity = feeder_.getVelocity().getValueAsDouble();
     inputs.feederVoltage = feeder_.getMotorVoltage().getValueAsDouble();
 
-    inputs.upDownPosition = up_down_.getPosition().getValueAsDouble();
-    inputs.upDownCurrent = up_down_.getSupplyCurrent().getValueAsDouble();
-    inputs.upDownAcceleration = up_down_.getAcceleration().getValueAsDouble();
-    inputs.upDownVelocity = up_down_.getVelocity().getValueAsDouble();
-    inputs.upDownVoltage = up_down_.getMotorVoltage().getValueAsDouble();
+    inputs.upDownPosition = upDown_.getPosition().getValueAsDouble();
+    inputs.upDownCurrent = upDown_.getSupplyCurrent().getValueAsDouble();
+    inputs.upDownAcceleration = upDown_.getAcceleration().getValueAsDouble();
+    inputs.upDownVelocity = upDown_.getVelocity().getValueAsDouble();
+    inputs.upDownVoltage = upDown_.getMotorVoltage().getValueAsDouble();
 
     inputs.shooter1Position = shooter1_.getPosition().getValueAsDouble();
     inputs.shooter1Current = shooter1_.getSupplyCurrent().getValueAsDouble();
@@ -238,11 +294,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
 
     inputs.encoderPosition = encoderMapper_.toRobot(absoluteEncoder_.getVoltage());
 
-    inputs.sensorVal = sensor_for_logging;
-    inputs.hasNote = is_note_present_;
-  }
-
-  private void updateMotorPosition(){
-    tilt_.setPosition(angle_/360.0);
+    inputs.sensorVal = sensor_for_logging_;
+    inputs.hasNote = isNotePresent_;
   }
 }
