@@ -85,7 +85,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     noteSensor_ = new DigitalInput(1);
     noteSensorInverted_ = true;
     absoluteEncoder_ = new AnalogInput(0);
-    encoderMapper_ = new EncoderMapper(5.0, 0, 90, -90);
+    encoderMapper_ = new EncoderMapper(90, -90, 5.0, 0);
     encoderMapper_.calibrate(-72, 4.283);
 
     interrupt_ = new AsynchronousInterrupt(noteSensor_, (rising, falling) -> { interruptHandler(rising, falling); }) ;
