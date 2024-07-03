@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Tramp;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkFlex;
 
@@ -97,19 +99,63 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
     public CANSparkFlex getManipulator(){
         return manipulator_motor_;
     }     
+
+     public double getArmPosition(){
+        return arm_motor_.getPosition().getValueAsDouble(); 
+     }
+
+    public double getClimberPosition(){
+        return climber_motor_.getPosition().getValueAsDouble(); 
+    }
+
+    public double getElevatorPosition(){
+        return elevator_motor_.getPosition().getValueAsDouble(); 
+    }
+
+    public void moveClimber(double m){}
+
+    public void moveElevator(double m){} 
+
+    public void runManipulatorRevolutions(double rps){}
+
+    public void runManipulator() {} 
+
+    public void stopManipulator(){
+        manipulator_motor_.stopMotor();
+    }
+
+    public void moveArmDegrees(double degs){
+    }
+
+    public void moveArmRadians(double rad){
+        arm_motor_.setControl(new MotionMagicVoltage(rad)); 
+    }
+
+    public void moveArmRevolutions(double rps){
+        arm_motor_.setControl(new VelocityVoltage(rps)); 
+    }
+   
+    public void trampPositionAction(double target_height_, double target_angle_){
+        double currentArmPosition = getArmPosition(); 
+        double targetHeight = target_height_
+
+        if (currentArmPosition < keep_out_min_ && target_angle_ > keep_out_max_) {
+            //
+            // We need to cross the keep out zone from min to max
+            //
+            if (target_height_ > keep_out_height_) {
+                //
+                // The eventual height is above the keep out zone, so we can go directly to the target height
+                // and just monitor the elevator height and start the arm when we get above the keepout height
+                //
+                sub_.getElevator().setAction(elevator_goto_target_action_, true) ;
+            } else {
+                //
+                // The eventual height is below the keepout zone, so we need to go to the keepout height,
+                // move the arm, and then go to the target height
+                //
+                sub_.getElevator().setAction(keepout_height_action_, true) ;
+            }
+    }
+    }
 }
-
-// irrelevant code, from the shooter roller assignment: 
-    // @Override
-     // start shooter and set to certain rps 
-    //   public void startShooter(double rps){
-    //     shootermotor1_.setControl(new VelocityVoltage(rps)) ;
-//   }
-
-    // @Override
-     // stop shooter by setting voltage out to 0
-    //   public void stopShooter(){
-    //     shootermotor1_.setControl(new VoltageOut(0.0)) ;
-//   }
-
-

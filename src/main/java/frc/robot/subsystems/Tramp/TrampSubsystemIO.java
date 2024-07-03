@@ -2,6 +2,9 @@ package frc.robot.subsystems.Tramp;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkFlex;
+
 public interface TrampSubsystemIO {
    
     @AutoLog
@@ -32,13 +35,43 @@ public interface TrampSubsystemIO {
         public double manipulatorVoltage = 0.0;
         public double manipulatorAcceleration = 0.0; 
     }
-    // updating all of the inputs
+    // updating inputs
     public default void updateInputs(TrampSubsystemIOInputs inputs) {}
-  
-//     // starting shooter
-//     public default void startShooter(double rps) {}
 
-//     // stopping shooter (by setting voltage to 0)
-//     public default void stopShooter() {}
+    // ARM METHODS: 
+    public TalonFX getArm(); 
+    
+    public void moveArmDegrees(double degs); 
+
+    public void moveArmRadians(double rad); 
+
+    public void moveArmRevolutions(double rps); 
+
+    public double getArmPosition(); 
+
+    // CLIMBER METHODS: 
+    public TalonFX getClimber(); 
+
+    public void moveClimber(double m); 
+
+    public double getClimberPosition(); 
+
+    // ELEVATOR METHODS: 
+    public TalonFX getElevator(); 
+
+    public void moveElevator(double m); 
+
+    public double getElevatorPosition(); 
+
+    //MANIPULATOR METHODS: 
+    public CANSparkFlex getManipulator(); 
+
+    public void runManipulatorRevolutions(double rps); 
+
+    public void runManipulator(); 
+
+    public void stopManipulator(); 
+
+    public double getManipulatorPosition(); 
 
 }
