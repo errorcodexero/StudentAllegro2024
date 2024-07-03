@@ -57,14 +57,36 @@ public class EncoderMapper
         return ret ;
     }    
 
-    private double normalize(double value, double vmax, double vmin) {
+    public double normalize(double value, double vmax, double vmin) {
         if (vmax < vmin){
             double temp = vmax ;
             vmax = vmin ;
             vmin = temp ;
         }
 
-        value = (value % (vmax - vmin)) + vmin - (vmin % (vmax - vmin));
+        value = value + (vmax - vmin) * -Math.floor(((value - vmin) / (vmax - vmin)));
+
+
+        return value ;
+    }
+
+    public double oldNormalize(double value, double vmax, double vmin){
+        if (vmax < vmin)
+        {
+            double temp = vmax ;
+            vmax = vmin ;
+            vmin = temp ;
+        }
+
+        while (value < vmin)
+        {
+            value += (vmax - vmin) ;
+        }
+
+        while (value > vmax)
+        {
+            value -= (vmax - vmin) ;
+        }
 
         return value ;
     }
