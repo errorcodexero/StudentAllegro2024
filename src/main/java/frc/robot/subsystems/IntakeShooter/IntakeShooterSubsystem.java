@@ -5,6 +5,9 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.xero1425.util.XeroTimer;
 
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterConstants.FeederConstants;
@@ -87,6 +90,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
 
     private boolean runOnceEject_ = true;
     private boolean weAreShooting_ = false;
+    private boolean TTest = false;
 
     public IntakeShooterSubsystem (IntakeShooterIO io, Supplier<ActionType> actionType, Supplier<ShootType> shootType, Supplier<Double> distFromTarget, Supplier<Boolean> aprilTagReady){
         io_ = io;
@@ -128,6 +132,11 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Logger.recordOutput("Stow State", stowState_);
         switch (state_) {
             case Idle, Aborted:
+                if(TTest){
+                    io_.getTilt().setControl(new PositionVoltage(TiltConstants.transferTarget/360));
+                    io_.moveUpDownDegrees(UpDownConstants.transferTarget);
+                    TTest = false;
+                }
                 break;
             case Intake:
                 intakePeriodic();

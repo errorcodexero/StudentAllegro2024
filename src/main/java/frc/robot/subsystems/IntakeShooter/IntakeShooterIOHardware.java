@@ -45,7 +45,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   private boolean sensor_for_logging_ = false;
 
   public IntakeShooterIOHardware() {
-    feeder_ = new TalonFX(TiltConstants.CANID);
+    feeder_ = new TalonFX(FeederConstants.CANID);
     upDown_ = new TalonFX(UpDownConstants.CANID);
     shooter1_ = new TalonFX(ShooterConstants.CANID1);
     shooter2_ = new TalonFX(ShooterConstants.CANID2);
@@ -91,6 +91,10 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     interrupt_ = new AsynchronousInterrupt(noteSensor_, (rising, falling) -> { interruptHandler(rising, falling); }) ;
     interrupt_.setInterruptEdges(true, true);            
     interrupt_.enable();
+
+    double encVal = absoluteEncoder_.getVoltage();
+    angle_ = encoderMapper_.toRobot(encVal);
+    tilt_.setPosition(angle_/360.0);
   }
   private void interruptHandler(Boolean rising, Boolean falling) {
 
@@ -116,7 +120,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void spinFeeder(double rps){
-    feeder_.setControl(new VelocityVoltage(rps * FeederConstants.gearRatio));
+    feeder_.setControl(new VelocityVoltage(rps * FeederConstants.gearRatio).withSlot(0));
   }
 
   public double getFeederPosition(){
@@ -136,11 +140,11 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void moveUpDown(double revs){
-    upDown_.setControl(new MotionMagicVoltage(revs * UpDownConstants.gearRatio));
+    upDown_.setControl(new MotionMagicVoltage(revs * UpDownConstants.gearRatio).withSlot(0));
   }
 
   public void moveUpDownPurePID(double degs){
-    upDown_.setControl(new PositionVoltage(degs / 360));
+    upDown_.setControl(new PositionVoltage(degs / 360).withSlot(0));
   }
 
   public void moveUpDownRevs(double revs){
@@ -172,7 +176,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void spinShooter1(double rps){
-    shooter1_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio));
+    shooter1_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio).withSlot(0));
   }
 
   public double getShooter1Position(){
@@ -192,7 +196,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void spinShooter2(double rps){
-    shooter2_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio));
+    shooter2_.setControl(new VelocityVoltage(rps * ShooterConstants.gearRatio).withSlot(0));
   }
 
   public double getShooter2Position(){
@@ -212,11 +216,11 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
   }
 
   public void moveTilt(double revs){
-    tilt_.setControl(new MotionMagicVoltage(revs * TiltConstants.gearRatio));
+    tilt_.setControl(new MotionMagicVoltage(revs * TiltConstants.gearRatio).withSlot(0));
   }
 
   public void moveTiltPurePID(double degs){
-    tilt_.setControl(new PositionVoltage(degs / 360));
+    tilt_.setControl(new PositionVoltage(degs / 360).withSlot(0));
   }
 
   public void moveTiltRevs(double revs){
@@ -252,44 +256,44 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     isNotePresent_ = timesSeenSensor_ % 2 == 1;
 
     double encVal = absoluteEncoder_.getVoltage();
-    angle_ = encoderMapper_.toRobot(encVal); //bad?
+    angle_ = encoderMapper_.toRobot(encVal);
 
     if(Math.abs(getTiltPosition() % 360 - angle_) > 2){
-      tilt_.setPosition(angle_/360.0);
+      //tilt_.setPosition(angle_/360.0);
     }
 
     updateInputs(inputs);
   }
 
   private void updateInputs (IntakeShooterIOInputsAutoLogged inputs){
-    inputs.feederPosition = feeder_.getPosition().getValueAsDouble();
+    inputs.feederPosition = feeder_.getPosition().getValueAsDouble() * 360;
     inputs.feederCurrent = feeder_.getSupplyCurrent().getValueAsDouble();
     inputs.feederAcceleration = feeder_.getAcceleration().getValueAsDouble();
     inputs.feederVelocity = feeder_.getVelocity().getValueAsDouble();
     inputs.feederVoltage = feeder_.getMotorVoltage().getValueAsDouble();
 
-    inputs.upDownPosition = upDown_.getPosition().getValueAsDouble();
+    inputs.upDownPosition = upDown_.getPosition().getValueAsDouble() * 360;
     inputs.upDownCurrent = upDown_.getSupplyCurrent().getValueAsDouble();
-    inputs.upDownAcceleration = upDown_.getAcceleration().getValueAsDouble();
-    inputs.upDownVelocity = upDown_.getVelocity().getValueAsDouble();
+    inputs.upDownAcceleration = upDown_.getAcceleration().getValueAsDouble() * 360;
+    inputs.upDownVelocity = upDown_.getVelocity().getValueAsDouble() * 360;
     inputs.upDownVoltage = upDown_.getMotorVoltage().getValueAsDouble();
 
-    inputs.shooter1Position = shooter1_.getPosition().getValueAsDouble();
+    inputs.shooter1Position = shooter1_.getPosition().getValueAsDouble() * 360;
     inputs.shooter1Current = shooter1_.getSupplyCurrent().getValueAsDouble();
     inputs.shooter1Acceleration = shooter1_.getAcceleration().getValueAsDouble();
     inputs.shooter1Velocity = shooter1_.getVelocity().getValueAsDouble();
     inputs.shooter1Voltage = shooter1_.getMotorVoltage().getValueAsDouble();
 
-    inputs.shooter2Position = shooter2_.getPosition().getValueAsDouble();
+    inputs.shooter2Position = shooter2_.getPosition().getValueAsDouble() * 360;
     inputs.shooter2Current = shooter2_.getSupplyCurrent().getValueAsDouble();
     inputs.shooter2Acceleration = shooter2_.getAcceleration().getValueAsDouble();
     inputs.shooter2Velocity = shooter2_.getVelocity().getValueAsDouble();
     inputs.shooter2Voltage = shooter2_.getMotorVoltage().getValueAsDouble();
 
-    inputs.tiltPosition = tilt_.getPosition().getValueAsDouble();
+    inputs.tiltPosition = tilt_.getPosition().getValueAsDouble() * 360;
     inputs.tiltCurrent = tilt_.getSupplyCurrent().getValueAsDouble();
-    inputs.tiltAcceleration = tilt_.getAcceleration().getValueAsDouble();
-    inputs.tiltVelocity = tilt_.getVelocity().getValueAsDouble();
+    inputs.tiltAcceleration = tilt_.getAcceleration().getValueAsDouble() * 360;
+    inputs.tiltVelocity = tilt_.getVelocity().getValueAsDouble() * 360;
     inputs.tiltVoltage = tilt_.getMotorVoltage().getValueAsDouble();
 
     inputs.encoderPosition = encoderMapper_.toRobot(absoluteEncoder_.getVoltage());
