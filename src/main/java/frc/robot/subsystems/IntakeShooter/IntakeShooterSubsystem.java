@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.xero1425.util.XeroTimer;
 
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 
 import edu.wpi.first.wpilibj2.command.Command;

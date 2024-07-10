@@ -7,6 +7,9 @@ public final class IntakeShooterConstants {
       public static final double kP = 0.0035;
       public static final double kD = 0.004;
       public static final double kV = 0.000312;
+      public static final double maxv = 80;
+      public static final double maxa = 80;
+      public static final double jerk = 0.0;
 
       public static final boolean inverted = true;
 
@@ -25,6 +28,10 @@ public final class IntakeShooterConstants {
       public static final double kP = 7.0;
       public static final double kD = 0.0;
       public static final double kV = 0.4;
+
+      public static final double maxv = 200;
+      public static final double maxa = 700;
+      public static final double jerk = 0.0;
 
       public static final boolean inverted = false;
 
@@ -68,6 +75,10 @@ public final class IntakeShooterConstants {
       public static final double kP = 2.8;
       public static final double kD = 0.0;
       public static final double kV = 0.1;
+
+      public static final double maxv = 200;
+      public static final double maxa = 700;
+      public static final double jerk = 0.0;
 
       public static final boolean inverted = false;
 

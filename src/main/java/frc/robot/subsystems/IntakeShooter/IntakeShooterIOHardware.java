@@ -7,7 +7,9 @@ package frc.robot.subsystems.IntakeShooter;
 import org.littletonrobotics.junction.Logger;
 import org.xero1425.util.EncoderMapper;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -58,12 +60,17 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     feeder_.getConfigurator().apply(feederPIDS);
     feeder_.setInverted(FeederConstants.inverted);
 
-    Slot0Configs upDownPIDS = new Slot0Configs();
+    TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
+    Slot0Configs upDownPIDS = upDownConfig.Slot0;
     upDownPIDS.kP = UpDownConstants.kP;
     upDownPIDS.kD = UpDownConstants.kD;
     upDownPIDS.kV = UpDownConstants.kV;
+    MotionMagicConfigs upDownMagicConfigs = upDownConfig.MotionMagic;
+    upDownMagicConfigs.MotionMagicCruiseVelocity = UpDownConstants.maxv;
+    upDownMagicConfigs.MotionMagicAcceleration = UpDownConstants.maxa;
+    upDownMagicConfigs.MotionMagicJerk = UpDownConstants.jerk;
     upDown_.setPosition(117.0/360.0);
-    upDown_.getConfigurator().apply(upDownPIDS);
+    upDown_.getConfigurator().apply(upDownConfig);
     upDown_.setInverted(UpDownConstants.inverted);
 
     Slot0Configs shooterPIDS = new Slot0Configs();
@@ -75,11 +82,16 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     shooter2_.getConfigurator().apply(shooterPIDS);
     shooter2_.setInverted(ShooterConstants.inverted2);
 
-    Slot0Configs tiltPIDS = new Slot0Configs();
+    TalonFXConfiguration tiltConfig = new TalonFXConfiguration();
+    Slot0Configs tiltPIDS = tiltConfig.Slot0;
     tiltPIDS.kP = TiltConstants.kP;
     tiltPIDS.kD = TiltConstants.kD;
     tiltPIDS.kV = TiltConstants.kV;
-    tilt_.getConfigurator().apply(tiltPIDS);
+    MotionMagicConfigs tiltMagicConfigs = tiltConfig.MotionMagic;
+    upDownMagicConfigs.MotionMagicCruiseVelocity = TiltConstants.maxv;
+    upDownMagicConfigs.MotionMagicAcceleration = TiltConstants.maxa;
+    upDownMagicConfigs.MotionMagicJerk = TiltConstants.jerk;
+    tilt_.getConfigurator().apply(tiltConfig);
     tilt_.setInverted(TiltConstants.inverted);
 
     noteSensor_ = new DigitalInput(1);
