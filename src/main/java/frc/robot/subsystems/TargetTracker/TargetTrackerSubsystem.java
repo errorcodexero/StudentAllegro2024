@@ -41,6 +41,8 @@ public class TargetTrackerSubsystem extends SubsystemBase {
         targetPose3d_ = getAprilTagPose3d(targetNumber_);
         canSeeTarget_ = false;
 
+        ll_.setPriorityTagID(targetNumber_);
+
     }
 
     @Override
@@ -52,6 +54,11 @@ public class TargetTrackerSubsystem extends SubsystemBase {
             canSeeTarget_ = false;
             distanceToTarget_ = calculateDistanceToTargetOdometry();
         }
+
+        Logger.recordOutput("TargetTracker/DistanceToTargetMeters", distanceToTarget_);
+        Logger.recordOutput("TargetTracker/CanSeeTarget", ll_.getFiducialID() == targetNumber_);
+        Logger.recordOutput("TargetTracker/TargetToLookFor", targetNumber_);
+
     }
 
     private double calculateDistanceToTargetVision() {

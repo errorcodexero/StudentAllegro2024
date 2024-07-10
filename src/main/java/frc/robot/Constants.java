@@ -15,8 +15,8 @@ package frc.robot;
 public final class Constants {
 
   public static class AKitConstants {
-    public static final boolean recordSimulatedInputs = true;
-    public static final boolean useRealTiming = true;
+    public static final boolean recordSimulatedInputs = false;
+    public static final boolean useRealTiming = false;
   }
 
   public static class OperatorConstants {

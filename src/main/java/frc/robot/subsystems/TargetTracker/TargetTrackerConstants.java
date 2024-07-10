@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class TargetTrackerConstants {
 
-    public static final double CAMERA_ANGLE = 20.0; // The angle that the camera is positioned.
-    public static final double CAMERA_HEIGHT = 0.1; // The height that the camera is at from the floor.
+    public static final double CAMERA_ANGLE = 40.0; // The angle that the camera is positioned.
+    public static final double CAMERA_HEIGHT = 0.165; // The height that the camera is at from the floor.
 
     public static class AprilTags {
         public static final int BLUE_SOURCE_SIDE = 1;
