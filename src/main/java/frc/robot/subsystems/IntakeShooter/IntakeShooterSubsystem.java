@@ -132,7 +132,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         switch (state_) {
             case Idle, Aborted:
                 if(TTest){
-                    io_.getTilt().setControl(new PositionVoltage(TiltConstants.transferTarget/360));
+                    io_.moveTiltDegrees(TiltConstants.transferTarget);;
                     io_.moveUpDownDegrees(UpDownConstants.transferTarget);
                     TTest = false;
                 }

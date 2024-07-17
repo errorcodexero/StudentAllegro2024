@@ -9,49 +9,13 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 final class AddInputIOInputs implements LoggableInputs{
     private static ArrayList<String> names = new ArrayList<String>();
-    private static ArrayList<LogValue> values = new ArrayList<LogValue>();
+    private static ArrayList<Object> values = new ArrayList<Object>();
 
     public AddInputIOInputs(){}
 
-    private LogValue getLogValue(Object value){
-        return new LogValue(value.toString(), null);
-    }
-
-    private LogValue getLogValue(Integer value){
-        return new LogValue(value, null);
-    }
-
-    private LogValue getLogValue(Boolean value){
-        return new LogValue(value, null);
-    }
-
-    private LogValue getLogValue(Double value){
-        return new LogValue(value, null);
-    }
-
-    private LogValue getLogValue(LogValue value){
-        return value;
-    }
-
-    private LogValue getValue(Object value){
-        switch(value.getClass().getSimpleName()){
-            case "Double": 
-                return getLogValue((Double) value);
-            case "Integer":
-                return getLogValue((Integer) value);
-            case "LogValue":
-                return getLogValue((LogValue) value);
-            case "Boolean":
-                return getLogValue((Boolean) value);
-            default:
-                return getLogValue(value);
-        }
-    }
-
-
     public int add(String name, Object value){
         names.add(name);
-        values.add(getValue(value));
+        values.add(value);
         return names.size() - 1;
     }
 
@@ -59,7 +23,7 @@ final class AddInputIOInputs implements LoggableInputs{
         if(idx >= values.size()){
             return false;
         }
-        values.set(idx, getValue(value));
+        values.set(idx, value);
         return true;
     }
 
@@ -67,14 +31,18 @@ final class AddInputIOInputs implements LoggableInputs{
         if(names.indexOf(name) == -1){
             return false;
         }
-        values.set(names.indexOf(name), getValue(value));
+        values.set(names.indexOf(name), value);
         return true;
+    }
+    
+    private void putTable(LogTable table, String name, Object value){
+        table.put(name, (LogValue) value.getClass().cast(value));
     }
 
     @Override
     public void toLog(LogTable table) {
         for(int i = 0; i < names.size(); i ++){
-            table.put(names.get(i), values.get(i));
+            putTable(table, names.get(i), values.get(i));
         }
     }
 
@@ -128,8 +96,9 @@ public class XeroAKInput{
     }
 
     public static void periodic(){
+        int counter = 0;
         for(String name : sub_names){
-            Logger.processInputs(name, new AddInputIOInputs());
+            Logger.processInputs(name, sub_inputs.get(counter));
         }
     }
 }
