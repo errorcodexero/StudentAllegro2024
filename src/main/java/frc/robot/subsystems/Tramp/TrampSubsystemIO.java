@@ -41,36 +41,28 @@ public interface TrampSubsystemIO {
     // ARM METHODS: 
     public TalonFX getArm(); 
     
-    public void moveArmDegrees(double degs); 
-
-    public void moveArmRadians(double rad); 
-
-    public void moveArmRevolutions(double rps); 
+    public void setArmPosition(double rps); 
 
     public double getArmPosition(); 
 
     // CLIMBER METHODS: 
     public TalonFX getClimber(); 
 
-    public void moveClimber(double m); 
+    public void setClimberPosition(double pos); 
 
     public double getClimberPosition(); 
 
     // ELEVATOR METHODS: 
     public TalonFX getElevator(); 
 
-    public void moveElevator(double m); 
+    public void setElevatorPosition(double pos); 
 
     public double getElevatorPosition(); 
 
     //MANIPULATOR METHODS: 
     public CANSparkFlex getManipulator(); 
 
-    public void runManipulatorRevolutions(double rps); 
-
-    public void runManipulator(); 
-
-    public void stopManipulator(); 
+    public void runManipulator(double speed); 
 
     public double getManipulatorPosition(); 
 

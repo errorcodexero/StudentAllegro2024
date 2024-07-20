@@ -2,56 +2,58 @@ package frc.robot.subsystems.Tramp;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class TrampSubsystemIO_HW implements TrampSubsystemIO {    
     private TalonFX arm_motor_; 
     private TalonFX climber_motor_; 
     private TalonFX elevator_motor_; 
     private CANSparkFlex manipulator_motor_; 
+    private SparkPIDController manipulator_PIDController; 
 
     public TrampSubsystemIO_HW() {
-    arm_motor_ = new TalonFX(7);
-    climber_motor_ = new TalonFX(10);
-    elevator_motor_ = new TalonFX(6);
-    manipulator_motor_ = new CANSparkFlex(9, null);
+    arm_motor_ = new TalonFX(TrampConstants.Arm.motorCANID);
+    climber_motor_ = new TalonFX(TrampConstants.Climber.motorCANID);
+    elevator_motor_ = new TalonFX(TrampConstants.Elevator.motorCANID);
+    manipulator_motor_ = new CANSparkFlex(TrampConstants.Manipulator.motorCANID, MotorType.kBrushless);
 
-// Setting all the PID values: 
+    // Setting PID values for arm and elevator: 
     var arm_pids = new Slot0Configs();
-    arm_pids.kS = 0.0; // Add 0.00 V output to overcome static friction
-    arm_pids.kV = 0.0; // A velocity target of 0 rps results in 0.00 V output
-    arm_pids.kP = 0.0; // An error of 0 rps results in 0.0 V output
-    arm_pids.kI = 0.0; // no output for integrated error
-    arm_pids.kD = 0.0; // no output for error derivative
-
-    var climber_pids = new Slot0Configs();
-    climber_pids.kS = 0.0; // Add 0.00 V output to overcome static friction
-    climber_pids.kV = 0.0; // A velocity target of 0 rps results in 0.00 V output
-    climber_pids.kP = 0.0; // An error of 0 rps results in 0.0 V output
-    climber_pids.kI = 0.0; // no output for integrated error
-    climber_pids.kD = 0.0; // no output for error derivative
+    arm_pids.kP = TrampConstants.Arm.kP; 
+    arm_pids.kI = TrampConstants.Arm.kI; 
+    arm_pids.kD = TrampConstants.Arm.kD; 
+    arm_pids.kV = TrampConstants.Arm.kV; 
+    arm_pids.kA = TrampConstants.Arm.kA; 
+    arm_pids.kG = TrampConstants.Arm.kG; 
+    arm_pids.kS = TrampConstants.Arm.kS; 
 
     var elevator_pids = new Slot0Configs();
-    elevator_pids.kS = 0.0; // Add 0.00 V output to overcome static friction
-    elevator_pids.kV = 0.0; // A velocity target of 0 rps results in 0.00 V output
-    elevator_pids.kP = 0.0; // An error of 0 rps results in 0.0 V output
-    elevator_pids.kI = 0.0; // no output for integrated error
-    elevator_pids.kD = 0.0; // no output for error derivative
-
-    var manipulator_pids = new Slot0Configs();
-    manipulator_pids.kS = 0.0; // Add 0.00 V output to overcome static friction
-    manipulator_pids.kV = 0.0; // A velocity target of 0 rps results in 0.00 V output
-    manipulator_pids.kP = 0.0; // An error of 0 rps results in 0.0 V output
-    manipulator_pids.kI = 0.0; // no output for integrated error
-    manipulator_pids.kD = 0.0; // no output for error derivative
+    elevator_pids.kP = TrampConstants.Elevator.kP; 
+    elevator_pids.kI = TrampConstants.Elevator.kI; 
+    elevator_pids.kD = TrampConstants.Elevator.kD; 
+    elevator_pids.kV = TrampConstants.Elevator.kV;
+    elevator_pids.kA = TrampConstants.Elevator.kA; 
+    elevator_pids.kG = TrampConstants.Elevator.kG; 
+    elevator_pids.kS = TrampConstants.Elevator.kS; 
 
     elevator_motor_.getConfigurator().apply(elevator_pids);
     arm_motor_.getConfigurator().apply(arm_pids);
-    climber_motor_.getConfigurator().apply(climber_pids);
-    // PIDS for the manipulator motor (SparkFlex) don't work the same way
-    // manipulator_motor_.getConfigurator().apply(manipulator_pids);
+
+    // setting PID values for manipulator: 
+    manipulator_PIDController.setP(TrampConstants.Manipulator.kP, 0); 
+    manipulator_PIDController.setI(TrampConstants.Manipulator.kI, 0); 
+    manipulator_PIDController.setD(TrampConstants.Manipulator.kD, 0); 
+    manipulator_PIDController.setFF(TrampConstants.Manipulator.kV, 0); 
+
+    // setting inverted values for all the motors: 
+    elevator_motor_.setInverted(TrampConstants.Elevator.inverted);
+    arm_motor_.setInverted(TrampConstants.Elevator.inverted);
+    climber_motor_.setInverted(TrampConstants.Elevator.inverted);
+    manipulator_motor_.setInverted(TrampConstants.Elevator.inverted);
     }
 
     // updateInputs function; updates all of the inputs from TrampSubsystemIO 
@@ -75,87 +77,69 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         inputs.climberVoltage = climber_motor_.getMotorVoltage().getValueAsDouble(); 
         inputs.climberAcceleration = climber_motor_.getAcceleration().getValueAsDouble(); 
 
-        // Inputs for the manipulator motor (SparkFlex) also work differently: 
-        //
-        // inputs.manipulatorPosition = manipulator_motor_.getPosition().getValueAsDouble(); 
-        // inputs.manipulatorVelocity = manipulator_motor_.getVelocity().getValueAsDouble(); 
-        // inputs.manipulatorCurrent = manipulator_motor_.getSupplyCurrent().getValueAsDouble(); 
-        // inputs.manipulatorVoltage = manipulator_motor_.getMotorVoltage().getValueAsDouble(); 
-        // inputs.manipulatorAcceleration = manipulator_motor_.getAcceleration().getValueAsDouble(); 
+        inputs.manipulatorPosition = manipulator_motor_.getEncoder().getPosition(); 
+        inputs.manipulatorVelocity = manipulator_motor_.getEncoder().getVelocity();  
+        inputs.manipulatorCurrent = manipulator_motor_.getOutputCurrent(); 
   }
 
+    // ARM METHODS: 
     public TalonFX getArm(){
         return arm_motor_;
-    }   
-   
+    }       
+
+    public void setArmPosition(double rps){
+        arm_motor_.setControl(new MotionMagicVoltage(rps * TrampConstants.Arm.gearRatio)); 
+    }
+
+     public double getArmPosition(){
+        return arm_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Arm.gearRatio; 
+     }
+
+    // CLIMBER METHODS: 
     public TalonFX getClimber(){
         return climber_motor_;
     }    
-   
+
+    public void setClimberPosition(double pos){
+        climber_motor_.setControl(new MotionMagicVoltage(pos * TrampConstants.Climber.metersPerRev)); 
+    }
+
+    public double getClimberPosition(){
+        return climber_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Climber.metersPerRev; 
+    }
+
+    // ELEVATOR METHODS: 
     public TalonFX getElevator(){
         return elevator_motor_;
     }    
-   
-    public CANSparkFlex getManipulator(){
-        return manipulator_motor_;
-    }     
 
-     public double getArmPosition(){
-        return arm_motor_.getPosition().getValueAsDouble(); 
-     }
-
-    public double getClimberPosition(){
-        return climber_motor_.getPosition().getValueAsDouble(); 
-    }
+    public void setElevatorPosition(double pos){
+        elevator_motor_.setControl(new MotionMagicVoltage(pos * TrampConstants.Elevator.metersPerRev)); 
+    } 
 
     public double getElevatorPosition(){
-        return elevator_motor_.getPosition().getValueAsDouble(); 
+        return elevator_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Elevator.metersPerRev; 
     }
 
-    public void moveClimber(double m){}
+    //MANIPULATOR METHODS: 
+    public CANSparkFlex getManipulator(){
+        return manipulator_motor_;
+    }  
 
-    public void moveElevator(double m){} 
-
-    public void runManipulatorRevolutions(double rps){}
-
-    public void runManipulator() {} 
+    public void runManipulator(double rps){
+        manipulator_PIDController.setReference(rps * 60, ControlType.kVelocity); 
+    }
 
     public void stopManipulator(){
         manipulator_motor_.stopMotor();
     }
 
-    public void moveArmDegrees(double degs){
-    }
+    public double getManipulatorPosition(){
+        return manipulator_motor_.getEncoder().getPosition() * 360; 
+    }    
 
-    public void moveArmRadians(double rad){
-        arm_motor_.setControl(new MotionMagicVoltage(rad)); 
-    }
-
-    public void moveArmRevolutions(double rps){
-        arm_motor_.setControl(new VelocityVoltage(rps)); 
-    }
-   
-    public void trampPositionAction(double target_height_, double target_angle_){
-        double currentArmPosition = getArmPosition(); 
-        double targetHeight = target_height_
-
-        if (currentArmPosition < keep_out_min_ && target_angle_ > keep_out_max_) {
-            //
-            // We need to cross the keep out zone from min to max
-            //
-            if (target_height_ > keep_out_height_) {
-                //
-                // The eventual height is above the keep out zone, so we can go directly to the target height
-                // and just monitor the elevator height and start the arm when we get above the keepout height
-                //
-                sub_.getElevator().setAction(elevator_goto_target_action_, true) ;
-            } else {
-                //
-                // The eventual height is below the keepout zone, so we need to go to the keepout height,
-                // move the arm, and then go to the target height
-                //
-                sub_.getElevator().setAction(keepout_height_action_, true) ;
-            }
-    }
-    }
 }
+
+// need to add: 
+// some more motor initialization things (current limit, min/max pos, max accel/vel)
+// withSlot(0) to end of certain methods 
