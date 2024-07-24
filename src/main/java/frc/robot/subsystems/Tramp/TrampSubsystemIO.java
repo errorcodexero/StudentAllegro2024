@@ -64,6 +64,8 @@ public interface TrampSubsystemIO {
 
     public void runManipulator(double speed); 
 
+    public void stopManipulator(); 
+
     public double getManipulatorPosition(); 
 
 }
