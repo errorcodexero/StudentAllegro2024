@@ -1,11 +1,5 @@
 package frc.robot.subsystems.Tramp;
 
-// things that need to be added:
-//
-// settings/heights for certain commands (this is needed for commands)
-// motor initialization things (inverted, current limit, min/max pos, max accel/vel)
-// fix 'k' formatting 
-
 public class TrampConstants {
     public class KeepoutZone {
         public static final double kElevatorHeight = 0.21 ;
