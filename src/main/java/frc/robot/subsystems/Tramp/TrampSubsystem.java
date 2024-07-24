@@ -1,5 +1,3 @@
-
-
 package frc.robot.subsystems.Tramp;
 
 import org.littletonrobotics.junction.Logger;

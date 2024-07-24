@@ -16,44 +16,44 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
     private SparkPIDController manipulator_PIDController; 
 
     public TrampSubsystemIO_HW() {
-    arm_motor_ = new TalonFX(TrampConstants.Arm.motorCANID);
-    climber_motor_ = new TalonFX(TrampConstants.Climber.motorCANID);
-    elevator_motor_ = new TalonFX(TrampConstants.Elevator.motorCANID);
-    manipulator_motor_ = new CANSparkFlex(TrampConstants.Manipulator.motorCANID, MotorType.kBrushless);
+    arm_motor_ = new TalonFX(TrampConstants.Arm.kMotorCANID);
+    climber_motor_ = new TalonFX(TrampConstants.Climber.kMotorCANID);
+    elevator_motor_ = new TalonFX(TrampConstants.Elevator.kMotorCANID);
+    manipulator_motor_ = new CANSparkFlex(TrampConstants.Manipulator.kMotorCANID, MotorType.kBrushless);
 
     // Setting PID values for arm and elevator: 
     var arm_pids = new Slot0Configs();
-    arm_pids.kP = TrampConstants.Arm.kP; 
-    arm_pids.kI = TrampConstants.Arm.kI; 
-    arm_pids.kD = TrampConstants.Arm.kD; 
-    arm_pids.kV = TrampConstants.Arm.kV; 
-    arm_pids.kA = TrampConstants.Arm.kA; 
-    arm_pids.kG = TrampConstants.Arm.kG; 
-    arm_pids.kS = TrampConstants.Arm.kS; 
+    arm_pids.kP = TrampConstants.Arm.PID.kP; 
+    arm_pids.kI = TrampConstants.Arm.PID.kI; 
+    arm_pids.kD = TrampConstants.Arm.PID.kD; 
+    arm_pids.kV = TrampConstants.Arm.PID.kV; 
+    arm_pids.kA = TrampConstants.Arm.PID.kA; 
+    arm_pids.kG = TrampConstants.Arm.PID.kG; 
+    arm_pids.kS = TrampConstants.Arm.PID.kS; 
 
     var elevator_pids = new Slot0Configs();
-    elevator_pids.kP = TrampConstants.Elevator.kP; 
-    elevator_pids.kI = TrampConstants.Elevator.kI; 
-    elevator_pids.kD = TrampConstants.Elevator.kD; 
-    elevator_pids.kV = TrampConstants.Elevator.kV;
-    elevator_pids.kA = TrampConstants.Elevator.kA; 
-    elevator_pids.kG = TrampConstants.Elevator.kG; 
-    elevator_pids.kS = TrampConstants.Elevator.kS; 
+    elevator_pids.kP = TrampConstants.Elevator.PID.kP; 
+    elevator_pids.kI = TrampConstants.Elevator.PID.kI; 
+    elevator_pids.kD = TrampConstants.Elevator.PID.kD; 
+    elevator_pids.kV = TrampConstants.Elevator.PID.kV;
+    elevator_pids.kA = TrampConstants.Elevator.PID.kA; 
+    elevator_pids.kG = TrampConstants.Elevator.PID.kG; 
+    elevator_pids.kS = TrampConstants.Elevator.PID.kS; 
 
     elevator_motor_.getConfigurator().apply(elevator_pids);
     arm_motor_.getConfigurator().apply(arm_pids);
 
     // setting PID values for manipulator: 
-    manipulator_PIDController.setP(TrampConstants.Manipulator.kP, 0); 
-    manipulator_PIDController.setI(TrampConstants.Manipulator.kI, 0); 
-    manipulator_PIDController.setD(TrampConstants.Manipulator.kD, 0); 
-    manipulator_PIDController.setFF(TrampConstants.Manipulator.kV, 0); 
+    manipulator_PIDController.setP(TrampConstants.Manipulator.PID.kP, 0); 
+    manipulator_PIDController.setI(TrampConstants.Manipulator.PID.kI, 0); 
+    manipulator_PIDController.setD(TrampConstants.Manipulator.PID.kD, 0); 
+    manipulator_PIDController.setFF(TrampConstants.Manipulator.PID.kV, 0); 
 
-    // setting inverted values for all the motors: 
-    elevator_motor_.setInverted(TrampConstants.Elevator.inverted);
-    arm_motor_.setInverted(TrampConstants.Elevator.inverted);
-    climber_motor_.setInverted(TrampConstants.Elevator.inverted);
-    manipulator_motor_.setInverted(TrampConstants.Elevator.inverted);
+    // setting kInverted values for all the motors: 
+    elevator_motor_.setInverted(TrampConstants.Elevator.kInverted);
+    arm_motor_.setInverted(TrampConstants.Elevator.kInverted);
+    climber_motor_.setInverted(TrampConstants.Elevator.kInverted);
+    manipulator_motor_.setInverted(TrampConstants.Elevator.kInverted);
     }
 
     // updateInputs function; updates all of the inputs from TrampSubsystemIO 
@@ -88,11 +88,11 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
     }       
 
     public void setArmPosition(double rps){
-        arm_motor_.setControl(new MotionMagicVoltage(rps * TrampConstants.Arm.gearRatio)); 
+        arm_motor_.setControl(new MotionMagicVoltage(rps * TrampConstants.Arm.kDegreesPerRev)); 
     }
 
      public double getArmPosition(){
-        return arm_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Arm.gearRatio; 
+        return arm_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Arm.kDegreesPerRev; 
      }
 
     // CLIMBER METHODS: 
@@ -101,11 +101,11 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
     }    
 
     public void setClimberPosition(double pos){
-        climber_motor_.setControl(new MotionMagicVoltage(pos * TrampConstants.Climber.metersPerRev)); 
+        climber_motor_.setControl(new MotionMagicVoltage(pos)); 
     }
 
     public double getClimberPosition(){
-        return climber_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Climber.metersPerRev; 
+        return climber_motor_.getPosition().getValueAsDouble() * 360; 
     }
 
     // ELEVATOR METHODS: 
@@ -114,11 +114,11 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
     }    
 
     public void setElevatorPosition(double pos){
-        elevator_motor_.setControl(new MotionMagicVoltage(pos * TrampConstants.Elevator.metersPerRev)); 
+        elevator_motor_.setControl(new MotionMagicVoltage(pos * TrampConstants.Elevator.kMetersPerRev)); 
     } 
 
     public double getElevatorPosition(){
-        return elevator_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Elevator.metersPerRev; 
+        return elevator_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Elevator.kMetersPerRev; 
     }
 
     //MANIPULATOR METHODS: 
