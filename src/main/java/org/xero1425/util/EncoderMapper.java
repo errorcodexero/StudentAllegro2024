@@ -1,4 +1,4 @@
-package EncoderMapper;
+package org.xero1425.util;
 
 public class EncoderMapper
 {
@@ -36,12 +36,9 @@ public class EncoderMapper
     /// \param encoder the encoder value
     /// \returns the robot value
     public double toRobot(double encoder) {
-        double ret ;
-        double offset; 
-
         encoder = clamp(encoder, emax_, emin_) ;
-        offset = normalize(ec_ - (rc_ - rmin_) / kEncoder2Robot_, emax_, emin_) ;
-        ret = normalize((encoder - offset) * kEncoder2Robot_ + rmin_, rmax_, rmin_) ;
+        double offset = normalize(ec_ - (rc_ - rmin_) / kEncoder2Robot_, emax_, emin_) ;
+        double ret = normalize((encoder - offset) * kEncoder2Robot_ + rmin_, rmax_, rmin_) ;
         
         return ret ;
     }
@@ -60,7 +57,20 @@ public class EncoderMapper
         return ret ;
     }    
 
-    private double normalize(double value, double vmax, double vmin) {
+    public double normalize(double value, double vmax, double vmin) {
+        if (vmax < vmin){
+            double temp = vmax ;
+            vmax = vmin ;
+            vmin = temp ;
+        }
+
+        value = value + (vmax - vmin) * -Math.floor(((value - vmin) / (vmax - vmin)));
+
+
+        return value ;
+    }
+
+    public double oldNormalize(double value, double vmax, double vmin){
         if (vmax < vmin)
         {
             double temp = vmax ;
