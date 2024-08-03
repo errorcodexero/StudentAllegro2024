@@ -32,6 +32,10 @@ public class TrampConstants {
         public static final boolean inverted = false;
 
         public static final double gearRatio = 14.81;
+
+        public static final double trapTarget = 180;
+        public static final double ampTarget = 225;
+        public static final double stowTarget = 0.0;
     }
 
     public class Climber {
@@ -40,6 +44,9 @@ public class TrampConstants {
         public static final boolean inverted = true;       
         
         public static final double metersPerRev = 0.00056420512;
+
+        public static final double ClimbTarget = 0.0;
+        public static final double PrepClimbTarget = 1.0;
     }
 
     public class Elevator {
@@ -61,6 +68,11 @@ public class TrampConstants {
         public static final boolean inverted = false;
 
         public static final double metersPerRev = 0.00393313925;
+
+        public static final double trapTarget = 0.2411;
+        public static final double ampTarget = 0.2 ;
+        public static final double stowTarget = 0.0;
+
     }
 
     public class Manipulator {
