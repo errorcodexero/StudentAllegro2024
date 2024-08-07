@@ -32,7 +32,7 @@ public class TrampConstants {
         }
 
         public class PID {
-            public static final double kP = 80; //8.0 ;
+            public static final double kP = 8.0; 
             public static final double kI = 0.0 ;
             public static final double kD = 0.0 ;
             public static final double kV = 0.0 ;
