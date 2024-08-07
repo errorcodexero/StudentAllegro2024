@@ -11,7 +11,7 @@ public class TrampConstants {
         public static final int kMotorCANID = 6 ;
         public static final boolean kInverted = true ;
         public static final double kCurrentLimit = 60.0 ;
-        public static final double kMetersPerRev = 0.003896166;
+        public static final double kMetersPerRev = 0.003896166; //0.0016
         public static final double kTargetPosTolerance = 0.0508 ;
         public static final double kTargetVelTolerance = 1.000 ;
         public static final double kSimGearRatio = 0.6 ;      
@@ -32,7 +32,7 @@ public class TrampConstants {
         }
 
         public class PID {
-            public static final double kP = 8.0 ;
+            public static final double kP = 80; //8.0 ;
             public static final double kI = 0.0 ;
             public static final double kD = 0.0 ;
             public static final double kV = 0.0 ;

@@ -75,29 +75,29 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
     elevator_motor_.setPosition(TrampConstants.Elevator.Positions.kStowed); 
 
     // limit configs: 
-    SoftwareLimitSwitchConfigs elevatorLimitConfigs = new SoftwareLimitSwitchConfigs(); 
-    elevatorLimitConfigs.ForwardSoftLimitEnable = true; 
-    elevatorLimitConfigs.ForwardSoftLimitThreshold = TrampConstants.Elevator.kMaxPosition; 
-    elevatorLimitConfigs.ReverseSoftLimitEnable = true; 
-    elevatorLimitConfigs.ReverseSoftLimitThreshold = TrampConstants.Elevator.kMinPosition; 
-    elevator_motor_.getConfigurator().apply(elevatorLimitConfigs); 
+    // SoftwareLimitSwitchConfigs elevatorLimitConfigs = new SoftwareLimitSwitchConfigs(); 
+    // elevatorLimitConfigs.ForwardSoftLimitEnable = true; 
+    // elevatorLimitConfigs.ForwardSoftLimitThreshold = TrampConstants.Elevator.kMaxPosition; 
+    // elevatorLimitConfigs.ReverseSoftLimitEnable = true; 
+    // elevatorLimitConfigs.ReverseSoftLimitThreshold = TrampConstants.Elevator.kMinPosition; 
+    // elevator_motor_.getConfigurator().apply(elevatorLimitConfigs); 
 
     // MANIPULATOR CONFIGS: 
+    manipulator_PIDController = manipulator_motor_.getPIDController(); 
+    manipulator_Encoder = manipulator_motor_.getEncoder(); 
+ 
     manipulator_PIDController.setP(TrampConstants.Manipulator.PID.kP, 0); 
     manipulator_PIDController.setI(TrampConstants.Manipulator.PID.kI, 0); 
     manipulator_PIDController.setD(TrampConstants.Manipulator.PID.kD, 0); 
     manipulator_PIDController.setFF(TrampConstants.Manipulator.PID.kV, 0); 
 
-    manipulator_motor_.setInverted(TrampConstants.Elevator.kInverted);
- 
-    manipulator_PIDController = manipulator_motor_.getPIDController(); 
-    manipulator_Encoder = manipulator_motor_.getEncoder(); 
+    manipulator_motor_.setInverted(TrampConstants.Manipulator.kInverted);
 
     manipulator_Encoder.setPositionConversionFactor(manipulator_Encoder.getCountsPerRevolution()) ;
     manipulator_Encoder.setVelocityConversionFactor(manipulator_Encoder.getCountsPerRevolution()) ;  
 
     // CLIMBER CONFIGS: 
-    climber_motor_.setInverted(TrampConstants.Elevator.kInverted);
+    climber_motor_.setInverted(TrampConstants.Climber.kInverted);
     
     }
 
@@ -132,12 +132,14 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         return arm_motor_;
     }       
 
-    public void setArmPosition(double rps){
-        arm_motor_.setControl(new MotionMagicVoltage(rps / TrampConstants.Arm.kDegreesPerRev).withSlot(0)); 
+    // sets position in degrees: 
+    public void setArmPosition(double deg){
+        arm_motor_.setControl(new MotionMagicVoltage(deg / TrampConstants.Arm.kDegreesPerRev).withSlot(0)); 
     }
 
+    // returns arm position in degrees: 
      public double getArmPosition(){
-        return arm_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Arm.kDegreesPerRev; 
+        return arm_motor_.getPosition().getValueAsDouble() * TrampConstants.Arm.kDegreesPerRev; 
      }
 
     // CLIMBER METHODS: 
@@ -145,12 +147,14 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         return climber_motor_;
     }    
 
+    // sets position in motor rotations: 
     public void setClimberPosition(double pos){
         climber_motor_.setControl(new MotionMagicVoltage(pos)); 
     }
 
+    // gets climber position in motor rotations: 
     public double getClimberPosition(){
-        return climber_motor_.getPosition().getValueAsDouble() * 360; 
+        return climber_motor_.getPosition().getValueAsDouble(); 
     }
 
     // ELEVATOR METHODS: 
@@ -158,12 +162,14 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         return elevator_motor_;
     }    
 
-    public void setElevatorPosition(double pos){
-        elevator_motor_.setControl(new MotionMagicVoltage(pos / TrampConstants.Elevator.kMetersPerRev).withSlot(0)); 
+    // sets position in meters: 
+    public void setElevatorPosition(double m){
+        elevator_motor_.setControl(new MotionMagicVoltage(m / TrampConstants.Elevator.kMetersPerRev).withSlot(0)); 
     } 
 
+    // returns elevator position in meters: 
     public double getElevatorPosition(){
-        return elevator_motor_.getPosition().getValueAsDouble() * 360 / TrampConstants.Elevator.kMetersPerRev; 
+        return elevator_motor_.getPosition().getValueAsDouble() * TrampConstants.Elevator.kMetersPerRev; 
     }
 
     //MANIPULATOR METHODS: 
@@ -171,20 +177,23 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         return manipulator_motor_;
     }  
 
+    // sets velocity in revolutions per second: 
     public void runManipulator(double rps){
         manipulator_PIDController.setReference(rps * 60, ControlType.kVelocity, 0); 
     }
 
-    public void setManipulatorPosition(double pos){
-        manipulator_PIDController.setReference(pos, ControlType.kVelocity, 0); 
+    // sets position in revolutions of manipulator rollers: 
+    public void setManipulatorPosition(double rev){
+        manipulator_PIDController.setReference(rev, ControlType.kPosition, 0); 
     }
 
     public void stopManipulator(){
         manipulator_motor_.stopMotor();
     }
 
+    // returns the number of revolutions that the manipulator rollers have turned 
     public double getManipulatorPosition(){
-        return manipulator_Encoder.getPosition() * 360; 
+        return manipulator_Encoder.getPosition(); 
     }    
 
 }

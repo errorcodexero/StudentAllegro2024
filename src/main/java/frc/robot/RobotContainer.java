@@ -10,8 +10,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-
+import frc.robot.commands.TestCommands.ArmPosCommand;
+import frc.robot.commands.TestCommands.ElevatorPosCommand;
+import frc.robot.commands.TestCommands.ManipulatorPosCommand;
+import frc.robot.commands.TestCommands.ManipulatorVelCommand;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.Tramp.TrampSubsystem;
+import frc.robot.subsystems.Tramp.TrampSubsystemIO;
+import frc.robot.subsystems.Tramp.TrampSubsystemIO_HW;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 
 import com.revrobotics.CANSparkFlex;
@@ -32,6 +38,7 @@ import frc.robot.subsystems.oi.OISubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
+  private TrampSubsystem tramp_subsystem_ = new TrampSubsystem(new TrampSubsystemIO_HW()); 
 
   private final OISubsystem oiPanel_ = new OISubsystem(2);
 
@@ -93,5 +100,28 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return Autos.exampleAuto(intake_shooter_);
+  }
+
+  // public Command getManipulatorVelCommand() {
+  //   return new ManipulatorVelCommand(tramp_subsystem_IO_, 0); 
+  // }
+
+  // public Command getManipulatorPosCommand() {
+  //   return new ManipulatorPosCommand(tramp_subsystem_IO_, 0); 
+  // }
+
+  // public Command getElevatorPosCommand() {
+  //   return new ElevatorPosCommand(tramp_subsystem_IO_, 0); 
+  // }
+
+  // public Command getArmPosCommand() {
+  //   return new ArmPosCommand(tramp_subsystem_IO_, 0); 
+  // } 
+
+  public Command getTestCommand() {
+    // return new ManipulatorVelCommand(tramp_subsystem_IO_, 0); 
+    // return new ManipulatorPosCommand(tramp_subsystem_IO_, 0); 
+    return new ElevatorPosCommand(tramp_subsystem_, 0.05); 
+    // return new ArmPosCommand(tramp_subsystem_, 10); 
   }
 }
