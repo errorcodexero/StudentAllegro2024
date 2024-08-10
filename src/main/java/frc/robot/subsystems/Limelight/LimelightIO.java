@@ -26,7 +26,7 @@ public interface LimelightIO {
         public LimelightResults parsedResults = new LimelightResults();
         public LimelightTarget_Fiducial[] fiducials = {};
         
-        private final String fiducialListRoot = "Fiducials"; // The root for list of fiducials in logging.
+        private final String fiducialListRoot = "Tags"; // The root for list of fiducials in logging.
         
         @Override
         public void toLog(LogTable table) {
