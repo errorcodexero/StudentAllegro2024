@@ -3,7 +3,7 @@ package frc.robot.subsystems.Limelight;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
@@ -14,10 +14,12 @@ public interface LimelightIO {
         // General Values That Will be Replayed
         public double tX = 0.0;
         public double tY = 0.0;
+        public double tXPixels = 0.0;
+        public double tYPixels = 0.0;
         public double tArea = 0.0;
         public boolean tValid = false;
         public int fiducialID = 0;
-        public Pose3d predictedBotPose;
+        public Pose2d predictedBotPose2d = new Pose2d();
         public String jsonDump = "";
 
         // Values for easier usage within code, and for graph visualization.
@@ -60,35 +62,38 @@ public interface LimelightIO {
             }
 
             // Logged values for graph visualization.
-            table.put(fiducialListRoot + "/GraphablePoints", graphablePoints);
             table.put(fiducialListRoot + "/GraphablePointsPixels", graphablePointsPixels);
-
-            table.put("TargetGraphablePoint", new double[] {tX, tY});
 
             // Logs values that will be replayed.
             table.put("TX", tX);
             table.put("TY", tY);
+            table.put("TXPixels", tXPixels);
+            table.put("TYPixels", tYPixels);
+            table.put("TCombinedPixels", new double[] {tXPixels, tYPixels});
             table.put("TArea", tArea);
             table.put("TValid", tValid);
             table.put("FiducialID", fiducialID);
-            table.put("PredictedBotPose", predictedBotPose);
+            table.put("PredictedBotPoseWpiRed", predictedBotPose2d);
             table.put("JsonDump", jsonDump);
 
         }
         @Override
         public void fromLog(LogTable table) {
+
             // Loads values from the log.
             tX = table.get("TX", tX);
             tY = table.get("TY", tY);
+            tXPixels = table.get("TXPixels", tXPixels);
+            tYPixels = table.get("TYPixels", tYPixels);
             tArea = table.get("TArea", tArea);
             tValid = table.get("TValid", tValid);
             fiducialID = table.get("FiducialID", fiducialID);
-            predictedBotPose = table.get("PredictedBotPose", predictedBotPose);
+            predictedBotPose2d = table.get("PredictedBotPose", predictedBotPose2d);
             jsonDump = table.get("JsonDump", jsonDump);
 
             // Parses the json dump from the log, this is only to be run during replay, meaning it has no effect on robot performance.
             parsedResults = ReplayLimelightHelpers.parseJson(jsonDump);
-            fiducials = parsedResults.targetingResults.targets_Fiducials;
+            fiducials = parsedResults.targets_Fiducials;
         }
 
         /**

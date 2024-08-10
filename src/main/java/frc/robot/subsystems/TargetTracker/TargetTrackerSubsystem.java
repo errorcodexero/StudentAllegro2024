@@ -22,7 +22,7 @@ public class TargetTrackerSubsystem extends SubsystemBase {
     private AprilTagFieldLayout fieldLayout_;
     private Pose2d targetPose2d_;
     private Pose3d targetPose3d_;
-    private int targetNumber_;
+    private int speakerCenterTagID_;
 
     private boolean canSeeTarget_;
     private double distanceToTarget_;
@@ -36,36 +36,38 @@ public class TargetTrackerSubsystem extends SubsystemBase {
 
         this.ll_ = ll;
         fieldLayout_ = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
-        targetNumber_ = AprilTags.getSpeakerCenter(DriverStation.getAlliance());
-        targetPose2d_ = getAprilTagPose2d(targetNumber_);
-        targetPose3d_ = getAprilTagPose3d(targetNumber_);
+        speakerCenterTagID_ = AprilTags.getSpeakerCenter(DriverStation.getAlliance());
+        targetPose2d_ = getAprilTagPose2d(speakerCenterTagID_);
+        targetPose3d_ = getAprilTagPose3d(speakerCenterTagID_);
         canSeeTarget_ = false;
 
-        ll_.setPriorityTagID(targetNumber_);
+        ll_.setPriorityTagID(speakerCenterTagID_);
 
     }
 
     @Override
     public void periodic() {
-        if (ll_.isValidTarget() && ll_.getFiducialID() == targetNumber_) {
-            canSeeTarget_ = true;
-            distanceToTarget_ = calculateDistanceToTargetVision();
-        } else {
-            canSeeTarget_ = false;
-            distanceToTarget_ = calculateDistanceToTargetOdometry();
-        }
 
-        Logger.recordOutput("TargetTracker/DistanceToTargetMeters", distanceToTarget_);
-        Logger.recordOutput("TargetTracker/CanSeeTarget", ll_.getFiducialID() == targetNumber_);
-        Logger.recordOutput("TargetTracker/TargetToLookFor", targetNumber_);
+        canSeeTarget_ = ll_.hasAprilTag(speakerCenterTagID_);
+        distanceToTarget_ = calculateDistanceToTargetVision().orElse(calculateDistanceToTargetOdometry());
+
+        Logger.recordOutput(logPath("DistanceToTargetMeters"), distanceToTarget_);
+        Logger.recordOutput(logPath("CanSeeTarget"), ll_.hasAprilTag(speakerCenterTagID_));
+        Logger.recordOutput(logPath("TargetToLookFor"), speakerCenterTagID_);
 
     }
 
-    private double calculateDistanceToTargetVision() {
-        double heightBetweenCameraAndTarget = targetPose3d_.getZ() - TargetTrackerConstants.CAMERA_HEIGHT;
-        double angleFromParallelToTarget = ll_.getTY() + TargetTrackerConstants.CAMERA_ANGLE;
+    private Optional<Double> calculateDistanceToTargetVision() {
+        Optional<Double> ty = ll_.getTY(speakerCenterTagID_);
 
-        return heightBetweenCameraAndTarget / Math.tan(Units.degreesToRadians(angleFromParallelToTarget));
+        if (ty.isEmpty()) {
+            return Optional.empty();
+        }
+
+        double heightBetweenCameraAndTarget = targetPose3d_.getZ() - TargetTrackerConstants.CAMERA_HEIGHT;
+        double angleFromParallelToTarget = ty.get() + TargetTrackerConstants.CAMERA_ANGLE;
+
+        return Optional.of(heightBetweenCameraAndTarget / Math.tan(Units.degreesToRadians(angleFromParallelToTarget)));
     }
 
     private double calculateDistanceToTargetOdometry() {
@@ -77,7 +79,7 @@ public class TargetTrackerSubsystem extends SubsystemBase {
     }
 
     public int getTargetNumber() {
-        return targetNumber_;
+        return speakerCenterTagID_;
     }
 
     public boolean canSeeTarget() {
@@ -98,5 +100,8 @@ public class TargetTrackerSubsystem extends SubsystemBase {
         return pose3d.orElse(new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)));
     }
 
+    private String logPath (String name) {
+        return this.getName() + "/" + name;
+    }
     
 }

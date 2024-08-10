@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.subsystems.Limelight.LimelightIO.LimelightIOInputs;
@@ -75,6 +74,10 @@ public class LimelightSubsystem extends SubsystemBase {
         io_.resetLed();
     }
 
+    /**
+     * Sets the priority tag to search for.
+     * @param id
+     */
     public void setPriorityTagID(int id) {
         io_.setPriorityTagID(id);
     }
@@ -83,7 +86,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * Finds if a valid target exists.
      * @return Whether or not a valid target exists.
      */
-    public boolean isValidTarget() {
+    public boolean hasValidTarget() {
         return inputs_.tValid;
     }
 
@@ -94,6 +97,14 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public boolean hasAprilTag(int id) {
         return findFid(id).isPresent();
+    }
+
+    /**
+     * Gets the id of the primary in-view Fiducial/Apriltag
+     * @return
+     */
+    public int getFiducialID() {
+        return inputs_.fiducialID;
     }
 
     /**
@@ -121,19 +132,11 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the id of the primary in-view Fiducial/Apriltag
-     * @return
-     */
-    public int getFiducialID() {
-        return inputs_.fiducialID;
-    }
-
-    /**
      * Gets a specific apriltag's X offset. Make sure to check if the robot can see the tag first. Otherwise this data will be innaccurate.
      * @param id The id of the apriltag.
      * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
-    public Optional<Double> getAprilTX(int id) {
+    public Optional<Double> getTX(int id) {
         Optional<LimelightTarget_Fiducial> fid = findFid(id);
 
         if (fid.isEmpty())
@@ -147,7 +150,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @param id The id of the apriltag.
      * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
-    public Optional<Double> getAprilTY(int id) {
+    public Optional<Double> getTY(int id) {
         Optional<LimelightTarget_Fiducial> fid = findFid(id);
 
         if (fid.isEmpty())
@@ -161,7 +164,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @param id The id of the apriltag.
      * @return How much of the camera the tag covers. This range is configured in the limelight tuning.
      */
-    public Optional<Double> getAprilTArea(int id) {
+    public Optional<Double> getTArea(int id) {
         Optional<LimelightTarget_Fiducial> fid = findFid(id);
 
         if (fid.isEmpty())

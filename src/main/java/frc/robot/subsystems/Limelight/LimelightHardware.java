@@ -1,7 +1,8 @@
 package frc.robot.subsystems.Limelight;
 
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
+import frc.robot.subsystems.Limelight.LimelightHelpers.PoseEstimate;
 
 public class LimelightHardware implements LimelightIO {
 
@@ -55,14 +56,24 @@ public class LimelightHardware implements LimelightIO {
     public void updateInputs(LimelightIOInputs inputs) {
         inputs.tX = LimelightHelpers.getTX(name_);
         inputs.tY = LimelightHelpers.getTY(name_);
+        inputs.tXPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getX();
+        inputs.tYPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getY();
         inputs.tArea = LimelightHelpers.getTA(name_);
         inputs.tValid = LimelightHelpers.getTV(name_);
         inputs.fiducialID = (int) LimelightHelpers.getFiducialID(name_);
-        inputs.predictedBotPose = LimelightHelpers.getBotPose3d(name_);
         inputs.jsonDump = LimelightHelpers.getJSONDump(name_);
 
+        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(name_);
+        Pose2d estimatedPose2d = new Pose2d();
+
+        if (poseEstimate != null) {
+            estimatedPose2d = poseEstimate.pose;
+        };
+        
+        inputs.predictedBotPose2d = estimatedPose2d;
+
         LimelightResults results = LimelightHelpers.getLatestResults(name_);
-        inputs.fiducials = results.targetingResults.targets_Fiducials;
+        inputs.fiducials = results.targets_Fiducials;
     }
 
 }
