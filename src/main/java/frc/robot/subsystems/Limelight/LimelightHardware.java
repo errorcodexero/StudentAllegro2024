@@ -4,6 +4,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Limelight.LimelightHelpers.PoseEstimate;
 
+/*
+ * Are you wondering what the heck a fiducial is?
+ * 
+ * I sure have the answer for you!
+ * 
+ * In the Limelight code, and here, I will be referring to tags like april tags, as fiducials.
+ * 
+ */
+
 public class LimelightHardware implements LimelightIO {
 
     private final String name_;

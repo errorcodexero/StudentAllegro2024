@@ -87,7 +87,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Whether or not a valid target exists.
      */
     public boolean hasValidTarget() {
-        return inputs_.tValid;
+        return inputs_.fiducials.length > 0;
     }
 
     /**
