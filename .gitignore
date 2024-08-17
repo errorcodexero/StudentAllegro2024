@@ -180,3 +180,5 @@ ctre_sim/
 #Building stuff
 .gradle
 build
+
+node_modules/

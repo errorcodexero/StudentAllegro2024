@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -46,81 +47,91 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
 
   private boolean sensor_for_logging_ = false;
 
+  public enum MoveState{
+      Starting,
+      Start,
+      Path, 
+      End, 
+      Done
+  }
+
+  private MoveState moveState_;
+
   public IntakeShooterIOHardware() {
-    feeder_ = new TalonFX(FeederConstants.CANID);
-    upDown_ = new TalonFX(UpDownConstants.CANID);
-    shooter1_ = new TalonFX(ShooterConstants.CANID1);
-    shooter2_ = new TalonFX(ShooterConstants.CANID2);
-    tilt_ = new TalonFX(TiltConstants.CANID);
+      feeder_ = new TalonFX(FeederConstants.CANID);
+      upDown_ = new TalonFX(UpDownConstants.CANID);
+      shooter1_ = new TalonFX(ShooterConstants.CANID1);
+      shooter2_ = new TalonFX(ShooterConstants.CANID2);
+      tilt_ = new TalonFX(TiltConstants.CANID);
 
-    Slot0Configs feederPIDS = new Slot0Configs();
-    feederPIDS.kP = FeederConstants.kP;
-    feederPIDS.kD = FeederConstants.kD;
-    feederPIDS.kV = FeederConstants.kV;
-    feeder_.getConfigurator().apply(feederPIDS);
-    feeder_.setInverted(FeederConstants.inverted);
+      Slot0Configs feederPIDS = new Slot0Configs();
+      feederPIDS.kP = FeederConstants.kP;
+      feederPIDS.kD = FeederConstants.kD;
+      feederPIDS.kV = FeederConstants.kV;
+      feeder_.getConfigurator().apply(feederPIDS);
+      feeder_.setInverted(FeederConstants.inverted);
 
-    TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
-    Slot0Configs upDownPIDS = upDownConfig.Slot0;
-    upDownPIDS.kP = UpDownConstants.kP;
-    upDownPIDS.kD = UpDownConstants.kD;
-    upDownPIDS.kV = UpDownConstants.kV;
-    MotionMagicConfigs upDownMagicConfigs = upDownConfig.MotionMagic;
-    upDownMagicConfigs.MotionMagicCruiseVelocity = UpDownConstants.maxv;
-    upDownMagicConfigs.MotionMagicAcceleration = UpDownConstants.maxa;
-    upDownMagicConfigs.MotionMagicJerk = UpDownConstants.jerk;
-    upDown_.setPosition(117.0/360.0);
-    upDown_.getConfigurator().apply(upDownConfig);
-    upDown_.setInverted(UpDownConstants.inverted);
+      TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
+      Slot0Configs upDownPIDS = upDownConfig.Slot0;
+      upDownPIDS.kP = UpDownConstants.kP;
+      upDownPIDS.kD = UpDownConstants.kD;
+      upDownPIDS.kV = UpDownConstants.kV;
+      MotionMagicConfigs upDownMagicConfigs = upDownConfig.MotionMagic;
+      upDownMagicConfigs.MotionMagicCruiseVelocity = UpDownConstants.maxv;
+      upDownMagicConfigs.MotionMagicAcceleration = UpDownConstants.maxa;
+      upDownMagicConfigs.MotionMagicJerk = UpDownConstants.jerk;
+      upDown_.setPosition(117.0/360.0 * UpDownConstants.gearRatio);
+      upDown_.getConfigurator().apply(upDownConfig);
+      upDown_.setInverted(UpDownConstants.inverted);
 
-    Slot0Configs shooterPIDS = new Slot0Configs();
-    shooterPIDS.kP = ShooterConstants.kP;
-    shooterPIDS.kD = ShooterConstants.kD;
-    shooterPIDS.kV = ShooterConstants.kV;
-    shooter1_.getConfigurator().apply(shooterPIDS);
-    shooter1_.setInverted(ShooterConstants.inverted1);
-    shooter2_.getConfigurator().apply(shooterPIDS);
-    shooter2_.setInverted(ShooterConstants.inverted2);
+      Slot0Configs shooterPIDS = new Slot0Configs();
+      shooterPIDS.kP = ShooterConstants.kP;
+      shooterPIDS.kD = ShooterConstants.kD;
+      shooterPIDS.kV = ShooterConstants.kV;
+      shooter1_.getConfigurator().apply(shooterPIDS);
+      shooter1_.setInverted(ShooterConstants.inverted1);
+      shooter2_.getConfigurator().apply(shooterPIDS);
+      shooter2_.setInverted(ShooterConstants.inverted2);
 
-    TalonFXConfiguration tiltConfig = new TalonFXConfiguration();
-    Slot0Configs tiltPIDS = tiltConfig.Slot0;
-    tiltPIDS.kP = TiltConstants.kP;
-    tiltPIDS.kD = TiltConstants.kD;
-    tiltPIDS.kV = TiltConstants.kV;
-    MotionMagicConfigs tiltMagicConfigs = tiltConfig.MotionMagic;
-    upDownMagicConfigs.MotionMagicCruiseVelocity = TiltConstants.maxv;
-    upDownMagicConfigs.MotionMagicAcceleration = TiltConstants.maxa;
-    upDownMagicConfigs.MotionMagicJerk = TiltConstants.jerk;
-    tilt_.getConfigurator().apply(tiltConfig);
-    tilt_.setInverted(TiltConstants.inverted);
+      TalonFXConfiguration tiltConfig = new TalonFXConfiguration();
+      Slot0Configs tiltPIDS = tiltConfig.Slot0;
+      tiltPIDS.kP = TiltConstants.kP;
+      tiltPIDS.kD = TiltConstants.kD;
+      tiltPIDS.kV = TiltConstants.kV;
+      MotionMagicConfigs tiltMagicConfigs = tiltConfig.MotionMagic;
+      tiltMagicConfigs.MotionMagicCruiseVelocity = TiltConstants.maxv;
+      tiltMagicConfigs.MotionMagicAcceleration = TiltConstants.maxa;
+      tiltMagicConfigs.MotionMagicJerk = TiltConstants.jerk;
+      tilt_.getConfigurator().apply(tiltConfig);
+      tilt_.setInverted(TiltConstants.inverted);
 
-    noteSensor_ = new DigitalInput(1);
-    noteSensorInverted_ = true;
-    absoluteEncoder_ = new AnalogInput(0);
-    encoderMapper_ = new EncoderMapper(90, -90, 5.0, 0);
-    encoderMapper_.calibrate(-72, 4.283);
+      noteSensor_ = new DigitalInput(1);
+      noteSensorInverted_ = true;
+      absoluteEncoder_ = new AnalogInput(0);
+      encoderMapper_ = new EncoderMapper(90, -90, 5.0, 0);
+      encoderMapper_.calibrate(-72, 4.283);
 
-    interrupt_ = new AsynchronousInterrupt(noteSensor_, (rising, falling) -> { interruptHandler(rising, falling); }) ;
-    interrupt_.setInterruptEdges(true, true);            
-    interrupt_.enable();
+      interrupt_ = new AsynchronousInterrupt(noteSensor_, (rising, falling) -> { interruptHandler(rising, falling); }) ;
+      interrupt_.setInterruptEdges(true, true);            
+      interrupt_.enable();
 
-    double encVal = absoluteEncoder_.getVoltage();
-    angle_ = encoderMapper_.toRobot(encVal);
-    tilt_.setPosition((angle_/360.0) * TiltConstants.gearRatio);
+      double encVal = absoluteEncoder_.getVoltage();
+      angle_ = encoderMapper_.toRobot(encVal);
+      tilt_.setPosition((angle_/360.0) * TiltConstants.gearRatio);
   }
   private void interruptHandler(Boolean rising, Boolean falling) {
 
-    Logger.recordOutput("rising",rising);
-    Logger.recordOutput("falling", falling);
+      Logger.recordOutput("rising",rising);
+      Logger.recordOutput("falling", falling);
 
-    if (falling == noteSensorInverted_) {
-      sensor_edge_seen_ = true;
-      sensor_for_logging_ = false;
-    }
+      if (falling == noteSensorInverted_) {
+        sensor_edge_seen_ = true;
+        sensor_for_logging_ = false;
+      }
 
-    if(rising == noteSensorInverted_){
-      sensor_for_logging_ = true;
-    }
+      if(rising == noteSensorInverted_){
+        sensor_for_logging_ = true;
+      }
   }
 
   public TalonFX getFeeder(){
@@ -263,6 +274,44 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     return sensor_for_logging_;
   }
 
+  public MoveState getMoveState(){
+    return moveState_;
+  }
+
+  public boolean moveSystem(double updown, double tilt){
+      double forTiltOnPath = - getUpDownPosition() + TiltConstants.diffFromUpDown;
+      switch (moveState_) {
+          case Starting:
+              if(Math.abs(getTiltPosition() - forTiltOnPath) > IntakeShooterConstants.otherOKThresh){
+                  tilt_.setControl(new MotionMagicVoltage(forTiltOnPath/360 * TiltConstants.gearRatio));
+              }
+              moveState_ = MoveState.Start;
+              break;
+          case Start:
+              if(Math.abs(getTiltPosition() - forTiltOnPath) < IntakeShooterConstants.otherOKThresh){
+                  tilt_.setControl(new VelocityVoltage(IntakeShooterConstants.tiltUpDownSpeed * TiltConstants.gearRatio));
+                  upDown_.setControl(new VelocityVoltage(IntakeShooterConstants.tiltUpDownSpeed * UpDownConstants.gearRatio));
+              }
+              moveState_ = MoveState.Path;
+              break;
+          case Path:
+              if(Math.abs(getUpDownPosition() - updown) < IntakeShooterConstants.otherOKThresh){
+                  tilt_.stopMotor();
+                  upDown_.stopMotor();
+                  tilt_.setControl(new MotionMagicVoltage(tilt * TiltConstants.gearRatio));
+                  moveState_ = MoveState.End;
+              }
+          case End:
+              if(Math.abs(getTiltPosition() - tilt) < IntakeShooterConstants.otherOKThresh){
+                  moveState_ = MoveState.Done;
+              }
+              break;
+          case Done:
+              moveState_ = MoveState.Starting;
+              return true;
+      }
+      return false;
+  }
   public void update(IntakeShooterIOInputsAutoLogged inputs) {
     timesSeenSensor_ += sensor_edge_seen_ ? 1 : 0;
     isNotePresent_ = timesSeenSensor_ % 2 == 1;
@@ -270,7 +319,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     double encVal = absoluteEncoder_.getVoltage();
     angle_ = encoderMapper_.toRobot(encVal);
 
-    if(Math.abs(getTiltPosition() % 360 - angle_) > 2){
+    if(Math.abs(getTiltPosition() - angle_) > 2){
       tilt_.setPosition((angle_/360.0) * TiltConstants.gearRatio);
     }
 

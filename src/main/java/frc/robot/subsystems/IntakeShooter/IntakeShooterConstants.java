@@ -90,6 +90,7 @@ public final class IntakeShooterConstants {
       public static final double subwooferShootTarget = -65.0;
       public static final double transferTarget = 0.0;
       public static final double stowTarget = -71.0;
+      public static final double diffFromUpDown = 71.0 - 118.0;
     }
     public static final String name = "Intake Shooter Subsystem";
 
@@ -99,4 +100,5 @@ public final class IntakeShooterConstants {
     public static final double ejectSecs = 1.0;
 
     public static final double speakerHeight = 2.1;
+    public static final double tiltUpDownSpeed = 0.5;
   }

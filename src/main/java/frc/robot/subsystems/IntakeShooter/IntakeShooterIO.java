@@ -1,6 +1,7 @@
 package frc.robot.subsystems.IntakeShooter;
 
 import org.littletonrobotics.junction.AutoLog;
+import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware.MoveState;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -80,6 +81,10 @@ public abstract interface IntakeShooterIO {
     abstract void moveTiltDegrees(double degs);
 
     abstract void moveTiltRadians(double rads);
+
+    abstract MoveState getMoveState();
+
+    abstract boolean moveSystem(double tilt, double upDown);
 
     abstract void stopFeeder();
     
