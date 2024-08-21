@@ -72,17 +72,36 @@ public class LimelightHardware implements LimelightIO {
         inputs.fiducialID = (int) LimelightHelpers.getFiducialID(name_);
         inputs.jsonDump = LimelightHelpers.getJSONDump(name_);
 
-        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed(name_);
-        Pose2d estimatedPose2d = new Pose2d();
+        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(name_);
+        Pose2d estimatedPose = new Pose2d();
+
+        PoseEstimate poseEstimateMegatag2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_);
+        Pose2d estimatedPoseMegatag2 = new Pose2d();
 
         if (poseEstimate != null) {
-            estimatedPose2d = poseEstimate.pose;
-        };
+            estimatedPose = poseEstimate.pose;
+        }
+
+        if (poseEstimateMegatag2 != null) {
+            estimatedPoseMegatag2 = poseEstimateMegatag2.pose;
+        }
         
-        inputs.predictedBotPose2d = estimatedPose2d;
+        inputs.estimatedPose = estimatedPose;
+        inputs.estimatedPoseMegatag2 = estimatedPoseMegatag2;
 
         LimelightResults results = LimelightHelpers.getLatestResults(name_);
         inputs.fiducials = results.targets_Fiducials;
+    }
+
+
+    @Override
+    public void setValidTags(int[] validIds) {
+        LimelightHelpers.SetFiducialIDFiltersOverride(name_, validIds);
+    }
+
+    @Override
+    public void giveRobotOrientation(double yaw, double yawRate, double pitch, double pitchRate, double roll, double rollRate) {
+        LimelightHelpers.SetRobotOrientation(name_, 0, 0, 0, 0, 0, 0);
     }
 
 }

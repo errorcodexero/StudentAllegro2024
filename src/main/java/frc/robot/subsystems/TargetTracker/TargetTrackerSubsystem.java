@@ -58,7 +58,7 @@ public class TargetTrackerSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (alliance_.isEmpty()) {
+        if (alliance_ == null) {
             Optional<Alliance> newAlliance = DriverStation.getAlliance();
             
             if (newAlliance.isEmpty()) {

@@ -34,7 +34,7 @@ public class TargetTrackerConstants {
          */
         public static int getSpeakerCenter(Optional<Alliance> alliance) {
             if (alliance.isEmpty()) {
-                return RED_SPEAKER_CENTER;
+                return 0;
             }
 
             return switch (alliance.get()) {

@@ -19,15 +19,20 @@ public interface LimelightIO {
         public double tArea = 0.0;
         public boolean tValid = false;
         public int fiducialID = 0;
-        public Pose2d predictedBotPose2d = new Pose2d();
         public String jsonDump = "";
+
+        public Pose2d estimatedPose = new Pose2d();
+        public Pose2d estimatedPoseMegatag2 = new Pose2d();
+
+        public double estimatedPoseTimestamp = 0.0;
+        public double estimatedPoseTimestampMegatag2 = 0.0;
 
         // Values for easier usage within code, and for graph visualization.
         public LimelightResults parsedResults = new LimelightResults();
         public LimelightTarget_Fiducial[] fiducials = {};
         
         private final String fiducialListRoot = "Tags"; // The root for list of fiducials in logging.
-        
+
         @Override
         public void toLog(LogTable table) {
 
@@ -73,8 +78,13 @@ public interface LimelightIO {
             table.put("TArea", tArea);
             table.put("TValid", tValid);
             table.put("FiducialID", fiducialID);
-            table.put("PredictedBotPoseWpiRed", predictedBotPose2d);
             table.put("JsonDump", jsonDump);
+
+            table.put("Estimation/EstimatedPose", estimatedPose);
+            table.put("Estimation/TimestampSeconds", estimatedPoseTimestamp);
+
+            table.put("Estimation/Megatag2/EstimatedPose", estimatedPoseMegatag2);
+            table.put("Estimation/Megatag2/TimestampSeconds", estimatedPoseTimestampMegatag2);
 
         }
         @Override
@@ -88,8 +98,13 @@ public interface LimelightIO {
             tArea = table.get("TArea", tArea);
             tValid = table.get("TValid", tValid);
             fiducialID = table.get("FiducialID", fiducialID);
-            predictedBotPose2d = table.get("PredictedBotPose", predictedBotPose2d);
             jsonDump = table.get("JsonDump", jsonDump);
+
+            estimatedPose = table.get("Estimation/EstimatedPose", estimatedPose);
+            estimatedPoseMegatag2 = table.get("Estimation/Megatag2/EstimatedPose", estimatedPoseMegatag2);
+
+            estimatedPoseTimestamp = table.get("Estimation/TimestampSeconds", estimatedPoseTimestamp);
+            estimatedPoseTimestampMegatag2 = table.get("Estimation/Megatag2/TimestampSeconds", estimatedPoseTimestampMegatag2);
 
             // Parses the json dump from the log, this is only to be run during replay, meaning it has no effect on robot performance.
             parsedResults = ReplayLimelightHelpers.parseJson(jsonDump);
@@ -132,6 +147,18 @@ public interface LimelightIO {
      * Sets the id for tx/ty targeting. Ignore other targets.
      */
     public abstract void setPriorityTagID(int id);
+
+    /**
+     * Sets the filter list of valid april tags.
+     * ex. {3, 4} would filter to only apriltags 3 and 4.
+     */
+    public abstract void setValidTags(int[] validIds);
+
+    /**
+     * Gives the robot orientation to the limelight for Megatag2 odometry.
+     * Blue origion, CCW-positive, 0 degrees facing red alliance wall
+     */
+    public abstract void giveRobotOrientation(double yaw, double yawRate, double pitch, double pitchRate, double roll, double rollRate);
     
     /**
      * Updates the inputs object with values from the hardware.
