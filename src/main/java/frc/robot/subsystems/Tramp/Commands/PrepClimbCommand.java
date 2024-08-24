@@ -15,7 +15,7 @@ public class PrepClimbCommand extends Command {
 
     @Override 
     public void initialize(){
-        if(sub_.getState().equals(State.Idle)){
+        if (sub_.getState().equals(State.Idle)){
         sub_.setState(State.PrepClimb);
        }
     }

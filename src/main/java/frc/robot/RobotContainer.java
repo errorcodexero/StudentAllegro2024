@@ -14,8 +14,8 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Tramp.TrampSubsystem;
 import frc.robot.subsystems.Tramp.TrampSubsystemIO_HW;
-import frc.robot.subsystems.Tramp.Commands.ClimbCommand;
-import frc.robot.subsystems.Tramp.Commands.PrepClimbCommand;
+import frc.robot.subsystems.Tramp.Commands.StowCommand;
+import frc.robot.subsystems.Tramp.Commands.TrampShootCommand;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 
 import com.revrobotics.CANSparkFlex;
@@ -35,10 +35,11 @@ import frc.robot.subsystems.oi.OISubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
-  private final TrampSubsystem tramp_ = new TrampSubsystem(new TrampSubsystemIO_HW());
-
   private final OISubsystem oiPanel_ = new OISubsystem(2);
+
+  private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
+  private final TrampSubsystem tramp_ = new TrampSubsystem(new TrampSubsystemIO_HW(), oiPanel_.actionTypeSupplier());
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =
@@ -65,8 +66,11 @@ public class RobotContainer {
     oiPanel_.setIndicator(3, true);
     oiPanel_.setIndicator(4, false);
 
-    oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {new PrepClimbCommand(tramp_);}));
-    oiPanel_.climbExecute().onTrue(Commands.runOnce(() -> {new ClimbCommand(tramp_);}));
+    oiPanel_.climbPrepare().onTrue(tramp_.PrepClimbCommand());
+    oiPanel_.climbExecute().onTrue(tramp_.ClimbCommand());
+    oiPanel_.shoot().onTrue(new TrampShootCommand(tramp_));
+    oiPanel_.turtle().onTrue(new StowCommand(tramp_));
+
 
     // Button Interactivity Testing
     oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {

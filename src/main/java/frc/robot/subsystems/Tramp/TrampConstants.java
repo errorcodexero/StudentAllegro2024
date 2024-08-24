@@ -50,12 +50,6 @@ public class TrampConstants {
             public static final double kBasicClimb = 0.2 ;
         }
 
-        public static final double metersPerRev = 0.00393313925;
-
-        public static final double trapTarget = 0.2411;
-        public static final double ampTarget = 0.2 ;
-        public static final double stowTarget = 0.0;
-
         public class PID {
             public static final double kP = 8.0 ;
             public static final double kI = 0.0 ;
@@ -133,20 +127,9 @@ public class TrampConstants {
             public static final double kI = 0.0 ;
             public static final double kD = 0.0 ;
             public static final double kV = 0.0 ;
-            public static final double kA = 0.0;
+            public static final double kA = 0.0 ;
             public static final double kG = 0.0 ;
             public static final double kS = 0.0 ;
         };         
-    }
-
-    public class Climber {
-        public static final int kMotorCANID = 10 ;
-        public static final boolean kInverted = true ;        
-        public static final double kCurrentLimit = 60.0 ;
-        public static final double kSimGearRatio = 2.0 ;      
-        public static final double kSimMotorLoad = 0.00001 ;  
-        public static final double kMoveClimberVoltage = 12.0 ;
-        public static final double kClimberUpPosition = 0.5746 ;
-        public static final double kClimberDownPosition = 0.0 ;
     }
 }
