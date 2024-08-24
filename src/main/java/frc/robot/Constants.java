@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -14,9 +17,14 @@ package frc.robot;
  */
 public final class Constants {
 
+  public static class FieldConstants {
+    public static final AprilTagFields field = AprilTagFields.k2024Crescendo;
+    public static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(field);
+  }
+
   public static class AKitConstants {
     public static final boolean recordSimulatedInputs = true;
-    public static final boolean useRealTiming = false;
+    public static final boolean useRealTiming = true;
   }
 
   public static class OperatorConstants {

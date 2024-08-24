@@ -1,0 +1,36 @@
+{
+  "name": "Allegro 2024 Camera",
+  "sourceUrl": "https://firstfrc.blob.core.windows.net/frc2024/KitBot/KitBot%20CAD%20and%20Drawings.zip",
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": -90
+    }
+  ],
+  "position": [
+    0.41021,
+    -0.3429,
+    0.12
+  ],
+  "cameras": [
+    {
+      "name": "Limelight",
+      "rotations": [{"axis": "y", "degrees": -40}, {"axis": "z", "degrees": 180}],
+      "position": [
+        -0.35625,
+        0,
+        0.165
+      ],
+      "resolution": [
+        960,
+        720
+      ],
+      "fov": 62.5
+    }
+  ],
+  "components": []
+}

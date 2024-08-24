@@ -4,20 +4,16 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-
+import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Limelight.LimelightSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem;
-import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
-
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
 
