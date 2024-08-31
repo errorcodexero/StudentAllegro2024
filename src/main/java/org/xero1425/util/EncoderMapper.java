@@ -70,6 +70,7 @@ public class EncoderMapper
         return value ;
     }
 
+    @Deprecated
     public double oldNormalize(double value, double vmax, double vmin){
         if (vmax < vmin)
         {

@@ -80,7 +80,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
       upDownMagicConfigs.MotionMagicCruiseVelocity = UpDownConstants.maxv;
       upDownMagicConfigs.MotionMagicAcceleration = UpDownConstants.maxa;
       upDownMagicConfigs.MotionMagicJerk = UpDownConstants.jerk;
-      upDown_.setPosition(117.0/360.0 * UpDownConstants.gearRatio);
+      upDown_.setPosition((UpDownConstants.stowTarget/360.0) * UpDownConstants.gearRatio);
       upDown_.getConfigurator().apply(upDownConfig);
       upDown_.setInverted(UpDownConstants.inverted);
 
@@ -104,6 +104,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
       tiltMagicConfigs.MotionMagicJerk = TiltConstants.jerk;
       tilt_.getConfigurator().apply(tiltConfig);
       tilt_.setInverted(TiltConstants.inverted);
+      //tilt_.setPosition((TiltConstants.stowTarget/360) * TiltConstants.gearRatio);
 
       noteSensor_ = new DigitalInput(1);
       noteSensorInverted_ = true;
@@ -118,6 +119,8 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
       double encVal = absoluteEncoder_.getVoltage();
       angle_ = encoderMapper_.toRobot(encVal);
       tilt_.setPosition((angle_/360.0) * TiltConstants.gearRatio);
+
+      moveState_ = MoveState.Starting;
   }
   private void interruptHandler(Boolean rising, Boolean falling) {
 
@@ -278,19 +281,20 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     return moveState_;
   }
 
-  public boolean moveSystem(double updown, double tilt){
-      double forTiltOnPath = - getUpDownPosition() + TiltConstants.diffFromUpDown;
+  public boolean moveSystem(double tilt, double updown){
+      double forTiltOnPath = IntakeShooterConstants.tiltDiffFromUpDown - getUpDownPosition();
       switch (moveState_) {
           case Starting:
-              if(Math.abs(getTiltPosition() - forTiltOnPath) > IntakeShooterConstants.otherOKThresh){
-                  tilt_.setControl(new MotionMagicVoltage(forTiltOnPath/360 * TiltConstants.gearRatio));
+              if(Math.abs(forTiltOnPath - getTiltPosition()) > IntakeShooterConstants.otherOKThresh){
+                  tilt_.setControl(new MotionMagicVoltage((forTiltOnPath / 360) * TiltConstants.gearRatio));
               }
               moveState_ = MoveState.Start;
               break;
           case Start:
-              if(Math.abs(getTiltPosition() - forTiltOnPath) < IntakeShooterConstants.otherOKThresh){
-                  tilt_.setControl(new VelocityVoltage(IntakeShooterConstants.tiltUpDownSpeed * TiltConstants.gearRatio));
-                  upDown_.setControl(new VelocityVoltage(IntakeShooterConstants.tiltUpDownSpeed * UpDownConstants.gearRatio));
+              if(Math.abs(forTiltOnPath - getTiltPosition()) < IntakeShooterConstants.otherOKThresh){
+                  int sign = updown - getUpDownPosition() < 0 ? -1 : 1;
+                  tilt_.setControl(new VelocityVoltage(-IntakeShooterConstants.tiltUpDownSpeed * TiltConstants.gearRatio * sign));
+                  upDown_.setControl(new VelocityVoltage(IntakeShooterConstants.tiltUpDownSpeed * UpDownConstants.gearRatio * sign));
               }
               moveState_ = MoveState.Path;
               break;
@@ -298,7 +302,7 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
               if(Math.abs(getUpDownPosition() - updown) < IntakeShooterConstants.otherOKThresh){
                   tilt_.stopMotor();
                   upDown_.stopMotor();
-                  tilt_.setControl(new MotionMagicVoltage(tilt * TiltConstants.gearRatio));
+                  tilt_.setControl(new MotionMagicVoltage((tilt / 360) * TiltConstants.gearRatio));
                   moveState_ = MoveState.End;
               }
           case End:

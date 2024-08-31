@@ -1,9 +1,9 @@
-package frc.robot.subsystems.IntakeShooter;
+package org.xero1425.util;
 /**
  * This class represents a Piecewise Linear (PWL) function.
  * It provides a method to perform linear interpolation between given points.
  */
-public class PWL {
+public class PWLs {
     private double[] x;
     private double[] y;
 
@@ -12,7 +12,7 @@ public class PWL {
      * @param x The array of x-values for the PWL function.
      * @param y The array of y-values for the PWL function.
      */
-    public PWL(double[] x, double[] y){
+    public PWLs(double[] x, double[] y){
         this.x = x;
         this.y = y;
     }

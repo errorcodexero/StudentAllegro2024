@@ -24,7 +24,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Transfer,
         Eject,
         Stow,
-        Aborted
+        Aborted,
+        Test
     }
 
     private enum IntakeState{
@@ -78,7 +79,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
 
     private boolean runOnceEject_ = true;
     private boolean weAreShooting_ = false;
-    private boolean TTest = false;
+
+    private boolean testing_ = false;
 
     public IntakeShooterSubsystem (IntakeShooterIO io, Supplier<ActionType> actionType, Supplier<ShootType> shootType, Supplier<Double> distFromTarget, Supplier<Boolean> aprilTagReady){
         io_ = io;
@@ -119,15 +121,13 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Logger.recordOutput("Transfer State", transferState_);
         Logger.recordOutput("Stowing", stowing_);
         Logger.recordOutput("Move State", io_.getMoveState());
-        Logger.recordOutput("Shooter Targets", shooterShootTarget_);
+        Logger.recordOutput("Shooter Target", shooterShootTarget_);
         Logger.recordOutput("Up Down Shoot Target", upDownShootTarget_);
         Logger.recordOutput("Tilt Shoot Target", tiltShootTarget_);
         switch (state_) {
             case Idle, Aborted:
-                if(TTest){
-                    io_.moveTiltDegrees(TiltConstants.transferTarget);;
-                    io_.moveUpDownDegrees(UpDownConstants.transferTarget);
-                    TTest = false;
+                if(testing_){
+                    state_ = State.Test;
                 }
                 break;
             case Intake:
@@ -140,6 +140,9 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 shootPeriodic();
                 break;
             case Stow:
+                if(true){
+                    return;
+                }
                 stowPeriodic();
                 break;
             case Transfer:
@@ -148,6 +151,8 @@ public class IntakeShooterSubsystem extends SubsystemBase{
             case Eject:
                 ejectPeriodic();
                 break;
+            case Test:
+                io_.moveSystem(TiltConstants.transferTarget, UpDownConstants.transferTarget);
             default:
                 state_ = State.Idle;
                 break;
@@ -209,6 +214,10 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         boolean doneMoving = false;
         switch(intakeState_){
             case MovingAndWaiting:
+                state_ = State.Test;
+                if(true){
+                    return;
+                }
                 doneMoving = io_.moveSystem(TiltConstants.intakeTarget, UpDownConstants.intakeTarget);
                 if(io_.hasNote()){
                     intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
@@ -266,9 +275,9 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         switch (shootingType_.get()) {
             case AUTO:
                 //lerp PWLs later when tuning
-                shooterShootTarget_ = (2.0 * distFromTarget_.get()) + 65.0;
+                shooterShootTarget_ = ShooterConstants.pwls.lerp(distFromTarget_.get());
                 upDownShootTarget_ = distFromTarget_.get() < UpDownConstants.autoShootTargetSwitchSpot ? UpDownConstants.autoShootTargetClose : UpDownConstants.autoShootTargetFar;
-                tiltShootTarget_ = Math.atan2(IntakeShooterConstants.speakerHeight, distFromTarget_.get()) + upDownShootTarget_ - 90.0;
+                tiltShootTarget_ = TiltConstants.pwls.lerp(distFromTarget_.get());
                 break;
             case PODIUM:
                 shooterShootTarget_ = ShooterConstants.podiumShootTarget;
