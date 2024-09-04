@@ -119,8 +119,8 @@ public class RobotContainer {
   // } 
 
   public Command getTestCommand() {
-    // return new ManipulatorVelCommand(tramp_subsystem_IO_, 0); 
-    // return new ManipulatorPosCommand(tramp_subsystem_IO_, 0); 
+    // return new ManipulatorVelCommand(tramp_subsystem_, 1); 
+    // return new ManipulatorPosCommand(tramp_subsystem_, 5); 
     return new ElevatorPosCommand(tramp_subsystem_, 0.05); 
     // return new ArmPosCommand(tramp_subsystem_, 10); 
   }

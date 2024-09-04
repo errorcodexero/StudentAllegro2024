@@ -75,12 +75,12 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
     elevator_motor_.setPosition(TrampConstants.Elevator.Positions.kStowed); 
 
     // limit configs: 
-    // SoftwareLimitSwitchConfigs elevatorLimitConfigs = new SoftwareLimitSwitchConfigs(); 
-    // elevatorLimitConfigs.ForwardSoftLimitEnable = true; 
-    // elevatorLimitConfigs.ForwardSoftLimitThreshold = TrampConstants.Elevator.kMaxPosition; 
-    // elevatorLimitConfigs.ReverseSoftLimitEnable = true; 
-    // elevatorLimitConfigs.ReverseSoftLimitThreshold = TrampConstants.Elevator.kMinPosition; 
-    // elevator_motor_.getConfigurator().apply(elevatorLimitConfigs); 
+    SoftwareLimitSwitchConfigs elevatorLimitConfigs = new SoftwareLimitSwitchConfigs(); 
+    elevatorLimitConfigs.ForwardSoftLimitEnable = true; 
+    elevatorLimitConfigs.ForwardSoftLimitThreshold = TrampConstants.Elevator.kMaxPosition / TrampConstants.Elevator.kMetersPerRev; 
+    elevatorLimitConfigs.ReverseSoftLimitEnable = true; 
+    elevatorLimitConfigs.ReverseSoftLimitThreshold = TrampConstants.Elevator.kMinPosition / TrampConstants.Elevator.kMetersPerRev; 
+    elevator_motor_.getConfigurator().apply(elevatorLimitConfigs); 
 
     // MANIPULATOR CONFIGS: 
     manipulator_PIDController = manipulator_motor_.getPIDController(); 
@@ -127,7 +127,7 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         inputs.manipulatorCurrent = manipulator_motor_.getOutputCurrent(); 
   }
 
-    // ARM METHODS: 
+// ARM METHODS: 
     public TalonFX getArm(){
         return arm_motor_;
     }       
@@ -142,7 +142,7 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         return arm_motor_.getPosition().getValueAsDouble() * TrampConstants.Arm.kDegreesPerRev; 
      }
 
-    // CLIMBER METHODS: 
+// CLIMBER METHODS: 
     public TalonFX getClimber(){
         return climber_motor_;
     }    
@@ -157,7 +157,7 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         return climber_motor_.getPosition().getValueAsDouble(); 
     }
 
-    // ELEVATOR METHODS: 
+// ELEVATOR METHODS: 
     public TalonFX getElevator(){
         return elevator_motor_;
     }    
@@ -172,7 +172,7 @@ public class TrampSubsystemIO_HW implements TrampSubsystemIO {
         return elevator_motor_.getPosition().getValueAsDouble() * TrampConstants.Elevator.kMetersPerRev; 
     }
 
-    //MANIPULATOR METHODS: 
+//MANIPULATOR METHODS: 
     public CANSparkFlex getManipulator(){
         return manipulator_motor_;
     }  
