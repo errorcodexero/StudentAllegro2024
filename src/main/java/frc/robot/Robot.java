@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends LoggedRobot {
-  
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -34,7 +34,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-    Logger.recordMetadata("StudentAllegro2024", "StudentAllegro2024"); // Set a metadata value
+    Logger.recordMetadata("Project", "StudentAllegro2024"); // Set a metadata value
 
     String runEnvironment = "Unknown";
 
