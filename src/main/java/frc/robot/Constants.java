@@ -16,16 +16,24 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
 
+  public static enum Robot {
+    COMPETITION,
+    PRACTICE
+  }
+
   public static enum RobotMode {
     REAL,
     SIMULATED,
     REPLAYED
   }
 
-  public static final boolean REPLAYING = false; // Should the simulation start into replay mode when not running on the RIO?
+  
+  public static final boolean REPLAYING = true; // Should the simulation start into replay mode when not running on the RIO?
   public static final boolean SAVE_SIMULATED_LOGS = false; // Should the physics simulation mode save a .wpilog?
-
+  
   public static final RobotMode ROBOT_MODE = RobotBase.isReal() ? RobotMode.REAL : (REPLAYING ? RobotMode.REPLAYED : RobotMode.SIMULATED);
+  
+  public static final Robot ROBOT = Robot.COMPETITION;
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;

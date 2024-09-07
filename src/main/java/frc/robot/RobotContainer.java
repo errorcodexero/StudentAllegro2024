@@ -79,8 +79,8 @@ public class RobotContainer {
     gamepad_.b().whileTrue(drivetrain_
         .applyRequest(() -> point_.withModuleDirection(new Rotation2d(-gamepad_.getLeftY(), -gamepad_.getLeftX()))));
 
-    // reset the field-centric heading on left bumper press
-    gamepad_.leftBumper().onTrue(drivetrain_.runOnce(() -> drivetrain_.seedFieldRelative()));
+    // reset the field-centric heading on Y and B press simultaneously
+    gamepad_.y().and(gamepad_.b()).onTrue(drivetrain_.runOnce(() -> drivetrain_.seedFieldRelative()));
   }
 
   private void setupDrivetrain() {
