@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -13,6 +15,18 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+  public static enum RobotMode {
+    REAL,
+    SIMULATED,
+    REPLAYED
+  }
+
+  public static final boolean REPLAYING = false; // Should the simulation start into replay mode when not running on the RIO?
+  public static final boolean SAVE_SIMULATED_LOGS = false; // Should the physics simulation mode save a .wpilog?
+
+  public static final RobotMode ROBOT_MODE = RobotBase.isReal() ? RobotMode.REAL : (REPLAYING ? RobotMode.REPLAYED : RobotMode.SIMULATED);
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
