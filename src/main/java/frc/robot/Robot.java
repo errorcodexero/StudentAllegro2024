@@ -11,8 +11,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -36,16 +34,12 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     Logger.recordMetadata("Project", "StudentAllegro2024"); // Set a metadata value
 
-    String runEnvironment = "Unknown";
-
     switch (Constants.ROBOT_MODE) {
       case REAL:
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
 
         // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-
-        runEnvironment = "Real Robot";
 
         break;
       case SIMULATED:
@@ -54,8 +48,6 @@ public class Robot extends LoggedRobot {
         }
 
         Logger.addDataReceiver(new NT4Publisher());
-
-        runEnvironment = "Simulation";
 
         break;
       case REPLAYED:
@@ -67,12 +59,10 @@ public class Robot extends LoggedRobot {
         Logger.setReplaySource(new WPILOGReader(logPath));
         Logger.addDataReceiver(new WPILOGWriter(replayLogPath));
 
-        runEnvironment = "Replay";
-
         break;
     }
 
-    Logger.recordMetadata("Environment", runEnvironment);
+    Logger.recordMetadata("Environment", Constants.ROBOT_MODE.toString());
 
     // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
