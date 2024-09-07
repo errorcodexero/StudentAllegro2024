@@ -53,7 +53,7 @@ public class RobotContainer {
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
   private final OISubsystem oiPanel_ = new OISubsystem(2);
-  private final LimelightSubsystem ll_ = new LimelightSubsystem();
+  private final LimelightSubsystem ll_ = new LimelightSubsystem(drivetrain);
 
   private final TargetTrackerSubsystem targetTracker_ = new TargetTrackerSubsystem(ll_);
 

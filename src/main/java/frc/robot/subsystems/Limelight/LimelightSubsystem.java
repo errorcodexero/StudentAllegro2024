@@ -8,18 +8,23 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.subsystems.Limelight.LimelightIO.LimelightIOInputs;
+import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 
 public class LimelightSubsystem extends SubsystemBase {
 
     private final LimelightIO io_;
+
+    // WILL MOVE TO SWERVE BASE LATER!!!
+    private final CommandSwerveDrivetrain drivetrain_;
+
     private final LimelightIOInputs inputs_;
 
     /**
      * Creates a Limelight Subsystem,
      * Uses default limelight name of "limelight" and default IO implementation.
      */
-    public LimelightSubsystem() {
-        this(new LimelightHardware());
+    public LimelightSubsystem(CommandSwerveDrivetrain drivetrain) {
+        this(new LimelightHardware(), drivetrain);
     }
 
     /**
@@ -27,8 +32,8 @@ public class LimelightSubsystem extends SubsystemBase {
      * Uses a specified Limelight name and the default IO implementation.
      * @param name The name of the limelight, ex. "limelight-side"
      */
-    public LimelightSubsystem(String name) {
-        this(new LimelightHardware(name));
+    public LimelightSubsystem(String name, CommandSwerveDrivetrain drivetrain) {
+        this(new LimelightHardware(name), drivetrain);
     }
 
     /**
@@ -36,15 +41,19 @@ public class LimelightSubsystem extends SubsystemBase {
      * Uses specified IO implementation, specifying name possibly in its constructor.
      * @param io The IO Implementation to use.
      */
-    public LimelightSubsystem(LimelightIO io) {
+    public LimelightSubsystem(LimelightIO io, CommandSwerveDrivetrain drivetrain) {
         io_ = io;
         inputs_ = new LimelightIOInputs();
+        drivetrain_ = drivetrain;
     }
 
     @Override
     public void periodic() {
         io_.updateInputs(inputs_);
         Logger.processInputs(getName(), inputs_);
+
+        giveRobotOrientation(drivetrain_.getState().Pose.getRotation().getDegrees());
+        drivetrain_.addVisionMeasurement(getMegatag2PoseEstimate(), getMegatag2TimestampSeconds());
     }
 
     /**
