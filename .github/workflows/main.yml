@@ -1,8 +1,7 @@
 name: Format
 
 on:
-  push:
-    [ organizemain ]
+  workflow_dispatch
 
 jobs:
 
