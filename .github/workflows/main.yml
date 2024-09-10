@@ -1,7 +1,8 @@
 name: Format
 
 on:
-  workflow_dispatch
+  push:
+    [ master ]
 
 jobs:
 
