@@ -6,8 +6,8 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.subsystems.Limelight.LimelightIO.LimelightIOInputs;
+import frc.robot.subsystems.Limelight.structs.Fiducial;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -215,12 +215,12 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
     public Optional<Double> getTX(int id) {
-        Optional<LimelightTarget_Fiducial> fid = findFid(id);
+        Optional<Fiducial> fid = findFid(id);
 
         if (fid.isEmpty())
             return Optional.empty();
 
-        return Optional.of(fid.get().tx);
+        return Optional.of(fid.get().x);
     }
 
     /**
@@ -229,12 +229,12 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
     public Optional<Double> getTY(int id) {
-        Optional<LimelightTarget_Fiducial> fid = findFid(id);
+        Optional<Fiducial> fid = findFid(id);
 
         if (fid.isEmpty())
             return Optional.empty();
 
-        return Optional.of(fid.get().ty);
+        return Optional.of(fid.get().y);
     }
 
     /**
@@ -243,21 +243,21 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return How much of the camera the tag covers. This range is configured in the limelight tuning.
      */
     public Optional<Double> getTArea(int id) {
-        Optional<LimelightTarget_Fiducial> fid = findFid(id);
+        Optional<Fiducial> fid = findFid(id);
 
         if (fid.isEmpty())
             return Optional.empty();
 
-        return Optional.of(fid.get().ta);
+        return Optional.of(fid.get().area);
     }
 
     /**
      * Finds a fidicial object in the array.
      * @return The fidicial, null if not found.
      */
-    private Optional<LimelightTarget_Fiducial> findFid(int id) {
-        for (LimelightTarget_Fiducial fid : inputs_.fiducials) {
-            if (fid.fiducialID == (double) id) {
+    private Optional<Fiducial> findFid(int id) {
+        for (Fiducial fid : inputs_.fiducials) {
+            if (fid.id == (double) id) {
                 return Optional.of(fid);
             }
         }

@@ -1,8 +1,11 @@
 package frc.robot.subsystems.Limelight;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Limelight.LimelightHelpers.PoseEstimate;
+import frc.robot.subsystems.Limelight.structs.Fiducial;
 
 /*
  * Are you wondering what the heck a fiducial is?
@@ -70,7 +73,6 @@ public class LimelightHardware implements LimelightIO {
         inputs.tArea = LimelightHelpers.getTA(name_);
         inputs.tValid = LimelightHelpers.getTV(name_);
         inputs.fiducialID = (int) LimelightHelpers.getFiducialID(name_);
-        inputs.jsonDump = LimelightHelpers.getJSONDump(name_);
 
         PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(name_);
         Pose2d estimatedPose = new Pose2d();
@@ -90,7 +92,7 @@ public class LimelightHardware implements LimelightIO {
         inputs.estimatedPoseMegatag2 = estimatedPoseMegatag2;
 
         LimelightResults results = LimelightHelpers.getLatestResults(name_);
-        inputs.fiducials = results.targets_Fiducials;
+        inputs.fiducials = Fiducial.fromLimelightArray(results.targets_Fiducials);
     }
 
 

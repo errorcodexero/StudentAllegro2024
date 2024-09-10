@@ -5,13 +5,12 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
-import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.subsystems.Limelight.structs.Fiducial;
 
 public interface LimelightIO {
 
     public class LimelightIOInputs implements LoggableInputs {
-        // General Values That Will be Replayed
+        // General Values That Will be ReplayedO
         public double tX = 0.0;
         public double tY = 0.0;
         public double tXPixels = 0.0;
@@ -19,67 +18,29 @@ public interface LimelightIO {
         public double tArea = 0.0;
         public boolean tValid = false;
         public int fiducialID = 0;
-        public String jsonDump = "";
+
+        public Fiducial[] fiducials = {};
 
         public Pose2d estimatedPose = new Pose2d();
         public Pose2d estimatedPoseMegatag2 = new Pose2d();
-
         public double estimatedPoseTimestamp = 0.0;
         public double estimatedPoseTimestampMegatag2 = 0.0;
 
-        // Values for easier usage within code, and for graph visualization.
-        public LimelightResults parsedResults = new LimelightResults();
-        public LimelightTarget_Fiducial[] fiducials = {};
-        
-        private final String fiducialListRoot = "Tags"; // The root for list of fiducials in logging.
-
         @Override
-        public void toLog(LogTable table) {
-
-            // Creates arrays to be graphed in advantagescope.
-            Translation2d[] graphablePoints = new Translation2d[fiducials.length];
-            Translation2d[] graphablePointsPixels = new Translation2d[fiducials.length];
-            
-            for (int i = 0; i < fiducials.length; i++) {
-                LimelightTarget_Fiducial fid = fiducials[i];
-
-                // Logs all the values about the certain fiducial.
-                table.put(fidEntry("ID", i), fid.fiducialID);
-                table.put(fidEntry("Family", i), fid.fiducialFamily);
-                table.put(fidEntry("TX", i), fid.tx);
-                table.put(fidEntry("TY", i), fid.ty);
-                table.put(fidEntry("TXPixels", i), fid.tx_pixels);
-                table.put(fidEntry("TYPixels", i), fid.ty_pixels);
-                table.put(fidEntry("TArea", i), fid.ta);
-                table.put(fidEntry("TS", i), fid.ts);
-
-                // Adds the point to the graphable array.
-                graphablePoints[i] = new Translation2d(fid.tx, fid.ty);
-                graphablePointsPixels[i] = new Translation2d(fid.tx_pixels, fid.ty_pixels);
-
-                // Logs the calculated poses from the limelight.
-                table.put(fidEntry("CameraPoseTargetSpace", i), fid.getCameraPose_TargetSpace());
-                table.put(fidEntry("RobotPoseFieldSpace", i), fid.getRobotPose_FieldSpace());
-                table.put(fidEntry("RobotPoseTargetSpace", i), fid.getRobotPose_TargetSpace());
-                table.put(fidEntry("TargetPoseCameraSpace", i), fid.getTargetPose_CameraSpace());
-                table.put(fidEntry("TargetPoseRobotSpace", i), fid.getTargetPose_RobotSpace());
-                
-            }
-
-            // Logged values for graph visualization.
-            table.put(fiducialListRoot + "/GraphablePointsPixels", graphablePointsPixels);
-
+        public void toLog(LogTable table) {   
             // Logs values that will be replayed.
-            table.put("TX", tX);
-            table.put("TY", tY);
-            table.put("TXPixels", tXPixels);
-            table.put("TYPixels", tYPixels);
-            table.put("TCombinedPixels", new double[] {tXPixels, tYPixels});
-            table.put("TArea", tArea);
-            table.put("TValid", tValid);
-            table.put("FiducialID", fiducialID);
-            table.put("JsonDump", jsonDump);
+            table.put("SimpleID", fiducialID);
+            table.put("SimpleArea", tArea);
+            table.put("SimpleX", tX);
+            table.put("SimpleY", tY);
+            table.put("SimpleXPixels", tXPixels);
+            table.put("SimpleYPixels", tYPixels);
+            table.put("SimpleValid", tValid);
 
+            // Fiducials serialized with structs
+            table.put("Fiducials", Fiducial.struct, fiducials);
+            
+            // TODO: Serialize into structs
             table.put("Estimation/EstimatedPose", estimatedPose);
             table.put("Estimation/TimestampSeconds", estimatedPoseTimestamp);
 
@@ -87,38 +48,28 @@ public interface LimelightIO {
             table.put("Estimation/Megatag2/TimestampSeconds", estimatedPoseTimestampMegatag2);
 
         }
+        
         @Override
         public void fromLog(LogTable table) {
-
             // Loads values from the log.
+            fiducialID = table.get("FiducialID", fiducialID);
+            tArea = table.get("TArea", tArea);
             tX = table.get("TX", tX);
             tY = table.get("TY", tY);
             tXPixels = table.get("TXPixels", tXPixels);
             tYPixels = table.get("TYPixels", tYPixels);
-            tArea = table.get("TArea", tArea);
             tValid = table.get("TValid", tValid);
-            fiducialID = table.get("FiducialID", fiducialID);
-            jsonDump = table.get("JsonDump", jsonDump);
 
+            // Fiducial List
+            fiducials = table.get("Fiducials", Fiducial.struct, fiducials);
+
+            // TODO: Serialize into structs
             estimatedPose = table.get("Estimation/EstimatedPose", estimatedPose);
             estimatedPoseMegatag2 = table.get("Estimation/Megatag2/EstimatedPose", estimatedPoseMegatag2);
 
             estimatedPoseTimestamp = table.get("Estimation/TimestampSeconds", estimatedPoseTimestamp);
             estimatedPoseTimestampMegatag2 = table.get("Estimation/Megatag2/TimestampSeconds", estimatedPoseTimestampMegatag2);
 
-            // Parses the json dump from the log, this is only to be run during replay, meaning it has no effect on robot performance.
-            parsedResults = ReplayLimelightHelpers.parseJson(jsonDump);
-            fiducials = parsedResults.targets_Fiducials;
-        }
-
-        /**
-         * Creates a string key for saving a fiducial at a specific index in the root.
-         * @param name The key to save.
-         * @param index The index to save it to.
-         * @return The formatted key.
-         */
-        private String fidEntry(String name, int index) {
-            return fiducialListRoot + "/" + index + "/" + name;
         }
 
     }
