@@ -18,7 +18,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
     private final LimelightIO io_;
 
-    // WILL MOVE TO SWERVE BASE LATER!!!
+    // TODO: move to swerve codebase later!!!
     private final CommandSwerveDrivetrain drivetrain_;
 
     private final LimelightIOInputs inputs_;

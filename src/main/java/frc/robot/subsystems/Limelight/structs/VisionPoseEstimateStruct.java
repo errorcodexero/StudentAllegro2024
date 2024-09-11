@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.struct.Struct;
 
-public class PoseEstimateStruct implements Struct<VisionPoseEstimate> {
+public class VisionPoseEstimateStruct implements Struct<VisionPoseEstimate> {
 
     @Override
     public Class<VisionPoseEstimate> getTypeClass() {
