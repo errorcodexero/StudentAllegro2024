@@ -57,7 +57,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
         giveRobotOrientation(drivetrain_.getState().Pose.getRotation().getDegrees());
         
-        if (inputs_.megatag2PoseEstimate.valid) {
+        if (inputs_.megatag2PoseEstimate.valid && inputs_.megatag2PoseEstimate.tagCount >= 2) {
             drivetrain_.addVisionMeasurement(
                 inputs_.megatag2PoseEstimate.pose,
                 inputs_.megatag2PoseEstimate.timestamp,

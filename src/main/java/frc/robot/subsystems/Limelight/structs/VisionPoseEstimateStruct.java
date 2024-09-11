@@ -9,12 +9,12 @@ public class VisionPoseEstimateStruct implements Struct<VisionPoseEstimate> {
 
     @Override
     public String getSchema() {
-        return "Pose2d pose; double timestamp; float valid";
+        return "Pose2d pose; double timestamp; double avgTagArea; double avgTagDist; float tagCount; float valid";
     }
 
     @Override
     public int getSize() {
-        return Pose2d.struct.getSize() + kSizeDouble + kSizeFloat;
+        return Pose2d.struct.getSize() + kSizeDouble * 3 + kSizeFloat * 2;
     }
 
     @Override
@@ -36,12 +36,15 @@ public class VisionPoseEstimateStruct implements Struct<VisionPoseEstimate> {
     public void pack(ByteBuffer bb, VisionPoseEstimate value) {
         Pose2d.struct.pack(bb, value.pose);
         bb.putDouble(value.timestamp);
+        bb.putDouble(value.avgTagArea);
+        bb.putDouble(value.avgTagDist);
+        bb.putFloat(value.tagCount);
         bb.putFloat(value.valid ? 1 : 0);
     }
 
     @Override
     public VisionPoseEstimate unpack(ByteBuffer bb) {
-        return new VisionPoseEstimate(Pose2d.struct.unpack(bb), bb.getDouble(), bb.getFloat() == 1 ? true : false);
+        return new VisionPoseEstimate(Pose2d.struct.unpack(bb), bb.getDouble(), bb.getDouble(), bb.getDouble(), (int) bb.getFloat(), bb.getFloat() == 1 ? true : false);
     }
 
     
