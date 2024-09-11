@@ -13,7 +13,7 @@ public class XeroFiducialStruct implements Struct<XeroFiducial> {
 
     @Override
     public String getTypeString() {
-        return "struct:Fiducial";
+        return "struct:XeroFiducial";
     }
 
     @Override

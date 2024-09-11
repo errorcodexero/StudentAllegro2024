@@ -56,10 +56,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
         giveRobotOrientation(drivetrain_.getState().Pose.getRotation().getDegrees());
         
-        if (inputs_.megatag2PoseEstimate.valid && inputs_.megatag2PoseEstimate.tagCount >= 2) {
+        if (inputs_.poseEstimateMegatag2.valid && inputs_.poseEstimateMegatag2.tagCount >= 2) {
             drivetrain_.addVisionMeasurement(
-                inputs_.megatag2PoseEstimate.pose,
-                inputs_.megatag2PoseEstimate.timestamp,
+                inputs_.poseEstimateMegatag2.pose,
+                inputs_.poseEstimateMegatag2.timestamp,
                 VecBuilder.fill(0.7, 0.7, 99999999)
             );
         }
@@ -145,7 +145,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Estimated Pose from Megatag2 to be used in pose estimation.
      */
     public XeroPoseEstimate getMegatag2PoseEstimate() {
-        return inputs_.megatag2PoseEstimate;
+        return inputs_.poseEstimateMegatag2;
     }
 
     /**
@@ -153,7 +153,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Estimated pose.
      */
     public XeroPoseEstimate getPoseEstimate() {
-        return inputs_.basicPoseEstimate;
+        return inputs_.poseEstimateBasic;
     }
 
     /**
