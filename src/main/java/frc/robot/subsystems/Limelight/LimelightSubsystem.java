@@ -1,13 +1,17 @@
 package frc.robot.subsystems.Limelight;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Limelight.LimelightIO.LimelightIOInputs;
 import frc.robot.subsystems.Limelight.structs.Fiducial;
+import frc.robot.subsystems.Limelight.structs.VisionPoseEstimate;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -53,7 +57,12 @@ public class LimelightSubsystem extends SubsystemBase {
         Logger.processInputs(getName(), inputs_);
 
         giveRobotOrientation(drivetrain_.getState().Pose.getRotation().getDegrees());
-        drivetrain_.addVisionMeasurement(getMegatag2PoseEstimate(), getMegatag2TimestampSeconds());
+        drivetrain_.addVisionMeasurement(inputs_.megatag2PoseEstimate.pose, inputs_.megatag2PoseEstimate.timestamp);
+
+        // Creates an array of coordinates to view in AdvantageScope
+        Translation2d[] points = Stream.of(inputs_.fiducials).map((f) -> new Translation2d(f.xPixels, f.yPixels)).toArray(Translation2d[]::new);
+        Logger.recordOutput(getName() + "/PointsPixels", points);
+
     }
 
     /**
@@ -130,34 +139,16 @@ public class LimelightSubsystem extends SubsystemBase {
      * @see <a href="https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2">Megatag2 Docs</a>
      * @return Estimated Pose from Megatag2 to be used in pose estimation.
      */
-    public Pose2d getMegatag2PoseEstimate() {
-        return inputs_.estimatedPoseMegatag2;
+    public VisionPoseEstimate getMegatag2PoseEstimate() {
+        return inputs_.megatag2PoseEstimate;
     }
 
     /**
      * Gets estimated information from the regular pose estimation.
      * @return Estimated pose.
      */
-    public Pose2d getPoseEstimate() {
-        return inputs_.estimatedPose;
-    }
-
-    /**
-     * Gets estimated information from the Megatag2 pose estimation.
-     * For this value to be relevant, you must provide the current robot orientation for every loop.
-     * @see <a href="https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2">Megatag2 Docs</a>
-     * @return Timestamp from Megatag2 to be used in pose estimation.
-     */
-    public double getMegatag2TimestampSeconds() {
-        return inputs_.estimatedPoseTimestampMegatag2;
-    }
-
-    /**
-     * Gets estimated information from the regular pose estimation.
-     * @return Timestamp of estimated pose.
-     */
-    public double getPoseEstimateTimestampSeconds() {
-        return inputs_.estimatedPoseTimestamp;
+    public VisionPoseEstimate getPoseEstimate() {
+        return inputs_.basicPoseEstimate;
     }
 
     /**

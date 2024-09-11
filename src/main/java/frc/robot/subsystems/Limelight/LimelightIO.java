@@ -3,9 +3,8 @@ package frc.robot.subsystems.Limelight;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.Limelight.structs.Fiducial;
+import frc.robot.subsystems.Limelight.structs.VisionPoseEstimate;
 
 public interface LimelightIO {
 
@@ -21,10 +20,8 @@ public interface LimelightIO {
 
         public Fiducial[] fiducials = {};
 
-        public Pose2d estimatedPose = new Pose2d();
-        public Pose2d estimatedPoseMegatag2 = new Pose2d();
-        public double estimatedPoseTimestamp = 0.0;
-        public double estimatedPoseTimestampMegatag2 = 0.0;
+        public VisionPoseEstimate basicPoseEstimate = new VisionPoseEstimate();
+        public VisionPoseEstimate megatag2PoseEstimate = new VisionPoseEstimate();
 
         @Override
         public void toLog(LogTable table) {   
@@ -40,35 +37,26 @@ public interface LimelightIO {
             // Fiducials serialized with structs
             table.put("Fiducials", Fiducial.struct, fiducials);
             
-            // TODO: Serialize into structs
-            table.put("Estimation/EstimatedPose", estimatedPose);
-            table.put("Estimation/TimestampSeconds", estimatedPoseTimestamp);
-
-            table.put("Estimation/Megatag2/EstimatedPose", estimatedPoseMegatag2);
-            table.put("Estimation/Megatag2/TimestampSeconds", estimatedPoseTimestampMegatag2);
-
+            table.put("PoseEstimation/Basic", VisionPoseEstimate.struct, basicPoseEstimate);
+            table.put("PoseEstimation/Megatag2", VisionPoseEstimate.struct, megatag2PoseEstimate);
         }
         
         @Override
         public void fromLog(LogTable table) {
             // Loads values from the log.
             fiducialID = table.get("FiducialID", fiducialID);
-            tArea = table.get("TArea", tArea);
-            tX = table.get("TX", tX);
-            tY = table.get("TY", tY);
-            tXPixels = table.get("TXPixels", tXPixels);
-            tYPixels = table.get("TYPixels", tYPixels);
-            tValid = table.get("TValid", tValid);
+            tArea      = table.get("TArea", tArea);
+            tX         = table.get("TX", tX);
+            tY         = table.get("TY", tY);
+            tXPixels   = table.get("TXPixels", tXPixels);
+            tYPixels   = table.get("TYPixels", tYPixels);
+            tValid     = table.get("TValid", tValid);
 
             // Fiducial List
             fiducials = table.get("Fiducials", Fiducial.struct, fiducials);
 
-            // TODO: Serialize into structs
-            estimatedPose = table.get("Estimation/EstimatedPose", estimatedPose);
-            estimatedPoseMegatag2 = table.get("Estimation/Megatag2/EstimatedPose", estimatedPoseMegatag2);
-
-            estimatedPoseTimestamp = table.get("Estimation/TimestampSeconds", estimatedPoseTimestamp);
-            estimatedPoseTimestampMegatag2 = table.get("Estimation/Megatag2/TimestampSeconds", estimatedPoseTimestampMegatag2);
+            basicPoseEstimate = table.get("PoseEstimation/Basic", VisionPoseEstimate.struct, basicPoseEstimate);
+            megatag2PoseEstimate = table.get("PoseEstimation/Megatag2", VisionPoseEstimate.struct, megatag2PoseEstimate);
 
         }
 

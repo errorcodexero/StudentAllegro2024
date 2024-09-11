@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Limelight.LimelightHelpers.PoseEstimate;
 import frc.robot.subsystems.Limelight.structs.Fiducial;
+import frc.robot.subsystems.Limelight.structs.VisionPoseEstimate;
 
 /*
  * Are you wondering what the heck a fiducial is?
@@ -74,22 +75,8 @@ public class LimelightHardware implements LimelightIO {
         inputs.tValid = LimelightHelpers.getTV(name_);
         inputs.fiducialID = (int) LimelightHelpers.getFiducialID(name_);
 
-        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(name_);
-        Pose2d estimatedPose = new Pose2d();
-
-        PoseEstimate poseEstimateMegatag2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_);
-        Pose2d estimatedPoseMegatag2 = new Pose2d();
-
-        if (poseEstimate != null) {
-            estimatedPose = poseEstimate.pose;
-        }
-
-        if (poseEstimateMegatag2 != null) {
-            estimatedPoseMegatag2 = poseEstimateMegatag2.pose;
-        }
-        
-        inputs.estimatedPose = estimatedPose;
-        inputs.estimatedPoseMegatag2 = estimatedPoseMegatag2;
+        inputs.basicPoseEstimate = VisionPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue(name_));
+        inputs.megatag2PoseEstimate = VisionPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
 
         LimelightResults results = LimelightHelpers.getLatestResults(name_);
         inputs.fiducials = Fiducial.fromLimelightArray(results.targets_Fiducials);
