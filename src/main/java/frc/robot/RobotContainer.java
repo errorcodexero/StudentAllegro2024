@@ -14,8 +14,6 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Tramp.TrampSubsystem;
 import frc.robot.subsystems.Tramp.TrampSubsystemIO_HW;
-import frc.robot.subsystems.Tramp.Commands.StowCommand;
-import frc.robot.subsystems.Tramp.Commands.TrampShootCommand;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 
 import com.revrobotics.CANSparkFlex;
@@ -25,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
+import frc.robot.subsystems.oi.type.ActionType;
 
 
 /**
@@ -68,9 +67,12 @@ public class RobotContainer {
 
     oiPanel_.climbPrepare().onTrue(tramp_.PrepClimbCommand());
     oiPanel_.climbExecute().onTrue(tramp_.ClimbCommand());
-    oiPanel_.shoot().onTrue(new TrampShootCommand(tramp_));
-    oiPanel_.turtle().onTrue(new StowCommand(tramp_));
-
+    oiPanel_.eject().onTrue(tramp_.EjectCommand());
+    oiPanel_.turtle().onTrue(tramp_.StowCommand());
+    oiPanel_.shoot().onTrue(tramp_.AmpShootCommand());
+    gamepad_.a().onTrue(tramp_.AmpShootCommand());
+    
+  
 
     // Button Interactivity Testing
     oiPanel_.climbPrepare().onTrue(Commands.runOnce(() -> {

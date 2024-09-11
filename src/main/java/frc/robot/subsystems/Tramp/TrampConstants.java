@@ -18,9 +18,6 @@ public class TrampConstants {
         public static final double kClimberDownPosition = 0.0 ;      
         
         public static final double metersPerRev = 0.00056420512;
-
-        public static final double ClimbTarget = 0.0;
-        public static final double PrepClimbTarget = 1.0;
         public static final double kElevatorHeight = 0.21 ;
         public static final double kMinArm = 5.0 ;
         public static final double kMaxArm = 75.0 ;
