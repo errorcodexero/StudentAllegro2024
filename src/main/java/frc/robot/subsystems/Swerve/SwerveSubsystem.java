@@ -2,13 +2,15 @@ package frc.robot.subsystems.Swerve;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +20,9 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveIO io_;
     private final SwerveIOInputsAutoLogged inputs_;
     private final SwerveDriveState state_;
+
+    @AutoLogOutput
+    private final Pose3d pose3d = new Pose3d();
 
     public SwerveSubsystem(SwerveIO io) {
         io_ = io;
