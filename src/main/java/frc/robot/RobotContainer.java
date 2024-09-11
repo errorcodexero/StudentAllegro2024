@@ -21,7 +21,6 @@ import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Limelight.LimelightSubsystem;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem;
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -55,7 +54,7 @@ public class RobotContainer {
   private final OISubsystem oiPanel_ = new OISubsystem(2);
   private final LimelightSubsystem ll_ = new LimelightSubsystem(drivetrain);
 
-  private final TargetTrackerSubsystem targetTracker_ = new TargetTrackerSubsystem(ll_);
+  // private final TargetTrackerSubsystem targetTracker_ = new TargetTrackerSubsystem(ll_);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController gamepad_ =

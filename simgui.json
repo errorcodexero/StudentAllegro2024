@@ -1,51 +1,12 @@
 {
-  "HALProvider": {
-    "Other Devices": {
-      "Talon FX (v6)[1]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX (v6)[1]/Fwd Limit": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX (v6)[1]/Rev Limit": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX (v6)[1]/Rotor Sensor": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX (v6)[2]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX (v6)[2]/Rotor Sensor": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX (v6)[3]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX (v6)[5]/Rev Limit": {
-        "header": {
-          "open": true
-        }
-      }
-    }
-  },
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/Pose": "Field2d",
+      "/SmartDashboard/Module 0": "Mechanism2d",
+      "/SmartDashboard/Module 1": "Mechanism2d",
+      "/SmartDashboard/Module 2": "Mechanism2d",
+      "/SmartDashboard/Module 3": "Mechanism2d"
     }
   },
   "NetworkTables": {
@@ -66,6 +27,9 @@
   },
   "NetworkTables Info": {
     "Clients": {
+      "open": true
+    },
+    "Connections": {
       "open": true
     },
     "Server": {

@@ -3,10 +3,8 @@ package frc.robot.subsystems.Limelight;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Limelight.LimelightIO.LimelightIOInputs;
@@ -57,11 +55,16 @@ public class LimelightSubsystem extends SubsystemBase {
         Logger.processInputs(getName(), inputs_);
 
         giveRobotOrientation(drivetrain_.getState().Pose.getRotation().getDegrees());
-        drivetrain_.addVisionMeasurement(inputs_.megatag2PoseEstimate.pose, inputs_.megatag2PoseEstimate.timestamp);
+        
+        if (inputs_.megatag2PoseEstimate.valid) {
+            drivetrain_.addVisionMeasurement(inputs_.megatag2PoseEstimate.pose, inputs_.megatag2PoseEstimate.timestamp);
+        }
 
         // Creates an array of coordinates to view in AdvantageScope
         Translation2d[] points = Stream.of(inputs_.fiducials).map((f) -> new Translation2d(f.xPixels, f.yPixels)).toArray(Translation2d[]::new);
         Logger.recordOutput(getName() + "/PointsPixels", points);
+
+        Logger.recordOutput("Thing", new VisionPoseEstimate());
 
     }
 

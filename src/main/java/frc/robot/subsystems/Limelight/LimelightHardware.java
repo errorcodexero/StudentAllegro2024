@@ -1,10 +1,6 @@
 package frc.robot.subsystems.Limelight;
 
-import java.util.ArrayList;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
-import frc.robot.subsystems.Limelight.LimelightHelpers.PoseEstimate;
 import frc.robot.subsystems.Limelight.structs.Fiducial;
 import frc.robot.subsystems.Limelight.structs.VisionPoseEstimate;
 
@@ -90,7 +86,7 @@ public class LimelightHardware implements LimelightIO {
 
     @Override
     public void giveRobotOrientation(double yaw, double yawRate, double pitch, double pitchRate, double roll, double rollRate) {
-        LimelightHelpers.SetRobotOrientation(name_, 0, 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(name_, yaw, 0, 0, 0, 0, 0);
     }
 
 }
