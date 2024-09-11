@@ -20,7 +20,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Swerve.util.Telemetry;
 import frc.robot.subsystems.oi.OISubsystem;
 
 
