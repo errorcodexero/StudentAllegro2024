@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.struct.Struct;
 
-public class VisionPoseEstimateStruct implements Struct<VisionPoseEstimate> {
+public class XeroPoseEstimateStruct implements Struct<XeroPoseEstimate> {
 
     @Override
     public String getSchema() {
@@ -18,8 +18,8 @@ public class VisionPoseEstimateStruct implements Struct<VisionPoseEstimate> {
     }
 
     @Override
-    public Class<VisionPoseEstimate> getTypeClass() {
-        return VisionPoseEstimate.class;
+    public Class<XeroPoseEstimate> getTypeClass() {
+        return XeroPoseEstimate.class;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class VisionPoseEstimateStruct implements Struct<VisionPoseEstimate> {
     }
 
     @Override
-    public void pack(ByteBuffer bb, VisionPoseEstimate value) {
+    public void pack(ByteBuffer bb, XeroPoseEstimate value) {
         Pose2d.struct.pack(bb, value.pose);
         bb.putDouble(value.timestamp);
         bb.putDouble(value.avgTagArea);
@@ -43,8 +43,8 @@ public class VisionPoseEstimateStruct implements Struct<VisionPoseEstimate> {
     }
 
     @Override
-    public VisionPoseEstimate unpack(ByteBuffer bb) {
-        return new VisionPoseEstimate(Pose2d.struct.unpack(bb), bb.getDouble(), bb.getDouble(), bb.getDouble(), (int) bb.getFloat(), bb.getFloat() == 1 ? true : false);
+    public XeroPoseEstimate unpack(ByteBuffer bb) {
+        return new XeroPoseEstimate(Pose2d.struct.unpack(bb), bb.getDouble(), bb.getDouble(), bb.getDouble(), (int) bb.getFloat(), bb.getFloat() == 1 ? true : false);
     }
 
     

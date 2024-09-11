@@ -4,11 +4,11 @@ import java.nio.ByteBuffer;
 
 import edu.wpi.first.util.struct.Struct;
 
-public class FiducialStruct implements Struct<Fiducial> {
+public class XeroFiducialStruct implements Struct<XeroFiducial> {
 
     @Override
-    public Class<Fiducial> getTypeClass() {
-        return Fiducial.class;
+    public Class<XeroFiducial> getTypeClass() {
+        return XeroFiducial.class;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class FiducialStruct implements Struct<Fiducial> {
     }
 
     @Override
-    public void pack(ByteBuffer bb, Fiducial value) {
+    public void pack(ByteBuffer bb, XeroFiducial value) {
         bb.putDouble(value.id);
         bb.putDouble(value.area);
         bb.putDouble(value.x);
@@ -38,8 +38,8 @@ public class FiducialStruct implements Struct<Fiducial> {
     }
 
     @Override
-    public Fiducial unpack(ByteBuffer bb) {
-        return new Fiducial(
+    public XeroFiducial unpack(ByteBuffer bb) {
+        return new XeroFiducial(
             bb.getDouble(),
             bb.getDouble(),
             bb.getDouble(),

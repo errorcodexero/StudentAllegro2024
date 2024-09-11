@@ -1,8 +1,8 @@
 package frc.robot.subsystems.Limelight;
 
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
-import frc.robot.subsystems.Limelight.structs.Fiducial;
-import frc.robot.subsystems.Limelight.structs.VisionPoseEstimate;
+import frc.robot.subsystems.Limelight.structs.XeroFiducial;
+import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 
 /*
  * Are you wondering what the heck a fiducial is?
@@ -62,20 +62,20 @@ public class LimelightHardware implements LimelightIO {
     }
 
     @Override
-    public void updateInputs(LimelightIOInputs inputs) {
-        inputs.tX = LimelightHelpers.getTX(name_);
-        inputs.tY = LimelightHelpers.getTY(name_);
-        inputs.tXPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getX();
-        inputs.tYPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getY();
-        inputs.tArea = LimelightHelpers.getTA(name_);
-        inputs.tValid = LimelightHelpers.getTV(name_);
-        inputs.fiducialID = (int) LimelightHelpers.getFiducialID(name_);
+    public void updateInputs(LimelightIOInputsAutoLogged inputs) {
+        inputs.simpleX = LimelightHelpers.getTX(name_);
+        inputs.simpleY = LimelightHelpers.getTY(name_);
+        inputs.simpleXPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getX();
+        inputs.simpleYPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getY();
+        inputs.simpleArea = LimelightHelpers.getTA(name_);
+        inputs.simpleValid = LimelightHelpers.getTV(name_);
+        inputs.simpleID = (int) LimelightHelpers.getFiducialID(name_);
 
-        inputs.basicPoseEstimate = VisionPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue(name_));
-        inputs.megatag2PoseEstimate = VisionPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
+        inputs.basicPoseEstimate = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue(name_));
+        inputs.megatag2PoseEstimate = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
 
         LimelightResults results = LimelightHelpers.getLatestResults(name_);
-        inputs.fiducials = Fiducial.fromLimelightArray(results.targets_Fiducials);
+        inputs.fiducials = XeroFiducial.fromLimelightArray(results.targets_Fiducials);
     }
 
 

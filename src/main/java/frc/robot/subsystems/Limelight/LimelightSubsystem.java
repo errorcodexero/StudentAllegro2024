@@ -8,9 +8,8 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Limelight.LimelightIO.LimelightIOInputs;
-import frc.robot.subsystems.Limelight.structs.Fiducial;
-import frc.robot.subsystems.Limelight.structs.VisionPoseEstimate;
+import frc.robot.subsystems.Limelight.structs.XeroFiducial;
+import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -20,7 +19,7 @@ public class LimelightSubsystem extends SubsystemBase {
     // TODO: move to swerve codebase later!!!
     private final CommandSwerveDrivetrain drivetrain_;
 
-    private final LimelightIOInputs inputs_;
+    private final LimelightIOInputsAutoLogged inputs_;
 
     /**
      * Creates a Limelight Subsystem,
@@ -46,7 +45,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public LimelightSubsystem(LimelightIO io, CommandSwerveDrivetrain drivetrain) {
         io_ = io;
-        inputs_ = new LimelightIOInputs();
+        inputs_ = new LimelightIOInputsAutoLogged();
         drivetrain_ = drivetrain;
     }
 
@@ -145,7 +144,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @see <a href="https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2">Megatag2 Docs</a>
      * @return Estimated Pose from Megatag2 to be used in pose estimation.
      */
-    public VisionPoseEstimate getMegatag2PoseEstimate() {
+    public XeroPoseEstimate getMegatag2PoseEstimate() {
         return inputs_.megatag2PoseEstimate;
     }
 
@@ -153,7 +152,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * Gets estimated information from the regular pose estimation.
      * @return Estimated pose.
      */
-    public VisionPoseEstimate getPoseEstimate() {
+    public XeroPoseEstimate getPoseEstimate() {
         return inputs_.basicPoseEstimate;
     }
 
@@ -179,7 +178,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return
      */
     public int getFiducialID() {
-        return inputs_.fiducialID;
+        return inputs_.simpleID;
     }
 
     /**
@@ -187,7 +186,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
     public double getTX() {
-        return inputs_.tX;
+        return inputs_.simpleX;
     }
 
     /**
@@ -195,7 +194,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
     public double getTY() {
-        return inputs_.tY;
+        return inputs_.simpleY;
     }
 
     /**
@@ -203,7 +202,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return How much of the camera the target covers. This range is configured in the limelight tuning.
      */
     public double getTArea() {
-        return inputs_.tArea;
+        return inputs_.simpleArea;
     }
 
     /**
@@ -212,7 +211,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Its X offset in degrees from the center of the camera. +X Right +Y Down
      */
     public Optional<Double> getTX(int id) {
-        Optional<Fiducial> fid = findFid(id);
+        Optional<XeroFiducial> fid = findFid(id);
 
         if (fid.isEmpty())
             return Optional.empty();
@@ -226,7 +225,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Its Y offset in degrees from the center of the camera. +X Right +Y Down
      */
     public Optional<Double> getTY(int id) {
-        Optional<Fiducial> fid = findFid(id);
+        Optional<XeroFiducial> fid = findFid(id);
 
         if (fid.isEmpty())
             return Optional.empty();
@@ -240,7 +239,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return How much of the camera the tag covers. This range is configured in the limelight tuning.
      */
     public Optional<Double> getTArea(int id) {
-        Optional<Fiducial> fid = findFid(id);
+        Optional<XeroFiducial> fid = findFid(id);
 
         if (fid.isEmpty())
             return Optional.empty();
@@ -252,8 +251,8 @@ public class LimelightSubsystem extends SubsystemBase {
      * Finds a fidicial object in the array.
      * @return The fidicial, null if not found.
      */
-    private Optional<Fiducial> findFid(int id) {
-        for (Fiducial fid : inputs_.fiducials) {
+    private Optional<XeroFiducial> findFid(int id) {
+        for (XeroFiducial fid : inputs_.fiducials) {
             if (fid.id == (double) id) {
                 return Optional.of(fid);
             }
