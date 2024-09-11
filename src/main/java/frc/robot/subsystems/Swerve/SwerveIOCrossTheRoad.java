@@ -10,15 +10,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.generated.TunerConstants;
 
 public class SwerveIOCrossTheRoad implements SwerveIO {
 
-    private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+    private final CommandSwerveDrivetrain drivetrain_;
+
+    public SwerveIOCrossTheRoad(CommandSwerveDrivetrain drivetrain) {
+        drivetrain_ = drivetrain;
+    }
 
     @Override
     public void updateInputs(SwerveIOInputsAutoLogged inputs) {
-        SwerveDriveState swerveDriveState = drivetrain.getState();
+        SwerveDriveState swerveDriveState = drivetrain_.getState();
         
         inputs.moduleStates = swerveDriveState.ModuleStates;
         inputs.moduleTargetStates = swerveDriveState.ModuleTargets;
@@ -28,9 +31,9 @@ public class SwerveIOCrossTheRoad implements SwerveIO {
         inputs.successfulDaqs = swerveDriveState.SuccessfulDaqs;
         inputs.failedDaqs = swerveDriveState.FailedDaqs;
 
-        inputs.rotation3d = drivetrain.getRotation3d();
-        inputs.gyroRate = drivetrain.getPigeon2().getRate();
-        inputs.odometryIsValid = drivetrain.odometryIsValid();
+        inputs.rotation3d = drivetrain_.getRotation3d();
+        inputs.gyroRate = drivetrain_.getPigeon2().getRate();
+        inputs.odometryIsValid = drivetrain_.odometryIsValid();
 
         // Add more as needed.
 
@@ -38,27 +41,27 @@ public class SwerveIOCrossTheRoad implements SwerveIO {
 
     @Override
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-        return drivetrain.applyRequest(requestSupplier);
+        return drivetrain_.applyRequest(requestSupplier);
     }
 
     @Override
     public void seedFieldRelative(Pose2d pose2d) {
-        drivetrain.seedFieldRelative(pose2d);
+        drivetrain_.seedFieldRelative(pose2d);
     }
 
     @Override
     public void seedFieldRelative() {
-        drivetrain.seedFieldRelative();
+        drivetrain_.seedFieldRelative();
     }
 
     @Override
     public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
-        drivetrain.addVisionMeasurement(visionMeasurement, timestampSeconds);
+        drivetrain_.addVisionMeasurement(visionMeasurement, timestampSeconds);
     }
 
     @Override
     public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-        drivetrain.addVisionMeasurement(visionMeasurement, timestampSeconds, visionMeasurementStdDevs);
+        drivetrain_.addVisionMeasurement(visionMeasurement, timestampSeconds, visionMeasurementStdDevs);
     }
     
 }

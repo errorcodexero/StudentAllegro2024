@@ -48,9 +48,7 @@ public class RobotContainer {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  private final SwerveSubsystem drivetrain = new SwerveSubsystem(new SwerveIOCrossTheRoad());
-
-  // private final Telemetry logger = new Telemetry(MaxSpeed);
+  private final SwerveSubsystem drivetrain = new SwerveSubsystem(new SwerveIOCrossTheRoad(TunerConstants.DriveTrain));
 
   // Intake Shooter
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
@@ -115,7 +113,7 @@ public class RobotContainer {
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
-    // drivetrain.registerTelemetry(logger::telemeterize);
+    
   }
 
 
