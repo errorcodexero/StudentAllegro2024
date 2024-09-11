@@ -11,7 +11,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Swerve.ctre.CommandSwerveDrivetrain;
 
 public class SwerveIOCrossTheRoad implements SwerveIO {
 
@@ -30,6 +29,7 @@ public class SwerveIOCrossTheRoad implements SwerveIO {
         inputs.failedDaqs = swerveDriveState.FailedDaqs;
 
         inputs.rotation3d = drivetrain.getRotation3d();
+        inputs.gyroRate = drivetrain.getPigeon2().getRate();
         inputs.odometryIsValid = drivetrain.odometryIsValid();
 
         // Add more as needed.

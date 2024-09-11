@@ -27,6 +27,7 @@ public interface SwerveIO {
         public int successfulDaqs = 0;
         public int failedDaqs = 0;
 
+        public double gyroRate = 0.0;
         public Rotation3d rotation3d = new Rotation3d();
         public boolean odometryIsValid = false;
     }

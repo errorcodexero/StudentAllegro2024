@@ -71,6 +71,10 @@ public class SwerveSubsystem extends SubsystemBase {
         return state_;
     }
 
+    public double getGyroRate() {
+        return inputs_.gyroRate;
+    }
+
     public boolean odometryIsValid() {
         return inputs_.odometryIsValid;
     }
