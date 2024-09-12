@@ -14,21 +14,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.org.xero1425.HolonomicPathFollower;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
-
-import com.revrobotics.CANSparkFlex;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,21 +40,19 @@ public class RobotContainer {
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-                                                               // driving in open loop
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
+  
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-   // The robot's subsystems and commands are defined here...
+  // The robot's subsystems and commands are defined here...
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
-
   private final OISubsystem oiPanel_ = new OISubsystem(2);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController gamepad_ =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  // private final CommandXboxController gamepad_ = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -68,14 +60,20 @@ public class RobotContainer {
     configureBindings();
   }
 
+  public IntakeShooterSubsystem getIntakeShooter() {
+    return intake_shooter_;
+  }
+
+  public CommandSwerveDrivetrain getDriveTrain() {
+    return drivetrain;
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * predicate, or via the named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s
+   * subclasses for {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
   private void configureBindings() {
 
@@ -102,9 +100,8 @@ public class RobotContainer {
       oiPanel_.setIndicator(OIConstants.Indicators.unclimbEnabled, false);
     }, oiPanel_));
 
-        drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
-                                                                                           // negative Y (forward)
+    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+        drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
             .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
@@ -122,7 +119,6 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -130,5 +126,14 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+
+  // Updated getOI() method to return the correct type (OISubsystem)
+  public OISubsystem getOI() {
+    return oiPanel_;
+  }
+
+  public HolonomicPathFollower getFollower() {
+    throw new UnsupportedOperationException("Unimplemented method 'getFollower'");
   }
 }
