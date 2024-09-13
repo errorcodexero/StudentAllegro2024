@@ -84,7 +84,7 @@ public class Limelight extends SubsystemBase {
         switch (poseMode_) {
             case MEGATAG:
 
-                megatagConsumer_.accept(inputs_.basicPoseEstimate); // give megatag1 estimate to consumers
+                megatagConsumer_.accept(inputs_.poseEstimateBasic); // give megatag1 estimate to consumers
 
                 break;
             case MEGATAG2:
@@ -93,7 +93,7 @@ public class Limelight extends SubsystemBase {
                 io_.giveRobotOrientation(poseSupplier_.get().getRotation().getDegrees(), 0, 0, 0, 0, 0);
                 
                 // give the megatag2 estimate to consumers (ex. drivebase vision measurement)
-                megatagConsumer_.accept(inputs_.megatag2PoseEstimate);
+                megatagConsumer_.accept(inputs_.poseEstimateMegatag2);
 
                 break;
             case NONE:
@@ -162,7 +162,7 @@ public class Limelight extends SubsystemBase {
      * @return Estimated Pose from Megatag2 to be used in pose estimation.
      */
     public XeroPoseEstimate getMegatag2PoseEstimate() {
-        return inputs_.megatag2PoseEstimate;
+        return inputs_.poseEstimateMegatag2;
     }
 
     /**
@@ -170,7 +170,7 @@ public class Limelight extends SubsystemBase {
      * @return Estimated pose.
      */
     public XeroPoseEstimate getMegatagPoseEstimate() {
-        return inputs_.basicPoseEstimate;
+        return inputs_.poseEstimateBasic;
     }
 
     /**

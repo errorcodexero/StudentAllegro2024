@@ -24,7 +24,7 @@ public class XeroPoseEstimateStruct implements Struct<XeroPoseEstimate> {
 
     @Override
     public String getTypeString() {
-        return "struct:VisionPoseEstimate";
+        return "struct:XeroPoseEstimate";
     }
 
     @Override

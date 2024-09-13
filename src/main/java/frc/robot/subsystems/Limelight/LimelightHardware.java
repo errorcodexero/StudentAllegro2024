@@ -52,8 +52,8 @@ public class LimelightHardware implements LimelightIO {
         inputs.simpleValid = LimelightHelpers.getTV(name_);
         inputs.simpleID = (int) LimelightHelpers.getFiducialID(name_);
 
-        inputs.basicPoseEstimate = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue(name_));
-        inputs.megatag2PoseEstimate = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
+        inputs.poseEstimateBasic = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue(name_));
+        inputs.poseEstimateMegatag2 = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
 
         LimelightResults results = LimelightHelpers.getLatestResults(name_);
         inputs.fiducials = XeroFiducial.fromLimelightArray(results.targets_Fiducials);

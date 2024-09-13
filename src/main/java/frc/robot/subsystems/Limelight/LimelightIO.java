@@ -20,8 +20,8 @@ public interface LimelightIO {
 
         public XeroFiducial[] fiducials = {};
 
-        public XeroPoseEstimate basicPoseEstimate = new XeroPoseEstimate();
-        public XeroPoseEstimate megatag2PoseEstimate = new XeroPoseEstimate();
+        public XeroPoseEstimate poseEstimateBasic = new XeroPoseEstimate();
+        public XeroPoseEstimate poseEstimateMegatag2 = new XeroPoseEstimate();
 
     }
 
