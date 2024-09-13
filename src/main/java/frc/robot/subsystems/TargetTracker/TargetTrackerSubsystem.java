@@ -1,44 +1,59 @@
 package frc.robot.subsystems.TargetTracker;
 
+import java.lang.constant.Constable;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Limelight.LimelightSubsystem;
+import frc.robot.Constants;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Limelight.Limelight;
 import frc.robot.util.AprilTags;
 
 public class TargetTrackerSubsystem extends SubsystemBase {
 
-    public record TargetData(int id, double distanceFromRobot, double angleFromRobot) {}
+    public record TargetData(int id, double distanceFromRobot, Rotation2d angleFromRobot) {}
 
-    private LimelightSubsystem ll_;
-
+    private Limelight ll_ = new Limelight();
+    
+    @AutoLogOutput
     private Alliance alliance_;
-    private boolean ready_;
+
+    @AutoLogOutput
+    private boolean allianceReady_;
+
+    private boolean canSeeTarget_;
+
+    @AutoLogOutput
+    private double distanceToTargetVision_;
+
+    @AutoLogOutput
+    private double distanceToTargetOdometry_;
 
     private Pose3d targetPose3d_;
     private Pose2d targetPose2d_;
+
     private int speakerCenterTagID_;
 
-    private boolean canSeeTarget_;
-    private double distanceToTarget_;
+    private Supplier<Pose2d> robotPoseSupplier_;
 
-    /**
-     * PLACEHOLDER!!!! DO NOT USE ON A REAL ROBOT!!!!!!!!!!!!!!!!!!!!111!!!!1111!!
-     */
-    private Pose2d robotPose2d_ = new Pose2d();
-
-    public TargetTrackerSubsystem(LimelightSubsystem ll) {
+    public TargetTrackerSubsystem(Supplier<Pose2d> robotPoseSupplier) {
         
-        this.ll_ = ll;
-        canSeeTarget_ = false;
-        speakerCenterTagID_ = 0;
+        ll_ = new Limelight("limelight", TunerConstants.DriveTrain);
+
+        speakerCenterTagID_ = AprilTags.SPEAKER_CENTER.getId(alliance_);
+
+        robotPoseSupplier_ = robotPoseSupplier;
 
     }
 
@@ -53,32 +68,27 @@ public class TargetTrackerSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        Logger.recordOutput(logPath("AllianceReady"), ready_);
-
         if (alliance_ == null) {
             Optional<Alliance> newAlliance = DriverStation.getAlliance();
             
             if (newAlliance.isEmpty()) {
-                ready_ = false;
+                allianceReady_ = false;
                 return;
             }
 
             setupAlliance(newAlliance.get());
-            ready_ = true;
+            allianceReady_ = true;
         }
 
         canSeeTarget_ = ll_.hasAprilTag(speakerCenterTagID_);
-        distanceToTarget_ = calculateDistanceToTargetVision().orElse(calculateDistanceToTargetOdometry());
-
-        Logger.recordOutput(logPath("DistanceToTargetMeters"), distanceToTarget_);
-        Logger.recordOutput(logPath("CanSeeTarget"), ll_.hasAprilTag(speakerCenterTagID_));
-        Logger.recordOutput(logPath("TargetToLookFor"), speakerCenterTagID_);
-
+        
+        
+        
     }
 
     public Optional<TargetData> getTargetData() {
-        if (ready_) {
-            TargetData data = new TargetData(speakerCenterTagID_, distanceToTarget_, -1d);
+        if (allianceReady_) {
+            TargetData data = new TargetData(speakerCenterTagID_, canSeeTarget_ ? distanceToTargetVision_ : distanceToTargetOdometry_, new Rotation2d());
             return Optional.of(data);
         }
         
@@ -86,7 +96,7 @@ public class TargetTrackerSubsystem extends SubsystemBase {
     }
 
     private Optional<Double> calculateDistanceToTargetVision() {
-        Optional<Double> ty = ll_.getTY(speakerCenterTagID_);
+        Optional<Double> ty = ll_.getSpecificY(speakerCenterTagID_);
 
         if (ty.isEmpty()) {
             return Optional.empty();
@@ -99,11 +109,7 @@ public class TargetTrackerSubsystem extends SubsystemBase {
     }
 
     private double calculateDistanceToTargetOdometry() {
-        return robotPose2d_.getTranslation().getDistance(targetPose2d_.getTranslation());
-    }
-
-    private String logPath(String name) {
-        return this.getName() + "/" + name;
+        return robotPoseSupplier_.get().getTranslation().getDistance(targetPose2d_.getTranslation());
     }
     
 }

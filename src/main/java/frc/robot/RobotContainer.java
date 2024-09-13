@@ -8,6 +8,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,7 +20,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
-import frc.robot.subsystems.Limelight.LimelightSubsystem;
+import frc.robot.subsystems.Limelight.Limelight;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.oi.OIConstants;
 import frc.robot.subsystems.oi.OISubsystem;
@@ -52,7 +53,8 @@ public class RobotContainer {
   private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
   private final OISubsystem oiPanel_ = new OISubsystem(2);
-  private final LimelightSubsystem ll_ = new LimelightSubsystem(drivetrain);
+
+  private final Limelight ll_ = new Limelight();
 
   // private final TargetTrackerSubsystem targetTracker_ = new TargetTrackerSubsystem(ll_);
 
@@ -62,6 +64,17 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    ll_.setupMegatag2(() -> {
+      return drivetrain.getState().Pose; // Supply robot pose.
+    }, (estimate) -> {
+      drivetrain.addVisionMeasurement( // Add vision measurements based on estimation.
+        estimate.pose,
+        estimate.timestamp,
+        VecBuilder.fill(0.7, 0.7, 9999999)
+      );
+    });
+
     // Configure the trigger bindings
     configureBindings();
   }

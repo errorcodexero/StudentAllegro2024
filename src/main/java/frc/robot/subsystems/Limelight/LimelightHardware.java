@@ -4,15 +4,6 @@ import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.Limelight.structs.XeroFiducial;
 import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 
-/*
- * Are you wondering what the heck a fiducial is?
- * 
- * I sure have the answer for you!
- * 
- * In the Limelight code, and here, I will be referring to tags like april tags, as fiducials.
- * 
- */
-
 public class LimelightHardware implements LimelightIO {
 
     private final String name_;
@@ -24,16 +15,6 @@ public class LimelightHardware implements LimelightIO {
      */
     public LimelightHardware(String name) {
         name_ = name;
-    }
-
-
-    /**
-     * Creates a new Limelight implementation, this implementation is using the Limelight Lib with a Limelight.
-     * This uses the default "limelight" name.
-     * @param name The name of the limelight.
-     */
-    public LimelightHardware() {
-        this("limelight");
     }
 
     @Override
