@@ -24,7 +24,7 @@ public class Limelight extends SubsystemBase {
     private Supplier<Pose2d> poseSupplier_;
     private Consumer<XeroPoseEstimate> megatagConsumer_;
 
-    @AutoLogOutput
+    @AutoLogOutput(key = "Limelight/PoseEstimationMode")
     private LimelightPoseMode poseMode_;
 
     public static enum LimelightPoseMode {
