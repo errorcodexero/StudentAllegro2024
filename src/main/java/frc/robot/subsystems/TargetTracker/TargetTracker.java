@@ -3,9 +3,11 @@ package frc.robot.subsystems.TargetTracker;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -16,8 +18,11 @@ public class TargetTracker extends SubsystemBase {
 
     private Supplier<Pose2d> robotPoseSupplier_;
 
-    @AutoLogOutput(key = "TargetTracker/TargetPoseAbsolute")
-    private Pose3d targetPoseAbsolute_;
+    @AutoLogOutput(key = "TargetTracker/DistanceToTargetMeters")
+    private double distanceToTargetMeters_;
+
+    @AutoLogOutput(key = "TargetTracker/RotationToTarget")
+    private Rotation2d angleToTarget_;
 
     public TargetTracker(Supplier<Pose2d> robotPoseSupplier) {
         robotPoseSupplier_ = robotPoseSupplier;
@@ -26,7 +31,18 @@ public class TargetTracker extends SubsystemBase {
     @Override
     public void periodic() {
         
-        targetPoseAbsolute_ = AprilTags.SPEAKER_CENTER.getPose3d(getAlliance());
+        Pose2d targetPose = AprilTags.SPEAKER_CENTER.getPose2d(getAlliance());
+        Pose2d robotPose = robotPoseSupplier_.get();
+
+        // The pose of the robot, but facing the back of the robot, AKA where the shooter is pointed and where the limelight is looking.
+        Pose2d backFacingRobotPose = new Pose2d(robotPose.getTranslation(), robotPose.getRotation().unaryMinus());
+
+        // The pose of the target relative to the robot pose.
+        Transform2d transformToTarget = targetPose.minus(backFacingRobotPose);
+
+        distanceToTargetMeters_ = transformToTarget.getTranslation().getDistance(new Translation2d());
+
+        Logger.recordOutput(getName() + "/RotationTo", new Pose2d(transformToTarget.getTranslation(), transformToTarget.getRotation()));
 
     }
 
