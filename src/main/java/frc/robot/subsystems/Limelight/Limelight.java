@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +24,9 @@ public class Limelight extends SubsystemBase {
 
     private Supplier<Pose2d> poseSupplier_;
     private Consumer<XeroPoseEstimate> megatagConsumer_;
+
+    @AutoLogOutput(key = "Limelight/LastValidTargetTimestamp")
+    private double lastValidTargetTimestamp_;
 
     @AutoLogOutput(key = "Limelight/PoseEstimationMode")
     private LimelightPoseMode poseMode_;
@@ -45,6 +49,7 @@ public class Limelight extends SubsystemBase {
 
         poseSupplier_ = null;
         megatagConsumer_ = null;
+        lastValidTargetTimestamp_ = 0;
     }
 
     /**
@@ -65,9 +70,10 @@ public class Limelight extends SubsystemBase {
     }
 
     /**
-     * Sets up Megatag2 tracking.
+     * Sets up Megatag2 tracking. A much better tracking system.
+     * @see <a href="https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2">Megatag2 Docs</a>
      * @param poseSupplier Supplier for robot pose.
-     * @param estimateConsumer The consumer to consume pose estimates.
+     * @param megatagConsumer The consumer to consume pose estimates.
      */
     public void setupMegatag2(Supplier<Pose2d> poseSupplier, Consumer<XeroPoseEstimate> megatagConsumer) {
         poseSupplier_ = poseSupplier;
@@ -100,6 +106,10 @@ public class Limelight extends SubsystemBase {
                 break;
         }
 
+        if (hasValidTarget()) {
+            lastValidTargetTimestamp_ = Timer.getFPGATimestamp();
+        }
+
         // Creates an array of coordinates to view in AdvantageScope
         Translation2d[] points = Stream.of(inputs_.fiducials).map((f) -> new Translation2d(f.xPixels, f.yPixels)).toArray(Translation2d[]::new);
         Logger.recordOutput(getName() + "/PointsPixels", points);
@@ -110,28 +120,28 @@ public class Limelight extends SubsystemBase {
      * Forces the Limelight indicator LED to be off.
      */
     public Command forceLedOff() {
-        return Commands.runOnce(io_::forceOff, this);
+        return runOnce(io_::forceOff);
     }
 
     /**
      * Forces the Limelight indicator LED to blink.
      */
     public Command forceLedBlink() {
-        return Commands.runOnce(io_::forceBlink, this);
+        return runOnce(io_::forceBlink);
     }
 
     /**
      * Forces the Limelight indicator LED to be on.
      */
     public Command forceLedOn() {
-        return Commands.runOnce(io_::forceOn, this);
+        return runOnce(io_::forceOn);
     }
 
     /**
      * Sets the Limelight indicator LED back to the default state, controlled by the limelight software itself.
      */
     public Command resetLed() {
-        return Commands.runOnce(io_::resetLed, this);
+        return runOnce(io_::resetLed);
     }
 
     /**
@@ -139,9 +149,9 @@ public class Limelight extends SubsystemBase {
      * @param id
      */
     public Command setPriorityTagID(int id) {
-        return Commands.runOnce(() -> {
+        return runOnce(() -> {
             io_.setPriorityTagID(id);
-        }, this);
+        });
     }
 
     /**
@@ -150,14 +160,14 @@ public class Limelight extends SubsystemBase {
      * @param validIds The filter list
      */
     public Command setTagFilters(int[] validIds) {
-        return Commands.runOnce(() -> {
+        return runOnce(() -> {
             io_.setValidTags(validIds);
-        }, this);
+        });
     }
 
     /**
      * Gets estimated information from the Megatag2 pose estimation.
-     * For this value to be relevant, you must provide the current robot orientation for every loop.
+     * For this value to be relevant, you must provide the current robot orientation for every loop, by calling and setting suppliers with setupMegatag2()
      * @see <a href="https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2">Megatag2 Docs</a>
      * @return Estimated Pose from Megatag2 to be used in pose estimation.
      */
@@ -174,20 +184,20 @@ public class Limelight extends SubsystemBase {
     }
 
     /**
-     * Finds if a valid target exists.
-     * @return Whether or not a valid target exists.
-     */
-    public boolean hasValidTarget() {
-        return inputs_.fiducials.length > 0;
-    }
-
-    /**
      * Figures out if its currently seeing a specific april tag.
      * @param id The id of the april tag.
      * @return Whether or not the Limelight can currently see the specified april tag.
      */
     public boolean hasAprilTag(int id) {
         return findFid(id).isPresent();
+    }
+
+    /**
+     * Finds if a valid target exists.
+     * @return Whether or not a valid target exists.
+     */
+    public boolean hasValidTarget() {
+        return inputs_.simpleValid;
     }
 
     /**
@@ -262,6 +272,14 @@ public class Limelight extends SubsystemBase {
             return Optional.empty();
 
         return Optional.of(fid.get().area);
+    }
+
+    /**
+     * Gets the time since theres been a valid target.
+     * @return The time elapsed, in seconds.
+     */
+    public double getTimeSinceValidTarget() {
+        return Timer.getFPGATimestamp() - lastValidTargetTimestamp_;
     }
 
     /**
