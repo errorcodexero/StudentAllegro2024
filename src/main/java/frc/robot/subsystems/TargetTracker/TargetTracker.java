@@ -37,12 +37,15 @@ public class TargetTracker extends SubsystemBase {
         // The pose of the robot, but facing the back of the robot, AKA where the shooter is pointed and where the limelight is looking.
         Pose2d backFacingRobotPose = new Pose2d(robotPose.getTranslation(), robotPose.getRotation().unaryMinus());
 
-        // The pose of the target relative to the robot pose.
-        Transform2d transformToTarget = targetPose.minus(backFacingRobotPose);
+        angleToTarget_ = targetPose.relativeTo(backFacingRobotPose).getTranslation().getAngle();
+        distanceToTargetMeters_ = robotPose.getTranslation().getDistance(targetPose.getTranslation());
 
-        distanceToTargetMeters_ = transformToTarget.getTranslation().getDistance(new Translation2d());
+        Logger.recordOutput(getName() + "/RobotPose", robotPose);
 
-        Logger.recordOutput(getName() + "/RotationTo", new Pose2d(transformToTarget.getTranslation(), transformToTarget.getRotation()));
+        Logger.recordOutput(getName() + "/AngleCorrected", new Pose2d(robotPose.getTranslation(), robotPose.getRotation().plus(angleToTarget_)));
+        Logger.recordOutput(getName() + "/AngleCorrected2", new Pose2d(robotPose.getTranslation(), robotPose.getRotation().rotateBy(angleToTarget_)));
+
+        Logger.recordOutput(getName() + "/TargetPose", targetPose);
 
     }
 
