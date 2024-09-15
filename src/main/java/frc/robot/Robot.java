@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -36,30 +37,30 @@ public class Robot extends LoggedRobot {
         
         switch (Constants.ROBOT_MODE) {
             case REAL:
-            Logger.addDataReceiver(new WPILOGWriter());
-            Logger.addDataReceiver(new NT4Publisher());
-            
-            // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-            
-            break;
-            case SIMULATED:
-            if (Constants.SAVE_SIMULATED_LOGS) {
                 Logger.addDataReceiver(new WPILOGWriter());
-            }
+                Logger.addDataReceiver(new NT4Publisher());
+                
+                // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
             
-            Logger.addDataReceiver(new NT4Publisher());
+                break;
+            case SIMULATED:
+                if (Constants.SAVE_SIMULATED_LOGS) {
+                    Logger.addDataReceiver(new WPILOGWriter());
+                }
+                
+                Logger.addDataReceiver(new NT4Publisher());
             
-            break;
+                break;
             case REPLAYED:
-            setUseTiming(false);
-            
-            String logPath = LogFileUtil.findReplayLog(); // Finds the log to replay from, whatever is currently open in AdvantageScope
-            String replayLogPath = LogFileUtil.addPathSuffix(logPath, "_replay"); // Adds _replay to differentiate between the original file
-            
-            Logger.setReplaySource(new WPILOGReader(logPath));
-            Logger.addDataReceiver(new WPILOGWriter(replayLogPath));
-            
-            break;
+                setUseTiming(false);
+                
+                String logPath = LogFileUtil.findReplayLog(); // Finds the log to replay from, whatever is currently open in AdvantageScope
+                String replayLogPath = LogFileUtil.addPathSuffix(logPath, "_replay"); // Adds _replay to differentiate between the original file
+                
+                Logger.setReplaySource(new WPILOGReader(logPath));
+                Logger.addDataReceiver(new WPILOGWriter(replayLogPath));
+                
+                break;
         }
         
         Logger.recordMetadata("Environment", Constants.ROBOT_MODE.toString());
