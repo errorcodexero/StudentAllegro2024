@@ -39,7 +39,7 @@ public class RobotContainer {
     private double maxAngularRate_ = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
     
     private final SwerveRequest.FieldCentric drive_ = new SwerveRequest.FieldCentric()
-        .withDeadband(maxSpeed_ * 0.1).withRotationalDeadband(maxAngularRate_ * 0.1) // Add a 10% deadband
+        // .withDeadband(maxSpeed_ * 0.1).withRotationalDeadband(maxAngularRate_ * 0.1) // Add a 10% deadband
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
     
     private final SwerveRequest.SwerveDriveBrake brake_ = new SwerveRequest.SwerveDriveBrake();
