@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -85,9 +86,9 @@ public class RobotContainer {
     private void setupDrivetrain() {
         drivetrain_.setDefaultCommand( // Drivetrain will execute this command periodically
             drivetrain_.applyRequest(() -> drive_
-                .withVelocityX(-gamepad_.getLeftY() * maxSpeed_) // Drive forward with negative Y (forward)
-                .withVelocityY(-gamepad_.getLeftX() * maxSpeed_) // Drive left with negative X (left)
-                .withRotationalRate(-gamepad_.getRightX() * maxAngularRate_) // Drive counterclockwise with negative X (left)
+                .withVelocityX(Math.pow(-gamepad_.getLeftY(), 2) * maxSpeed_) // Drive forward with negative Y (forward)
+                .withVelocityY(Math.pow(-gamepad_.getLeftX(), 2) * maxSpeed_) // Drive left with negative X (left)
+                .withRotationalRate(Math.pow(-gamepad_.getRightX(), 2) * maxAngularRate_) // Drive counterclockwise with negative X (left)
             )
         );
     }
