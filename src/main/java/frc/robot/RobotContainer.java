@@ -92,12 +92,7 @@ public class RobotContainer {
                 .withVelocityY(-gamepad_.getLeftX() * maxSpeed_) // Drive left with negative X (left)
                 .withRotationalRate(-gamepad_.getRightX() * maxAngularRate_) // Drive counterclockwise with negative X (left)
             )
-        );    
-        
-        if (Utils.isSimulation()) {
-            drivetrain_.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-        }
-
+        );
     }
     
     /**
