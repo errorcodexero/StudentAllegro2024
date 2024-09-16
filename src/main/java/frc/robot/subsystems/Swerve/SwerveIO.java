@@ -42,7 +42,4 @@ public interface SwerveIO {
     public default void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {}
     public default void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {}
 
-    
-
-
 }
