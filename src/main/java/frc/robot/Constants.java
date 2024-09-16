@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -28,11 +31,16 @@ public final class Constants {
     }
     
     public static final Robot ROBOT = Robot.COMPETITION; // The robot currently running.
-    public static final boolean REPLAYING = true; // Should the simulation start into replay mode when not running on the RIO?
+    public static final boolean REPLAYING = false; // Should the simulation start into replay mode when not running on the RIO?
     public static final boolean SAVE_SIMULATED_LOGS = false; // Should the physics simulation mode save a .wpilog?
     
     public static final RobotMode ROBOT_MODE = RobotBase.isReal() ? RobotMode.REAL : (REPLAYING ? RobotMode.REPLAYED : RobotMode.SIMULATED);
     
+    public static class FieldConstants {
+        private static final AprilTagFields FIELD = AprilTagFields.k2024Crescendo;
+        public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(FIELD);
+    }
+
     public static class OperatorConstants {
         public static final int kDriverControllerPort = 0;
     }

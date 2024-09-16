@@ -20,7 +20,7 @@ public class TargetTracker extends SubsystemBase {
     private double distanceToTargetMeters_;
 
     @AutoLogOutput(key = "TargetTracker/RotationToTarget")
-    private Rotation2d angleToTarget_;
+    private Rotation2d rotationToTarget_;
 
     public TargetTracker(Supplier<Pose2d> robotPoseSupplier) {
         robotPoseSupplier_ = robotPoseSupplier;
@@ -28,22 +28,23 @@ public class TargetTracker extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
-        Pose2d targetPose = AprilTags.SPEAKER_CENTER.getPose2d(getAlliance());
+
         Pose2d robotPose = robotPoseSupplier_.get();
+        Pose2d targetPose = AprilTags.SPEAKER_CENTER.getPose2d(getAlliance());
 
-        // The pose of the robot, but facing the back of the robot, AKA where the shooter is pointed and where the limelight is looking.
-        Pose2d backFacingRobotPose = new Pose2d(robotPose.getTranslation(), robotPose.getRotation().unaryMinus());
+        Pose2d backFacingRobotPose = new Pose2d(robotPose.getTranslation(), robotPose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
 
-        angleToTarget_ = targetPose.relativeTo(backFacingRobotPose).getTranslation().getAngle();
-        distanceToTargetMeters_ = robotPose.getTranslation().getDistance(targetPose.getTranslation());
+        Pose2d targetPoseRelativeToRobotBack = targetPose.relativeTo(backFacingRobotPose);
 
-        Logger.recordOutput(getName() + "/RobotPose", robotPose);
+        rotationToTarget_ = targetPoseRelativeToRobotBack.getTranslation().getAngle();
+        distanceToTargetMeters_ = targetPoseRelativeToRobotBack.getTranslation().getNorm();
 
-        Logger.recordOutput(getName() + "/AngleCorrected", new Pose2d(robotPose.getTranslation(), robotPose.getRotation().plus(angleToTarget_)));
-        Logger.recordOutput(getName() + "/AngleCorrected2", new Pose2d(robotPose.getTranslation(), robotPose.getRotation().rotateBy(angleToTarget_)));
-
-        Logger.recordOutput(getName() + "/TargetPose", targetPose);
+        Logger.recordOutput(getName() + "/Explanation/BackfacingRobotPose", backFacingRobotPose);
+        Logger.recordOutput(getName() + "/Explanation/AngleCorrected", new Pose2d(
+            robotPose.getTranslation(),
+            robotPose.getRotation().rotateBy(rotationToTarget_)
+        ));
+        Logger.recordOutput(getName() + "/Explanation/TargetPose", targetPose);
 
     }
 
