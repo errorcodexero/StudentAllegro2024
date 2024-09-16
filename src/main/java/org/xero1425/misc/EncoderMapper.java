@@ -1,4 +1,4 @@
-package EncoderMapper;
+package org.xero1425.misc;
 
 public class EncoderMapper
 {
