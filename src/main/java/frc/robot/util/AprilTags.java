@@ -2,10 +2,11 @@ package frc.robot.util;
 
 import java.util.Optional;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.Constants;
 
 public enum AprilTags {
 
@@ -17,6 +18,17 @@ public enum AprilTags {
     STAGE_LEFT(11, 15),
     STAGE_RIGHT(12, 16),
     AMP(5, 6);
+
+    private static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+
+    /**
+     * Gets the pose of a apriltag from its ID. You will have to handle yourself what will happen if the tag wasnt found.
+     * @param id The id to search for.
+     * @return An Optional type of a Pose3d.
+     */
+    public static Optional<Pose3d> byID(int id) {
+        return fieldLayout.getTagPose(id);
+    }
 
     private int red;
     private Pose3d redPose;
@@ -45,7 +57,7 @@ public enum AprilTags {
     }
 
     private Pose3d initPose(int id) {
-        Optional<Pose3d> pose = Constants.FieldConstants.fieldLayout.getTagPose(id);
+        Optional<Pose3d> pose = fieldLayout.getTagPose(id);
 
         if (pose.isPresent()) {
             return pose.get();
@@ -54,4 +66,4 @@ public enum AprilTags {
         System.err.println("Error! Field layout pose for apriltag id " + id + " doesnt exist! Assuming zero pose!");
         return new Pose3d();
     }
-    }
+}

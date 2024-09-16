@@ -5,12 +5,13 @@
 package frc.robot.subsystems.IntakeShooter;
 
 import org.littletonrobotics.junction.Logger;
+import org.xero1425.misc.EncoderMapper;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import EncoderMapper.EncoderMapper;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AsynchronousInterrupt;
 import edu.wpi.first.wpilibj.DigitalInput;

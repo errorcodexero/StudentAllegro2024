@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Limelight;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -13,9 +14,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.Limelight.structs.XeroFiducial;
 import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 import frc.robot.util.AprilTags;
@@ -117,13 +116,16 @@ public class Limelight extends SubsystemBase {
         Translation2d[] points = Stream.of(inputs_.fiducials).map((f) -> new Translation2d(f.xPixels, f.yPixels)).toArray(Translation2d[]::new);
         Logger.recordOutput(getName() + "/PointsPixels", points);
 
-        // Creates an array of poses of the currently visible tags. This is useful for seeing which tags it can see visually.
-        Pose3d[] validTargetPoses = new Pose3d[inputs_.fiducials.length];
-        for (int i = 0; i < validTargetPoses.length; i++) {
-            validTargetPoses[i] = Constants.FieldConstants.fieldLayout.getTagPose((int) inputs_.fiducials[i].id).orElse(new Pose3d());
+        // Creates an array of poses of the currently visible tags. This is useful for seeing which tags the robot can see visually.
+        ArrayList<Pose3d> validTargetPoses = new ArrayList<Pose3d>();
+
+        for (XeroFiducial fiducial : inputs_.fiducials) {
+            AprilTags.byID((int) fiducial.id).ifPresent((pose) -> {
+                validTargetPoses.add(pose);
+            });
         }
 
-        Logger.recordOutput(getName() + "/ValidTargetPoses", validTargetPoses);
+        Logger.recordOutput(getName() + "/ValidTargetPoses", validTargetPoses.toArray(new Pose3d[0]));
 
     }
 
