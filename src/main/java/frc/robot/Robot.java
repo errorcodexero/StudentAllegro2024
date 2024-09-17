@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -40,7 +41,7 @@ public class Robot extends LoggedRobot {
                 Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
                 
-                // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+                new PowerDistribution(0, ModuleType.kCTRE); // Enables power distribution logging
             
                 break;
             case SIMULATED:
