@@ -7,7 +7,6 @@ package frc.robot;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,7 +38,7 @@ public class RobotContainer {
     private double maxAngularRate_ = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
     
     private final SwerveRequest.FieldCentric drive_ = new SwerveRequest.FieldCentric()
-        // .withDeadband(maxSpeed_ * 0.1).withRotationalDeadband(maxAngularRate_ * 0.1) // Add a 10% deadband
+        .withDeadband(maxSpeed_ * 0.1).withRotationalDeadband(maxAngularRate_ * 0.1) // Add a 10% deadband
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
     
     private final SwerveRequest.SwerveDriveBrake brake_ = new SwerveRequest.SwerveDriveBrake();
@@ -86,9 +85,9 @@ public class RobotContainer {
     private void setupDrivetrain() {
         drivetrain_.setDefaultCommand( // Drivetrain will execute this command periodically
             drivetrain_.applyRequest(() -> drive_
-                .withVelocityX(Math.pow(MathUtil.applyDeadband(-gamepad_.getLeftY(), 0.04), 2) * maxSpeed_) // Drive forward with negative Y (forward)
-                .withVelocityY(Math.pow(MathUtil.applyDeadband(-gamepad_.getLeftX(), 0.04), 2) * maxSpeed_) // Drive left with negative X (left)
-                .withRotationalRate(Math.pow(MathUtil.applyDeadband(-gamepad_.getRightX(), 0.04), 2) * maxAngularRate_) // Drive counterclockwise with negative X (left)
+                .withVelocityX(Math.pow(-gamepad_.getLeftY(), 2) * maxSpeed_) // Drive forward with negative Y (forward)
+                .withVelocityY(Math.pow(-gamepad_.getLeftX(), 2) * maxSpeed_) // Drive left with negative X (left)
+                .withRotationalRate(Math.pow(-gamepad_.getRightX(), 2) * maxAngularRate_) // Drive counterclockwise with negative X (left)
             )
         );
     }
