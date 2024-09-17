@@ -65,10 +65,12 @@ public class Limelight extends SubsystemBase {
      * Sets up Megatag1 tracking.
      * @param estimateConsumer The consumer to consume pose estimates.
      */
-    public void setupMegatag(Consumer<XeroPoseEstimate> megatagConsumer) {
-        megatagConsumer_ = megatagConsumer;
+    public Command trackMegatag(Consumer<XeroPoseEstimate> megatagConsumer) {
+        return runOnce(() -> {
+            megatagConsumer_ = megatagConsumer;
 
-        poseMode_ = LimelightPoseMode.MEGATAG;
+            poseMode_ = LimelightPoseMode.MEGATAG;
+        });
     }
 
     /**
@@ -77,11 +79,13 @@ public class Limelight extends SubsystemBase {
      * @param poseSupplier Supplier for robot pose.
      * @param megatagConsumer The consumer to consume pose estimates.
      */
-    public void setupMegatag2(Supplier<Pose2d> poseSupplier, Consumer<XeroPoseEstimate> megatagConsumer) {
-        poseSupplier_ = poseSupplier;
-        megatagConsumer_ = megatagConsumer;
-
-        poseMode_ = LimelightPoseMode.MEGATAG2;
+    public Command trackMegatag2(Supplier<Pose2d> poseSupplier, Consumer<XeroPoseEstimate> megatagConsumer) {
+        return runOnce(() -> {
+            poseSupplier_ = poseSupplier;
+            megatagConsumer_ = megatagConsumer;
+            
+            poseMode_ = LimelightPoseMode.MEGATAG2;
+        });
     }
 
     @Override

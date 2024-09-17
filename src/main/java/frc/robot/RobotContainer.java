@@ -70,13 +70,13 @@ public class RobotContainer {
         setupDrivetrain();
 
         // Sets up Megatag2 tracking with the limelight.
-        limelight_.setupMegatag2(() -> drivetrain_.getState().Pose, (estimate) -> {
+        limelight_.trackMegatag2(() -> drivetrain_.getState().Pose, (estimate) -> {
             drivetrain_.addVisionMeasurement(
                 estimate.pose,
                 estimate.timestamp,
                 VecBuilder.fill(0.7, 0.7, 9999999)
             );
-        });
+        }).schedule();
 
     }
     
