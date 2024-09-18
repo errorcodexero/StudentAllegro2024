@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -14,7 +13,6 @@ import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
-import frc.robot.subsystems.Swerve.SwerveIOCrossTheRoad;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -32,18 +30,14 @@ public class RobotContainer {
     private final CommandXboxController gamepad_ =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
     
-    
-    
-    
-    
     // Subsystems
     
-    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(new SwerveIOCrossTheRoad(TunerConstants.DriveTrain)); 
+    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); 
 
     private final IntakeShooterSubsystem intake_shooter_ =
-        new IntakeShooterSubsystem(new IntakeShooterIOHardware());  
+        new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
-    private final OISubsystem oiPanel_ = new OISubsystem(2);   
+    private final OISubsystem oiPanel_ = new OISubsystem(2);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {

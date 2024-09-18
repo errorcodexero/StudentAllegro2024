@@ -1,19 +1,17 @@
 package frc.robot.subsystems.Swerve;
 
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLog;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj2.command.Command;
 
 public interface SwerveIO {
 
@@ -32,16 +30,16 @@ public interface SwerveIO {
         public boolean odometryIsValid = false;
     }
 
-    public default void updateInputs(SwerveIOInputsAutoLogged inputs) {}
+    public void updateInputs(SwerveIOInputsAutoLogged inputs);
 
-    public default Command applyRequest(Supplier<SwerveRequest> requestSupplier) { return new Command() {}; }
+    public void setOperatorPerspectiveForward(Rotation2d fieldDirection);
 
-    public default void setControl(SwerveRequest request) {}
+    public void setControl(SwerveRequest request);
     
-    public default void seedFieldRelative(Pose2d pose2d) {};
-    public default void seedFieldRelative() {};
+    public void seedFieldRelative(Pose2d pose2d);
+    public void seedFieldRelative();
 
-    public default void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {}
-    public default void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {}
+    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds);
+    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs);
 
 }
