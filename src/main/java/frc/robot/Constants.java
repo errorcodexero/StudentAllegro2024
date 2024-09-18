@@ -37,7 +37,7 @@ public final class Constants {
         public static final int kDriverControllerPort = 0;
 
         public static final double SLOW_DRIVE_MULTIPLIER = 0.25;
-        public static final double DRIVE_EASE_EXPONENT = 3.0;
+        public static final int DRIVE_EASE_EXPONENT = 3;
 
         public static final double CONTROLLER_DEADBAND = 0.02;
     }
