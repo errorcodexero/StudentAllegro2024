@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -35,15 +31,9 @@ public class RobotContainer {
     private final CommandXboxController gamepad_ =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
     
-    private double maxSpeed_ = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
-    private double maxAngularRate_ = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
     
-    private final SwerveRequest.FieldCentric drive_ = new SwerveRequest.FieldCentric()
-        // .withDeadband(maxSpeed_ * 0.1).withRotationalDeadband(maxAngularRate_ * 0.1) // Add a 10% deadband
-        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
     
-    private final SwerveRequest.SwerveDriveBrake brake_ = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point_ = new SwerveRequest.PointWheelsAt();   
+    
     
     // Subsystems
     
@@ -97,15 +87,6 @@ public class RobotContainer {
                 .withRotationalRate(easeVelocityInput(-gamepad_.getRightX()) * maxAngularRate_) // Drive counterclockwise with negative X (left)
             )
         );
-    }
-    
-    /**
-     * Eases the velocity input (-1 to 1) to be quadratic. This makes drivebases be affected less by smaller movements of joysticks.
-     * @param rawInput
-     * @return The eased input.
-     */
-    private double easeVelocityInput(double rawInput) {
-        return Math.signum(MathUtil.applyDeadband(rawInput, 0.02)) * Math.abs(Math.pow(rawInput, Constants.OperatorConstants.DRIVE_EASE_EXPONENT));
     }
     
     /**
