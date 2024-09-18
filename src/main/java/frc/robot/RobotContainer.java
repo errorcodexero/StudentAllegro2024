@@ -85,11 +85,20 @@ public class RobotContainer {
     private void setupDrivetrain() {
         drivetrain_.setDefaultCommand( // Drivetrain will execute this command periodically
             drivetrain_.applyRequest(() -> drive_
-                .withVelocityX(Math.signum(-gamepad_.getLeftY()) * Math.abs(Math.pow(-gamepad_.getLeftY(), 2)) * maxSpeed_) // Drive forward with negative Y (forward)
-                .withVelocityY(Math.signum(-gamepad_.getLeftX()) * Math.abs(Math.pow(-gamepad_.getLeftX(), 2)) * maxSpeed_) // Drive left with negative X (left)
-                .withRotationalRate(Math.signum(-gamepad_.getRightX()) * Math.abs(Math.pow(-gamepad_.getRightX(), 2)) * maxAngularRate_) // Drive counterclockwise with negative X (left)
+                .withVelocityX(easeVelocityInput(-gamepad_.getLeftY()) * maxSpeed_) // Drive forward with negative Y (forward)
+                .withVelocityY(easeVelocityInput(-gamepad_.getLeftX()) * maxSpeed_) // Drive left with negative X (left)
+                .withRotationalRate(easeVelocityInput(-gamepad_.getRightX()) * maxAngularRate_) // Drive counterclockwise with negative X (left)
             )
         );
+    }
+
+    /**
+     * Eases the velocity input (-1 to 1) to be quadratic. This makes drivebases be affected less by smaller movements of joysticks.
+     * @param rawInput
+     * @return The eased input.
+     */
+    private double easeVelocityInput(double rawInput) {
+        return Math.signum(rawInput) * Math.abs(Math.pow(rawInput, 2));
     }
     
     /**
