@@ -2,6 +2,8 @@
 
 This is the student-led robot code for Allegro, 1425's robot designed for the First Robotics Competition 2024 game, CRESCENDO.
 
+![Robot Image](/robot.png)
+
 ### Whats different about this?
 
 Most obviously, this codebase is written solely by students.
