@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
@@ -61,32 +62,24 @@ public class RobotContainer {
     * joysticks}.
     */
     private void configureBindings() {
-        // Points all the swerve modules inward, resulting in restisting movement.
-        gamepad_.a().whileTrue(drivetrain_.applyRequest(() -> brake_));
-
-        gamepad_.x().whileTrue(Commands.startEnd(() -> {
-            maxSpeed_ = TunerConstants.kSpeedAt12VoltsMps * Constants.OperatorConstants.SLOW_DRIVE_MULTIPLIER;
-        }, () -> {
-            maxSpeed_ = TunerConstants.kSpeedAt12VoltsMps;
-        }));
+        // Points all the swerve modules inward, resulting in restisting movement
+        gamepad_.a().whileTrue(drivetrain_.brake());
         
         // Point all the swerve modules to where the joystick points.
-        gamepad_.b().whileTrue(drivetrain_.applyRequest(
-            () -> point_.withModuleDirection(new Rotation2d(-gamepad_.getLeftY(), -gamepad_.getLeftX()))
-        )); 
+        gamepad_.b().whileTrue(drivetrain_.pointModules(gamepad_::getLeftX, gamepad_::getLeftY)); 
 
         // reset the field-centric heading on Y and B press simultaneously
         gamepad_.y().and(gamepad_.b()).onTrue(drivetrain_.runOnce(() -> drivetrain_.seedFieldRelative()));
     }
     
     private void setupDrivetrain() {
-        drivetrain_.setDefaultCommand( // Drivetrain will execute this command periodically
-            drivetrain_.applyRequest(() -> drive_
-                .withVelocityX(easeVelocityInput(-gamepad_.getLeftY()) * maxSpeed_) // Drive forward with negative Y (forward)
-                .withVelocityY(easeVelocityInput(-gamepad_.getLeftX()) * maxSpeed_) // Drive left with negative X (left)
-                .withRotationalRate(easeVelocityInput(-gamepad_.getRightX()) * maxAngularRate_) // Drive counterclockwise with negative X (left)
-            )
-        );
+        drivetrain_.setDefaultCommand(new TeleopSwerveDrive(
+            drivetrain_, // 
+            gamepad_::getLeftX, // Suppliers for gamepad controls.
+            gamepad_::getLeftY,
+            gamepad_::getRightX,
+            gamepad_.x()::getAsBoolean // Slow mode boolean supplier.
+        ));
     }
     
     /**

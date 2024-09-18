@@ -35,6 +35,8 @@ public interface SwerveIO {
     public default void updateInputs(SwerveIOInputsAutoLogged inputs) {}
 
     public default Command applyRequest(Supplier<SwerveRequest> requestSupplier) { return new Command() {}; }
+
+    public default void setControl(SwerveRequest request) {}
     
     public default void seedFieldRelative(Pose2d pose2d) {};
     public default void seedFieldRelative() {};

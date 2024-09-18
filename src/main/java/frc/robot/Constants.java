@@ -38,6 +38,8 @@ public final class Constants {
 
         public static final double SLOW_DRIVE_MULTIPLIER = 0.25;
         public static final double DRIVE_EASE_EXPONENT = 3.0;
+
+        public static final double CONTROLLER_DEADBAND = 0.02;
     }
     
     public static class IntakeShooterConstants {

@@ -45,6 +45,11 @@ public class SwerveIOCrossTheRoad implements SwerveIO {
     }
 
     @Override
+    public void setControl(SwerveRequest request) {
+        drivetrain_.setControl(request);
+    }
+
+    @Override
     public void seedFieldRelative(Pose2d pose2d) {
         drivetrain_.seedFieldRelative(pose2d);
     }
