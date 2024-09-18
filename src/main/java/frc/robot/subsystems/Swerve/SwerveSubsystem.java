@@ -2,27 +2,36 @@ package frc.robot.subsystems.Swerve;
 
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.generated.TunerConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveIO io_;
     private final SwerveIOInputsAutoLogged inputs_;
     private final SwerveDriveState state_;
 
-    @AutoLogOutput
-    private final Pose3d pose3d = new Pose3d();
+    private double maxSpeed_ = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
+    private double maxAngularRate_ = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+
+    private final SwerveRequest.FieldCentric driveRequest_ = new SwerveRequest.FieldCentric()
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
+    
+    private final SwerveRequest.SwerveDriveBrake brakeRequest_ = new SwerveRequest.SwerveDriveBrake();
+
+    private final SwerveRequest.PointWheelsAt pointRequest_ = new SwerveRequest.PointWheelsAt();   
 
     public SwerveSubsystem(SwerveIO io) {
         io_ = io;
@@ -42,6 +51,24 @@ public class SwerveSubsystem extends SubsystemBase {
         state_.Pose = inputs_.pose;
         state_.SuccessfulDaqs = inputs_.successfulDaqs;
         state_.speeds = inputs_.speeds;
+    }
+
+    /**
+     * Eases the velocity input (-1 to 1) to be quadratic. This makes drivebases be affected less by smaller movements of joysticks.
+     * @param rawInput
+     * @return The eased input.
+     */
+    private double easeVelocityInput(double rawInput) {
+        return Math.signum(MathUtil.applyDeadband(rawInput, 0.02)) * Math.abs(Math.pow(rawInput, Constants.OperatorConstants.DRIVE_EASE_EXPONENT));
+    }
+
+    public Command teleopDrive(Supplier<Double> rawLeftX, Supplier<Double> rawLeftY, Supplier<Double> rawRightX, Supplier<Boolean> slowMode) {
+        return applyRequest(() ->
+            driveRequest_
+                .withVelocityX(easeVelocityInput(-rawLeftY.get()) * maxSpeed_)
+                .withVelocityY(easeVelocityInput(-rawLeftX.get()) * maxSpeed_)
+                .withRotationalRate(easeVelocityInput(-rawRightX.get()) * maxAngularRate_)
+        );
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
