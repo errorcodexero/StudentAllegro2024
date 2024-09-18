@@ -39,7 +39,6 @@ public class Robot extends LoggedRobot {
                 Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
                 
-                // TODO: a/b test to see if this actually does anything meaningful
                 // new PowerDistribution(0, ModuleType.kCTRE); // Enables power distribution logging
             
                 break;
