@@ -17,7 +17,7 @@ public class TrampSubsystem extends SubsystemBase {
         Shooting,
         AfterShootingInTrap,
         MovingToTransfer,
-        Tranferring,
+        Transferring,
         PrepAmp,
 
         // Place Holder for goTo like Action
@@ -143,14 +143,14 @@ public class TrampSubsystem extends SubsystemBase {
              */
             case MovingToTransfer:
                 movingToTransfer();
-                state_ = State.Tranferring;
+                state_ = State.Transferring;
                 break;
             
             /* This state waits for the note to be transferred from the IntakeShooter and, 
              * once the Tramp has the note, switches to either the "PrepAmp" or "PrepTrap"
              * State depending on the actionType.
              */
-            case Tranferring:
+            case Transferring:
                 transferringPeriodic();
                 if (actionType_.get() == ActionType.AMP){
                     state_ = State.PrepAmp;
@@ -245,8 +245,8 @@ public class TrampSubsystem extends SubsystemBase {
                 // if in 'Trapping' position, start climbing.
                 if (io.getElevatorPosition() == TrampConstants.Elevator.Positions.kTrap &
                     io.getArmPosition() == TrampConstants.Arm.Positions.kTrap &
-                    inputs.armVelocity < 0.01 &
-                    inputs.elevatorVelocity < 0.01 &
+                    inputs.armVelocity < 0.01 & inputs.armVelocity > -0.01 &
+                    inputs.elevatorVelocity < 0.01 & inputs.elevatorVelocity > -0.01 &
                     io.getClimberPosition() == TrampConstants.Climber.kClimberUpPosition){
 
                     climbReady_ = true;
@@ -287,8 +287,8 @@ public class TrampSubsystem extends SubsystemBase {
         // if the Tramp is in 'Trapping' position and not moving, move the climbers up.
         if (io.getElevatorPosition() == TrampConstants.Elevator.Positions.kTrap &
             io.getArmPosition() == TrampConstants.Arm.Positions.kTrap &
-            inputs.armVelocity < 0.01 &
-            inputs.elevatorVelocity < 0.01){
+            inputs.armVelocity < 0.01 & inputs.armVelocity > -0.01 &
+            inputs.elevatorVelocity < 0.01 & inputs.armVelocity > -0.01){
                 io.setClimberPosition(TrampConstants.Climber.kClimberUpPosition);
         }
     }
@@ -318,8 +318,8 @@ public class TrampSubsystem extends SubsystemBase {
                 // if in 'Amp' position, "shoot" the note.
                 if (io.getElevatorPosition() == TrampConstants.Elevator.Positions.kAmp &
                     io.getArmPosition() == TrampConstants.Arm.Positions.kAmp){
-                        io.runManipulator(35);
-                        Commands.waitSeconds(1);
+                        io.runManipulator(70);
+                        Commands.waitSeconds(TrampConstants.Manipulator.kShootTime);
                         io.stopManipulator();
                 }
                 break;
@@ -331,8 +331,8 @@ public class TrampSubsystem extends SubsystemBase {
                     io.getArmPosition() == TrampConstants.Arm.Positions.kTrap &
                     climbDone_ == true){
                         Commands.waitSeconds(2);
-                        io.runManipulator(35);
-                        Commands.waitSeconds(1);
+                        io.runManipulator(70);
+                        Commands.waitSeconds(TrampConstants.Manipulator.kDepositTime);
                         io.stopManipulator();
                 }
                 break;
@@ -364,7 +364,7 @@ public class TrampSubsystem extends SubsystemBase {
                 // if in 'Trap' position, move to 'Amp' position. 
                 if (io.getElevatorPosition() != TrampConstants.Elevator.Positions.kAmp &
                     io.getArmPosition() != TrampConstants.Arm.Positions.kAmp){
-                        state_ = State.PrepAmp;
+                    state_ = State.PrepAmp;
                 }
                 break;
             
@@ -388,6 +388,7 @@ public class TrampSubsystem extends SubsystemBase {
             inputs.climberVelocity < 0.01){
                 io.setElevatorPosition(TrampConstants.Elevator.Positions.kStowed);
                 io.setArmPosition(TrampConstants.Arm.Positions.kStowed);
+                // Stow Climber?
             }
     }
 
@@ -442,12 +443,12 @@ public class TrampSubsystem extends SubsystemBase {
             case WaitingForNote:
                 // This depends on the use of a sensor between the manipulator rollers.
                 if (hasNote_ == false){
-                    io.runManipulator(5);
+
                 }
                 else {
                     io.stopManipulator();
+                    transferState_ = TransferState.ExitTransfer;
                 }
-                transferState_ = TransferState.ExitTransfer;
                 break;
 
             case ExitTransfer:
@@ -470,6 +471,7 @@ public class TrampSubsystem extends SubsystemBase {
     }
 
 
+    
     // Method called in the "PrepAmp" State. 
     public void prepAmpPeriodic(){
         io.setElevatorPosition(TrampConstants.Elevator.Positions.kAmp);
@@ -489,7 +491,8 @@ public class TrampSubsystem extends SubsystemBase {
 
     // Method that is called during the "MovingNote" State.
     public void movingNotePeriodic(){
-        io.setManipulatorPosition(TrampConstants.Manipulator.kTrapMoveNoteDistance);
+        double noteDistance = io.getManipulatorPosition() + TrampConstants.Manipulator.kTrapMoveNoteDistance;
+        io.setManipulatorPosition(noteDistance);
     }
 
 
@@ -502,6 +505,7 @@ public class TrampSubsystem extends SubsystemBase {
 
             case Trap1:
                 // if we don't have the note, move the arm forward to make sure it gets in.
+                // This assumes sensor
                 if (hasNote_ == false){
                     Commands.waitSeconds(1);
                     io.setArmPosition(TrampConstants.Arm.Positions.kTrap3);
@@ -511,11 +515,10 @@ public class TrampSubsystem extends SubsystemBase {
 
             case Trap2:
                 // Moving the arm back to be in a legal position.
+                Commands.waitSeconds(1);
                 io.setArmPosition(TrampConstants.Arm.Positions.kTrap4);
                 break;
         }
-    }
-    
-    
+    } 
 }
 
