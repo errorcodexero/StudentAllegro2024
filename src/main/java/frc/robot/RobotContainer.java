@@ -19,6 +19,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.Orchestra.OrchestraIOTalonFX;
+import frc.robot.subsystems.Orchestra.OrchestraSubsystem;
 import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -55,6 +57,8 @@ public class RobotContainer {
         new IntakeShooterSubsystem(new IntakeShooterIOHardware());  
 
     private final OISubsystem oiPanel_ = new OISubsystem(2);   
+
+    private final OrchestraSubsystem orchestra_ = new OrchestraSubsystem(new OrchestraIOTalonFX());
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -83,6 +87,8 @@ public class RobotContainer {
 
         // reset the field-centric heading on Y and B press simultaneously
         gamepad_.y().and(gamepad_.b()).onTrue(drivetrain_.runOnce(() -> drivetrain_.seedFieldRelative()));
+
+        gamepad_.povDown().toggleOnTrue(orchestra_.playChirp(Constants.OperatorConstants.MUSIC_FILENAME));
     }
     
     private void setupDrivetrain() {

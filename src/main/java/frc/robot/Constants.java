@@ -35,6 +35,9 @@ public final class Constants {
     
     public static class OperatorConstants {
         public static final int kDriverControllerPort = 0;
+
+        public static final String MUSIC_FILENAME = "finalcountdown.chrp";
+        public static final int[] ORCHESTRA_INSTRUMENTS = {2, 5, 11, 12, 21, 22, 31, 32, 41, 42};
     }
     
     public static class IntakeShooterConstants {
