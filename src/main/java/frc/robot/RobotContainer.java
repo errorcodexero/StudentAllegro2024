@@ -4,22 +4,16 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
-import frc.robot.subsystems.Swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
 
@@ -36,25 +30,14 @@ public class RobotContainer {
     private final CommandXboxController gamepad_ =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
     
-    private double maxSpeed_ = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
-    private double maxAngularRate_ = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
-    
-    private final SwerveRequest.FieldCentric drive_ = new SwerveRequest.FieldCentric()
-    .withDeadband(maxSpeed_ * 0.1).withRotationalDeadband(maxAngularRate_ * 0.1) // Add a 10% deadband
-    .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
-    
-    private final SwerveRequest.SwerveDriveBrake brake_ = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point_ = new SwerveRequest.PointWheelsAt();   
-    private final Telemetry swerveTelemetry_ = new Telemetry(maxSpeed_);
-    
     // Subsystems
     
-    private final CommandSwerveDrivetrain drivetrain_ = TunerConstants.DriveTrain; 
+    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); 
 
     private final IntakeShooterSubsystem intake_shooter_ =
-        new IntakeShooterSubsystem(new IntakeShooterIOHardware());  
+        new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
-    private final OISubsystem oiPanel_ = new OISubsystem(2);   
+    private final OISubsystem oiPanel_ = new OISubsystem(2);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -73,32 +56,24 @@ public class RobotContainer {
     * joysticks}.
     */
     private void configureBindings() {
-        // Points all the swerve modules inward, resulting in restisting movement.
-        gamepad_.a().whileTrue(drivetrain_.applyRequest(() -> brake_));
+        // Points all the swerve modules inward, resulting in restisting movement
+        gamepad_.a().whileTrue(drivetrain_.brake());
         
         // Point all the swerve modules to where the joystick points.
-        gamepad_.b().whileTrue(drivetrain_.applyRequest(
-            () -> point_.withModuleDirection(new Rotation2d(-gamepad_.getLeftY(), -gamepad_.getLeftX()))
-        )); 
+        gamepad_.b().whileTrue(drivetrain_.pointModules(gamepad_::getLeftX, gamepad_::getLeftY)); 
 
         // reset the field-centric heading on Y and B press simultaneously
         gamepad_.y().and(gamepad_.b()).onTrue(drivetrain_.runOnce(() -> drivetrain_.seedFieldRelative()));
     }
     
     private void setupDrivetrain() {
-        drivetrain_.setDefaultCommand( // Drivetrain will execute this command periodically
-            drivetrain_.applyRequest(() -> drive_
-                .withVelocityX(-gamepad_.getLeftY() * maxSpeed_) // Drive forward with negative Y (forward)
-                .withVelocityY(-gamepad_.getLeftX() * maxSpeed_) // Drive left with negative X (left)
-                .withRotationalRate(-gamepad_.getRightX() * maxAngularRate_) // Drive counterclockwise with negative X (left)
-            )
-        );    
-        
-        if (Utils.isSimulation()) {
-            drivetrain_.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-        }
-        
-        drivetrain_.registerTelemetry(swerveTelemetry_::telemeterize);
+        drivetrain_.setDefaultCommand(new TeleopSwerveDrive(
+            drivetrain_, // 
+            gamepad_::getLeftX, // Suppliers for gamepad controls.
+            gamepad_::getLeftY,
+            gamepad_::getRightX,
+            gamepad_.x()::getAsBoolean // Slow mode boolean supplier.
+        ));
     }
     
     /**

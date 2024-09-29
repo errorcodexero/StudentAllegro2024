@@ -28,13 +28,18 @@ public final class Constants {
     }
     
     public static final Robot ROBOT = Robot.COMPETITION; // The robot currently running.
-    public static final boolean REPLAYING = true; // Should the simulation start into replay mode when not running on the RIO?
+    public static final boolean REPLAYING = false; // Should the simulation start into replay mode when not running on the RIO?
     public static final boolean SAVE_SIMULATED_LOGS = false; // Should the physics simulation mode save a .wpilog?
     
     public static final RobotMode ROBOT_MODE = RobotBase.isReal() ? RobotMode.REAL : (REPLAYING ? RobotMode.REPLAYED : RobotMode.SIMULATED);
     
     public static class OperatorConstants {
         public static final int kDriverControllerPort = 0;
+
+        public static final double SLOW_DRIVE_MULTIPLIER = 0.25;
+        public static final int DRIVE_EASE_EXPONENT = 3;
+
+        public static final double CONTROLLER_DEADBAND = 0.02;
     }
     
     public static class IntakeShooterConstants {
