@@ -4,7 +4,14 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -60,6 +67,13 @@ public class RobotContainer {
                 VecBuilder.fill(0.7, 0.7, 9999999)
             );
         }).schedule();
+
+        Logger.recordOutput("Components/Updown", new Pose3d(0.201, 0.0, 0.214, new Rotation3d(0, 118.5, 0)));
+
+        Logger.recordOutput("testpose", new Pose2d());
+
+        Pose3d[] poses = {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()};
+        Logger.recordOutput("componentstest", poses);
 
     }
     
