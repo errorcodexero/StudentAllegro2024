@@ -92,8 +92,8 @@ public class Robot extends LoggedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
-        // Testing
-        Logger.recordOutput("Components/Updown", new Pose3d(0.205, 0.0, 0.214, new Rotation3d(0, Units.degreesToRadians(i), 0)));
+        // Testing Poses
+        Logger.recordOutput("Components/Updown", new Pose3d(0.203, 0.0, 0.212, new Rotation3d(0, Units.degreesToRadians(i), 0)));
         i += 1;
     }
     
