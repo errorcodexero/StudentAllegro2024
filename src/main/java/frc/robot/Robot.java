@@ -11,9 +11,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -75,8 +72,6 @@ public class Robot extends LoggedRobot {
         m_robotContainer = new RobotContainer();
     }
 
-    int i = 0;
-    
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
     * that you want ran during disabled, autonomous, teleoperated and test.
@@ -91,10 +86,6 @@ public class Robot extends LoggedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-
-        // Testing Poses
-        Logger.recordOutput("Components/Updown", new Pose3d(0.203, 0.0, 0.212, new Rotation3d(0, Units.degreesToRadians(i), 0)));
-        i += 1;
     }
     
     /** This function is called once each time the robot enters Disabled mode. */

@@ -5,13 +5,11 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Quaternion;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,6 +23,7 @@ import frc.robot.subsystems.Limelight.Limelight;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTracker;
 import frc.robot.subsystems.oi.OISubsystem;
+import frc.robot.util.ComponentVisualizer;
 
 
 /**
@@ -52,6 +51,10 @@ public class RobotContainer {
     private final Limelight limelight_ = new Limelight();
 
     private final TargetTracker targetTracker_ = new TargetTracker(() -> drivetrain_.getState().Pose);
+
+    private final ComponentVisualizer visualizer_ = new ComponentVisualizer("TestingComponents");
+    private final LoggedDashboardNumber updownAngle_ = new LoggedDashboardNumber("UpdownAngle");
+    private final LoggedDashboardNumber tiltAngle_ = new LoggedDashboardNumber("TiltAngle");
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -111,6 +114,8 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return Commands.run(() -> {
+            visualizer_.update(updownAngle_.get(), tiltAngle_.get());
+        });
     }
 }
