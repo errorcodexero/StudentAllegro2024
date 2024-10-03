@@ -68,8 +68,6 @@ public class RobotContainer {
             );
         }).schedule();
 
-        Logger.recordOutput("Components/Updown", new Pose3d(0.201, 0.0, 0.214, new Rotation3d(0, 118.5, 0)));
-
         Logger.recordOutput("testpose", new Pose2d());
 
         Pose3d[] poses = {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()};
