@@ -3,6 +3,7 @@ package frc.robot.util;
 import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -20,13 +21,13 @@ public class ComponentVisualizer {
     // The length of the updown to the pivot of the tilt.
     private static final Measure<Distance> kUpdownLength = Inches.of(8);
 
-    private static final Measure<Distance> kElevatorLength = Feet.of(2);
+    private static final Measure<Distance> kElevatorLength = Inches.of(35.8);
 
     private static final Pose3d kClimberBottom = new Pose3d(
-            0.0,
-            Inches.of(9.5).in(Meters),
-            Inches.of(10).in(Meters),
-            new Rotation3d(0, Degrees.of(-10).in(Radians), 0)
+        -0.260350,
+        -0.086059,
+        -0.097958,
+        new Rotation3d(0, Degrees.of(-10).in(Radians), 0)
     );
 
     private final String logkey_;
@@ -42,8 +43,8 @@ public class ComponentVisualizer {
     public ComponentVisualizer(String logkey) {
         logkey_ = logkey;
 
-        updownAngle_ = Degrees.of(-90);
-        tiltAngle_ = Degrees.of(90);
+        updownAngle_ = Degrees.of(-123.392);
+        tiltAngle_ = Degrees.of(160);
 
         elevatorHeight_ = Meters.of(0);
         armAngle_ = Degrees.of(0);
