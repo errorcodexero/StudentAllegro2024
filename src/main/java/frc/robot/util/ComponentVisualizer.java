@@ -12,21 +12,49 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class ComponentVisualizer {
 
+    
     // The position of the updown.
     private static final Translation3d kUpdownOrigin = new Translation3d(0.203, 0.0, 0.212);
-
+    
     // The length of the updown to the pivot of the tilt.
-    private static final Measure<Distance> kUpdownLength = Inches.of(8);
+    private static Measure<Distance> kUpdownLength = Inches.of(8);
+    
+    private static Measure<Distance> kElevatorLength = Inches.of(35.8);
+    
+    // For testing only! Delete after values have been figured out
+    private static final LoggedDashboardNumber updownLength = new LoggedDashboardNumber("UpdownLength");
+    private static final LoggedDashboardNumber elevatorLength = new LoggedDashboardNumber("ElevatorLength");
+    private static final LoggedDashboardNumber elevatorX = new LoggedDashboardNumber("ElevatorX");
+    private static final LoggedDashboardNumber elevatorY = new LoggedDashboardNumber("ElevatorY");
+    private static final LoggedDashboardNumber elevatorZ = new LoggedDashboardNumber("ElevatorZ");
+    
+    static {
+        updownLength.set(8);
+        elevatorLength.set(35.8);
 
-    private static final Measure<Distance> kElevatorLength = Inches.of(35.8);
+        elevatorX.set(-0.260350);
+        elevatorY.set(0);
+        elevatorZ.set(-0.097958);
 
-    private static final Pose3d kClimberBottom = new Pose3d(
-        -0.260350,
-        -0.086059,
-        -0.097958,
+        Commands.run(() -> {
+            kUpdownLength = Inches.of(updownLength.get());
+            kElevatorLength = Inches.of(elevatorLength.get());
+            kClimberBottom = new Pose3d(
+                elevatorX.get(),
+                elevatorY.get(),
+                elevatorZ.get(),
+                new Rotation3d(0, Degrees.of(-10).in(Radians), 0)
+            );
+        }).schedule();
+    }
+
+    private static Pose3d kClimberBottom = new Pose3d(
+        -0.260350, 0, -0.097958,
         new Rotation3d(0, Degrees.of(-10).in(Radians), 0)
     );
 
@@ -45,7 +73,7 @@ public class ComponentVisualizer {
 
         updownAngle_ = Degrees.of(-123.392);
         tiltAngle_ = Degrees.of(160);
-
+ 
         elevatorHeight_ = Meters.of(0);
         armAngle_ = Degrees.of(0);
 

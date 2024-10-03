@@ -114,8 +114,6 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        return Commands.run(() -> {
-            visualizer_.update(updownAngle_.get(), tiltAngle_.get());
-        });
+        return Commands.print("No autonomous command configured");
     }
 }
