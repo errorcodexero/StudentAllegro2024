@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -53,8 +56,12 @@ public class RobotContainer {
     private final TargetTracker targetTracker_ = new TargetTracker(() -> drivetrain_.getState().Pose);
 
     private final ComponentVisualizer visualizer_ = new ComponentVisualizer("TestingComponents");
+
     private final LoggedDashboardNumber updownAngle_ = new LoggedDashboardNumber("UpdownAngle");
     private final LoggedDashboardNumber tiltAngle_ = new LoggedDashboardNumber("TiltAngle");
+    private final LoggedDashboardNumber elevatorHeight_ = new LoggedDashboardNumber("ElevatorHeight");
+    private final LoggedDashboardNumber armAngle_ = new LoggedDashboardNumber("ArmAngle");
+    private final LoggedDashboardNumber climberHeight_ = new LoggedDashboardNumber("ClimberHeight");
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -114,6 +121,13 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        // return Commands.print("No autonomous command configured");
+        return Commands.run(() -> {
+            visualizer_.setUpdownAngle(Degrees.of(updownAngle_.get()));
+            visualizer_.setTiltAngle(Degrees.of(tiltAngle_.get()));
+            visualizer_.setElevatorHeight(Inches.of(elevatorHeight_.get()));
+            visualizer_.setArmAngle(Degrees.of(armAngle_.get()));
+            visualizer_.setClimberHeight(Inches.of(climberHeight_.get()));
+        });
     }
 }
