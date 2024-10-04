@@ -1,6 +1,9 @@
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -13,16 +16,15 @@ import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class ComponentVisualizer {
 
     
     // The position of the updown.
-    private static final Translation3d kUpdownOrigin = new Translation3d(0.203, 0.0, 0.212);
+    private static final Translation3d kUpdownOrigin = new Translation3d(0.203, 0.0, 0.167 + 0.045);
     
     // The length of the updown to the pivot of the tilt.
-    private static Measure<Distance> kUpdownLength = Inches.of(8);
+    private static Measure<Distance> kUpdownLength = Inches.of(7.8626771654);
     
     private static Measure<Distance> kElevatorLength = Inches.of(35.8);
     
