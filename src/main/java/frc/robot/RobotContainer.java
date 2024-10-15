@@ -9,8 +9,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.Robot;
+import frc.robot.Constants.RobotEnvironment;
 import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Swerve.SwerveIO;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -26,16 +29,31 @@ public class RobotContainer {
     // Gamepad and generic initialization
     
     private final CommandXboxController gamepad_ =
-        new CommandXboxController(OperatorConstants.kDriverControllerPort);
+        new CommandXboxController(OperatorConstants.GAMEPAD_PORT);
 
-    private final OISubsystem oiPanel_ = new OISubsystem(2);
+    private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.OI_PORT);
 
-    // Subsystems
-    
-    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); 
+    // Subsystems using default implementations for when the type of robot is null or if it is in replay.
+    private SwerveSubsystem drivetrain_ = new SwerveSubsystem(new SwerveIO() {}); 
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        // Set up real subsystems based on the runtime environment.
+        if (Constants.ENVIRONMENT != RobotEnvironment.REPLAYED) {
+            switch (Constants.ROBOT) {
+                case COMPBOT -> {
+                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain);
+                }
+                case PRACTICEBOT -> {
+                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); // Change for other tuner constants when they are generated.
+                }
+                case SIMBOT -> {
+                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); // Should auto simulate.
+                }
+            }
+        }
+
         // Configure the trigger bindings
         configureBindings();
         setupDrivetrain();

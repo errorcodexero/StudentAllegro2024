@@ -17,24 +17,34 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
     
     public static enum Robot {
-        COMPETITION,
-        PRACTICE
+        COMPBOT,
+        PRACTICEBOT,
+        SIMBOT
     }
     
-    public static enum RobotMode {
+    public static enum RobotEnvironment {
         REAL,
         SIMULATED,
         REPLAYED
     }
     
-    public static final Robot ROBOT = Robot.COMPETITION; // The robot currently running.
-    public static final boolean REPLAYING = false; // Should the simulation start into replay mode when not running on the RIO?
+    // The robot currently running. Change to simbot to use simulation.
+    public static final Robot ROBOT = Robot.COMPBOT;
+
+    // Check to see if configured robot is configured incorrectly for the runtime.
+    static {
+        if (RobotBase.isReal() && ROBOT == Robot.SIMBOT) {
+            throw new RuntimeException("Invalid Configuration! Robot set to simulation on real bot!");
+        }
+    }
+
+    public static final RobotEnvironment ENVIRONMENT = RobotBase.isReal() ? RobotEnvironment.REAL : (ROBOT == Robot.SIMBOT ? RobotEnvironment.SIMULATED : RobotEnvironment.REPLAYED);
+
     public static final boolean SAVE_SIMULATED_LOGS = false; // Should the physics simulation mode save a .wpilog?
     
-    public static final RobotMode ROBOT_MODE = RobotBase.isReal() ? RobotMode.REAL : (REPLAYING ? RobotMode.REPLAYED : RobotMode.SIMULATED);
-    
     public static class OperatorConstants {
-        public static final int kDriverControllerPort = 0;
+        public static final int GAMEPAD_PORT = 0;
+        public static final int OI_PORT = 2;
 
         public static final double SLOW_DRIVE_MULTIPLIER = 0.25;
         public static final int DRIVE_EASE_EXPONENT = 3;
