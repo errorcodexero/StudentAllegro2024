@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
-import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -33,9 +31,6 @@ public class RobotContainer {
     // Subsystems
     
     private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); 
-
-    private final IntakeShooterSubsystem intake_shooter_ =
-        new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
     private final OISubsystem oiPanel_ = new OISubsystem(2);
     
