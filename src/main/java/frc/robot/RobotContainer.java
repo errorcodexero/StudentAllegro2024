@@ -15,6 +15,7 @@ import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
+import frc.robot.util.ComponentVisualizer;
 
 
 /**
@@ -29,6 +30,9 @@ public class RobotContainer {
     
     private final CommandXboxController gamepad_ =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+    private final ComponentVisualizer measuredVisualizer_ = new ComponentVisualizer("Mechanism3d/Measured");
+    private final ComponentVisualizer setpointVisualizer_ = new ComponentVisualizer("Mechanism3d/Setpoints");
     
     // Subsystems
     
