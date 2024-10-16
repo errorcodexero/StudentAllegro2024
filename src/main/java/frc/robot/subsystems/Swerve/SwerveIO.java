@@ -17,8 +17,20 @@ public interface SwerveIO {
 
     @AutoLog
     public static class SwerveIOInputs {
-        public SwerveModuleState[] moduleStates = new SwerveModuleState[4];
-        public SwerveModuleState[] moduleTargetStates = new SwerveModuleState[4];
+        public SwerveModuleState[] moduleStates = {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
+        };
+
+        public SwerveModuleState[] moduleTargetStates = {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
+        };
+        
         public Pose2d pose = new Pose2d();
         public ChassisSpeeds speeds = new ChassisSpeeds();
         public double odometryPeriodSeconds = 0.0;
