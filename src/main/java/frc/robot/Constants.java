@@ -35,6 +35,7 @@ public final class Constants {
     
     public static class OperatorConstants {
         public static final int kDriverControllerPort = 0;
+        public static final int kOperatorInterfacePort = 2;
 
         public static final double SLOW_DRIVE_MULTIPLIER = 0.25;
         public static final int DRIVE_EASE_EXPONENT = 3;

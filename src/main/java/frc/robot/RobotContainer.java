@@ -37,7 +37,7 @@ public class RobotContainer {
     private final IntakeShooterSubsystem intake_shooter_ =
         new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
-    private final OISubsystem oiPanel_ = new OISubsystem(2);
+    private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
