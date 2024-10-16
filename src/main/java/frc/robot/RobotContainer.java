@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drive.TeleopSwerveDrive;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -32,7 +32,7 @@ public class RobotContainer {
     
     // Subsystems
     
-    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); 
+    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
 
     private final IntakeShooterSubsystem intake_shooter_ =
         new IntakeShooterSubsystem(new IntakeShooterIOHardware());
