@@ -124,4 +124,24 @@ public class ComponentVisualizer {
         publish();
     }
 
+    public Pose3d getUpdownPose() {
+        return updownPose_;
+    }
+
+    public Pose3d getTiltPose() {
+        return tiltPose_;
+    }
+
+    public Pose3d getElevatorPose() {
+        return elevatorPose_;
+    }
+
+    public Pose3d getArmPose() {
+        return armPose_;
+    }
+
+    public Pose3d getClimberPose() {
+        return climberPose_;
+    }
+
 }
