@@ -16,6 +16,7 @@ import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 import frc.robot.util.ComponentVisualizer;
+import frc.robot.util.NoteVisualizer;
 
 
 /**
@@ -26,22 +27,25 @@ import frc.robot.util.ComponentVisualizer;
 */
 public class RobotContainer {
     
-    // Gamepad and generic initialization
+    // Gamepads
     
     private final CommandXboxController gamepad_ =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
-    private final ComponentVisualizer measuredVisualizer_ = new ComponentVisualizer("Mechanism3d/Measured");
-    private final ComponentVisualizer setpointVisualizer_ = new ComponentVisualizer("Mechanism3d/Setpoints");
     
     // Subsystems
     
     private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
-
+    
     private final IntakeShooterSubsystem intake_shooter_ =
-        new IntakeShooterSubsystem(new IntakeShooterIOHardware());
-
+    new IntakeShooterSubsystem(new IntakeShooterIOHardware());
+    
     private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
+
+    // Utilities
+
+    private final ComponentVisualizer measuredVisualizer_ = new ComponentVisualizer("Mechanism3d/Measured");
+    private final ComponentVisualizer setpointVisualizer_ = new ComponentVisualizer("Mechanism3d/Setpoints");
+    private final NoteVisualizer noteVisualizer_ = new NoteVisualizer("NoteVisualizer", measuredVisualizer_, drivetrain_::getPose);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {

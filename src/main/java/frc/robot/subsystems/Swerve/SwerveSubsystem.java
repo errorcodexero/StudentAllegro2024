@@ -96,6 +96,10 @@ public class SwerveSubsystem extends SubsystemBase {
         return state_;
     }
 
+    public Pose2d getPose() {
+        return inputs_.pose;
+    }
+
     public double getGyroRate() {
         return inputs_.gyroRate;
     }
