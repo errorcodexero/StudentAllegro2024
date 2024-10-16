@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.RobotEnvironment;
 import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Swerve.SwerveIO;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -29,13 +31,30 @@ public class RobotContainer {
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
     
     // Subsystems
-    
-    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); 
+
+    // Init with default implementations in case robot is configured wrongly or is in replay. This will be overitten later.
+    private SwerveSubsystem drivetrain_ = new SwerveSubsystem(new SwerveIO() {});
 
     private final OISubsystem oiPanel_ = new OISubsystem(2);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        // Set up real subsystems based on the runtime environment.
+        if (Constants.ENVIRONMENT != RobotEnvironment.REPLAYED) {
+            switch (Constants.ROBOT) {
+                case COMPETITION -> {
+                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain);
+                }
+                case PRACTICE -> {
+                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); // Change for other tuner constants when they are generated.
+                }
+                case SIMBOT -> {
+                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); // Should auto simulate.
+                }
+            }
+        }
+
         // Configure the trigger bindings
         configureBindings();
         setupDrivetrain();
