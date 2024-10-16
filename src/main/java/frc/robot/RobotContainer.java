@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.RobotEnvironment;
 import frc.robot.commands.drive.TeleopSwerveDrive;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.Swerve.SwerveIO;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
@@ -35,7 +35,7 @@ public class RobotContainer {
     // Init with default implementations in case robot is configured wrongly or is in replay. This will be overitten later.
     private SwerveSubsystem drivetrain_ = new SwerveSubsystem(new SwerveIO() {});
 
-    private final OISubsystem oiPanel_ = new OISubsystem(2);
+    private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
