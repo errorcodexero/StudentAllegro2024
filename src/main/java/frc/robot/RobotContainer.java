@@ -23,6 +23,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Limelight.Limelight;
+import frc.robot.subsystems.Limelight.LimelightIOPhoton;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTracker;
 import frc.robot.subsystems.oi.OISubsystem;
@@ -51,7 +52,17 @@ public class RobotContainer {
 
     private final OISubsystem oiPanel_ = new OISubsystem(2);
 
-    private final Limelight limelight_ = new Limelight();
+    private final Limelight limelight_ = new Limelight(
+        new LimelightIOPhoton("photon"),
+        () -> drivetrain_.getState().Pose,
+        (estimate) -> {
+            drivetrain_.addVisionMeasurement(
+                estimate.pose,
+                estimate.timestamp,
+                VecBuilder.fill(0.7, 0.7, 9999999)
+            );
+        }
+    );
 
     private final TargetTracker targetTracker_ = new TargetTracker(() -> drivetrain_.getState().Pose);
 
@@ -68,15 +79,6 @@ public class RobotContainer {
         // Configure the trigger bindings
         configureBindings();
         setupDrivetrain();
-
-        // Sets up Megatag2 tracking with the limelight.
-        limelight_.trackMegatag2(() -> drivetrain_.getState().Pose, (estimate) -> {
-            drivetrain_.addVisionMeasurement(
-                estimate.pose,
-                estimate.timestamp,
-                VecBuilder.fill(0.7, 0.7, 9999999)
-            );
-        }).schedule();
 
         Logger.recordOutput("testpose", new Pose2d());
 

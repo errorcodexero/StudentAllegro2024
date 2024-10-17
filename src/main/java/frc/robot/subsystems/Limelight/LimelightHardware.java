@@ -1,6 +1,10 @@
 package frc.robot.subsystems.Limelight;
 
+import java.util.ArrayList;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightResults;
+import frc.robot.subsystems.Limelight.LimelightHelpers.RawDetection;
 import frc.robot.subsystems.Limelight.structs.XeroFiducial;
 import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 
@@ -38,31 +42,30 @@ public class LimelightHardware implements LimelightIO {
     }
 
     @Override
-    public void setPriorityTagID(int id) {
-        LimelightHelpers.setPriorityTagID(name_, id);
-    }
-
-    @Override
     public void updateInputs(LimelightIOInputsAutoLogged inputs) {
         inputs.simpleX = LimelightHelpers.getTX(name_);
         inputs.simpleY = LimelightHelpers.getTY(name_);
-        inputs.simpleXPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getX();
-        inputs.simpleYPixels = LimelightHelpers.getTargetPose3d_CameraSpace(name_).getY();
         inputs.simpleArea = LimelightHelpers.getTA(name_);
         inputs.simpleValid = LimelightHelpers.getTV(name_);
         inputs.simpleID = (int) LimelightHelpers.getFiducialID(name_);
 
-        inputs.poseEstimateBasic = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue(name_));
-        inputs.poseEstimateMegatag2 = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
+        RawDetection[] detections = LimelightHelpers.getRawDetections(name_);
+        ArrayList<Translation2d> corners = new ArrayList<>();
 
+        for (RawDetection detection : detections) {
+            corners.add(new Translation2d(detection.corner0_X, detection.corner0_Y));
+            corners.add(new Translation2d(detection.corner1_X, detection.corner1_Y));
+            corners.add(new Translation2d(detection.corner2_X, detection.corner2_Y));
+            corners.add(new Translation2d(detection.corner3_X, detection.corner3_Y));
+        }
+
+        inputs.rawCorners = corners.toArray(new Translation2d[0]);
+        
         LimelightResults results = LimelightHelpers.getLatestResults(name_);
         inputs.fiducials = XeroFiducial.fromLimelightArray(results.targets_Fiducials);
-    }
 
+        inputs.poseEstimate = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
 
-    @Override
-    public void setValidTags(int[] validIds) {
-        LimelightHelpers.SetFiducialIDFiltersOverride(name_, validIds);
     }
 
     @Override

@@ -9,12 +9,12 @@ public class XeroPoseEstimateStruct implements Struct<XeroPoseEstimate> {
 
     @Override
     public String getSchema() {
-        return "Pose2d pose; double timestamp; double avgTagArea; double avgTagDist; int32 tagCount; bool valid";
+        return "Pose2d pose; double timestamp; int32 tagCount; bool valid";
     }
 
     @Override
     public int getSize() {
-        return Pose2d.struct.getSize() + kSizeDouble * 3 + kSizeFloat * 2;
+        return Pose2d.struct.getSize() + kSizeDouble + kSizeInt32 + kSizeBool;
     }
 
     @Override
@@ -36,15 +36,13 @@ public class XeroPoseEstimateStruct implements Struct<XeroPoseEstimate> {
     public void pack(ByteBuffer bb, XeroPoseEstimate value) {
         Pose2d.struct.pack(bb, value.pose);
         bb.putDouble(value.timestamp);
-        bb.putDouble(value.avgTagArea);
-        bb.putDouble(value.avgTagDist);
         bb.putInt(value.tagCount);
         bb.put((byte) (value.valid ? 1 : 0));
     }
 
     @Override
     public XeroPoseEstimate unpack(ByteBuffer bb) {
-        return new XeroPoseEstimate(Pose2d.struct.unpack(bb), bb.getDouble(), bb.getDouble(), bb.getDouble(), bb.getInt(), bb.get() == 1 ? true : false);
+        return new XeroPoseEstimate(Pose2d.struct.unpack(bb), bb.getDouble(), bb.getInt(), bb.get() == 1 ? true : false);
     }
 
     

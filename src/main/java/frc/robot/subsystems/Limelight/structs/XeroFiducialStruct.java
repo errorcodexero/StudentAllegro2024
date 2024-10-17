@@ -18,12 +18,12 @@ public class XeroFiducialStruct implements Struct<XeroFiducial> {
 
     @Override
     public String getSchema() {
-        return "double id;double area;double x;double y;double xPixels;double yPixels;double ts";
+        return "double id;double area;double x;double y";
     }
 
     @Override
     public int getSize() {
-        return kSizeDouble * 7;
+        return kSizeDouble * 4;
     }
 
     @Override
@@ -32,17 +32,11 @@ public class XeroFiducialStruct implements Struct<XeroFiducial> {
         bb.putDouble(value.area);
         bb.putDouble(value.x);
         bb.putDouble(value.y);
-        bb.putDouble(value.xPixels);
-        bb.putDouble(value.yPixels);
-        bb.putDouble(value.ts);
     }
 
     @Override
     public XeroFiducial unpack(ByteBuffer bb) {
         return new XeroFiducial(
-            bb.getDouble(),
-            bb.getDouble(),
-            bb.getDouble(),
             bb.getDouble(),
             bb.getDouble(),
             bb.getDouble(),
