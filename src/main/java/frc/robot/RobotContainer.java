@@ -5,7 +5,6 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -57,12 +56,6 @@ public class RobotContainer {
     
     private final OISubsystem oiPanel_ = new OISubsystem(Constants.OperatorConstants.kOperatorInterfacePort);
 
-    private final LoggedDashboardNumber updownAngle_ = new LoggedDashboardNumber("UpdownAngle");
-    private final LoggedDashboardNumber tiltAngle_ = new LoggedDashboardNumber("TiltAngle");
-    private final LoggedDashboardNumber elevatorHeight_ = new LoggedDashboardNumber("ElevatorHeight");
-    private final LoggedDashboardNumber armAngle_ = new LoggedDashboardNumber("ArmAngle");
-    private final LoggedDashboardNumber climberHeight_ = new LoggedDashboardNumber("ClimberHeight");
-    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         // Configure the trigger bindings
