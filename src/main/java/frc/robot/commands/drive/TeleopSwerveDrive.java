@@ -1,15 +1,14 @@
 package frc.robot.commands.drive;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class TeleopSwerveDrive extends Command {
@@ -21,7 +20,7 @@ public class TeleopSwerveDrive extends Command {
     private final Supplier<Double> rawRightX_;
     private final Supplier<Boolean> slowMode_;
 
-    private final double MAX_SPEED = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
+    private final double MAX_SPEED = CompSwerveConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
     private final double MAX_ANGULAR_RATE = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
     private final SwerveRequest.FieldCentric driveRequest_ = new SwerveRequest.FieldCentric()

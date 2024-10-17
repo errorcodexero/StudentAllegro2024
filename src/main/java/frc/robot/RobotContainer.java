@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drive.TeleopSwerveDrive;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Limelight.Limelight;
@@ -45,12 +45,7 @@ public class RobotContainer {
     
     // Subsystems
     
-    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); 
-
-    private final IntakeShooterSubsystem intake_shooter_ =
-        new IntakeShooterSubsystem(new IntakeShooterIOHardware());
-
-    private final OISubsystem oiPanel_ = new OISubsystem(2);
+    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
 
     private final Limelight limelight_ = new Limelight(
         new LimelightIOPhoton("photon"),
@@ -65,8 +60,8 @@ public class RobotContainer {
     );
 
     private final TargetTracker targetTracker_ = new TargetTracker(() -> drivetrain_.getState().Pose);
-
-    private final ComponentVisualizer visualizer_ = new ComponentVisualizer("TestingComponents");
+    
+    private final OISubsystem oiPanel_ = new OISubsystem(Constants.OperatorConstants.kOperatorInterfacePort);
 
     private final LoggedDashboardNumber updownAngle_ = new LoggedDashboardNumber("UpdownAngle");
     private final LoggedDashboardNumber tiltAngle_ = new LoggedDashboardNumber("TiltAngle");
