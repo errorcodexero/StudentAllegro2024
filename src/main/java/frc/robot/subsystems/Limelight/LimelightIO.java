@@ -21,7 +21,6 @@ public interface LimelightIO {
         public XeroFiducial[] fiducials = new XeroFiducial[] {};
 
         public XeroPoseEstimate poseEstimate = new XeroPoseEstimate();
-
     }
 
     /**

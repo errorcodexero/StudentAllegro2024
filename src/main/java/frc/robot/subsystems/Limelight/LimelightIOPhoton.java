@@ -100,7 +100,6 @@ public class LimelightIOPhoton implements LimelightIO {
         }, () -> {
             inputs.poseEstimate = new XeroPoseEstimate();
         });
-        
     }
 
     @Override

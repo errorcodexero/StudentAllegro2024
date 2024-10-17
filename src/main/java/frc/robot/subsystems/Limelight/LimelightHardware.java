@@ -65,7 +65,6 @@ public class LimelightHardware implements LimelightIO {
         inputs.fiducials = XeroFiducial.fromLimelightArray(results.targets_Fiducials);
 
         inputs.poseEstimate = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
-
     }
 
     @Override

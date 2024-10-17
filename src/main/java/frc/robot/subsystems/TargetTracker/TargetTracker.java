@@ -1,15 +1,19 @@
 package frc.robot.subsystems.TargetTracker;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,7 +35,6 @@ public class TargetTracker extends SubsystemBase {
 
     @Override
     public void periodic() {
-
         Pose2d robotPose = robotPoseSupplier_.get();
         Pose2d targetPose = AprilTags.SPEAKER_CENTER.getPose2d(getAlliance());
 
@@ -48,7 +51,14 @@ public class TargetTracker extends SubsystemBase {
             robotPose.getRotation().rotateBy(rotationToTarget_)
         ));
         Logger.recordOutput(getName() + "/Explanation/TargetPose", targetPose);
+    }
 
+    public Measure<Angle> getAngleToTarget() {
+        return Radians.of(rotationToTarget_.getRadians());
+    }
+
+    public Measure<Distance> getDistanceToTarget() {
+        return Meters.of(distanceToTargetMeters_);
     }
 
     private Alliance getAlliance() {

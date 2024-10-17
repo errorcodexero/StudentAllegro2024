@@ -66,7 +66,6 @@ public class Limelight extends SubsystemBase {
         }
 
         Logger.recordOutput(getName() + "/ValidTargetPoses", validTargetPoses.toArray(new Pose3d[0]));
-
     }
 
     /**
