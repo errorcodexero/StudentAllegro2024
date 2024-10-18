@@ -156,6 +156,4 @@ public class CompSwerveConstants {
     public static final SwerveModuleConstants BackRight = ConstantCreator.createModuleConstants(
             kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset, Units.inchesToMeters(kBackRightXPosInches), Units.inchesToMeters(kBackRightYPosInches), kInvertRightSide);
 
-    public static final SwerveIOCTRE DriveTrain = new SwerveIOCTRE(DrivetrainConstants, FrontLeft,
-            FrontRight, BackLeft, BackRight);
 }
