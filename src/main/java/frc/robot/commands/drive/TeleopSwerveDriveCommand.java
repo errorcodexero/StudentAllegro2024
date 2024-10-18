@@ -11,7 +11,7 @@ import frc.robot.Constants;
 import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
-public class TeleopSwerveDrive extends Command {
+public class TeleopSwerveDriveCommand extends Command {
 
     private final SwerveSubsystem drivebase_;
 
@@ -26,7 +26,7 @@ public class TeleopSwerveDrive extends Command {
     private final SwerveRequest.FieldCentric driveRequest_ = new SwerveRequest.FieldCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
 
-    public TeleopSwerveDrive(SwerveSubsystem drivebase, Supplier<Double> rawLeftX, Supplier<Double> rawLeftY, Supplier<Double> rawRightX, Supplier<Boolean> slowMode) {
+    public TeleopSwerveDriveCommand(SwerveSubsystem drivebase, Supplier<Double> rawLeftX, Supplier<Double> rawLeftY, Supplier<Double> rawRightX, Supplier<Boolean> slowMode) {
         drivebase_ = drivebase;
 
         rawLeftX_ = rawLeftX;
