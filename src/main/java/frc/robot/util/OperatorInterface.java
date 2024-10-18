@@ -13,9 +13,9 @@ public class OperatorInterface extends CommandGenericHID {
     public static class ButtonMap {
         public static final int cycleSpeaker = 1;
         public static final int cycleTrap = 2;
-        public static final int climbPrepare = 3;
+        public static final int climbBasic = 3;
         public static final int climbExecute = 4;
-        public static final int unclimb = 6;
+        public static final int autoTramp = 6;
         public static final int shoot = 7;
         public static final int turtle = 8;
         public static final int abort = 9;
@@ -80,7 +80,7 @@ public class OperatorInterface extends CommandGenericHID {
      * @return {@link Trigger} for the Climb Basic Button
      */
     public Trigger climbBasic() {
-        return button(ButtonMap.climbPrepare);
+        return button(ButtonMap.climbBasic);
     }
 
     /**
@@ -96,7 +96,7 @@ public class OperatorInterface extends CommandGenericHID {
      * @return {@link Trigger} for the Auto Amp/Trap button.
      */
     public Trigger autoTramp() {
-        return button(ButtonMap.unclimb);
+        return button(ButtonMap.autoTramp);
     }
 
     /**
