@@ -14,7 +14,7 @@ import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
-import frc.robot.subsystems.oi.OISubsystem;
+import frc.robot.util.OperatorInterface;
 
 
 /**
@@ -29,6 +29,9 @@ public class RobotContainer {
     
     private final CommandXboxController gamepad_ =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+    private final OperatorInterface oi_ =
+        new OperatorInterface(OperatorConstants.kOperatorInterfacePort);
     
     // Subsystems
     
@@ -37,8 +40,6 @@ public class RobotContainer {
     private final IntakeShooterSubsystem intake_shooter_ =
         new IntakeShooterSubsystem(new IntakeShooterIOHardware());
 
-    private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
-    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         // Configure the trigger bindings
