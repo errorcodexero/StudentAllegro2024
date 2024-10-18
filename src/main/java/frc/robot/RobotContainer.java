@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.drive.TeleopSwerveDrive;
+import frc.robot.commands.drive.TeleopSwerveDriveCommand;
 import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
@@ -67,7 +67,7 @@ public class RobotContainer {
     }
     
     private void setupDrivetrain() {
-        drivetrain_.setDefaultCommand(new TeleopSwerveDrive(
+        drivetrain_.setDefaultCommand(new TeleopSwerveDriveCommand(
             drivetrain_, // 
             gamepad_::getLeftX, // Suppliers for gamepad controls.
             gamepad_::getLeftY,
