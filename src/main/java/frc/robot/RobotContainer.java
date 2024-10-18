@@ -9,10 +9,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.RobotEnvironment;
 import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.CompSwerveConstants;
-import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
-import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
+import frc.robot.subsystems.Swerve.SwerveIO;
+import frc.robot.subsystems.Swerve.SwerveIOCTRE;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -31,16 +32,48 @@ public class RobotContainer {
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
     
     // Subsystems
-    
-    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
 
-    private final IntakeShooterSubsystem intake_shooter_ =
-        new IntakeShooterSubsystem(new IntakeShooterIOHardware());
+    // Init with default implementations in case robot is configured wrongly or is in replay. This will be overitten later.
+    private SwerveSubsystem drivetrain_ = new SwerveSubsystem(new SwerveIO() {});
 
     private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        // Set up real subsystems based on the runtime environment.
+        if (Constants.ENVIRONMENT != RobotEnvironment.REPLAYED) {
+            switch (Constants.ROBOT) {
+                case COMPETITION -> {
+                    drivetrain_ = new SwerveSubsystem(new SwerveIOCTRE(
+                        CompSwerveConstants.DrivetrainConstants,
+                        CompSwerveConstants.FrontLeft,
+                        CompSwerveConstants.FrontRight,
+                        CompSwerveConstants.BackLeft,
+                        CompSwerveConstants.BackRight
+                    ));
+                }
+                case PRACTICE -> {
+                    drivetrain_ = new SwerveSubsystem(new SwerveIOCTRE(
+                        CompSwerveConstants.DrivetrainConstants,
+                        CompSwerveConstants.FrontLeft,
+                        CompSwerveConstants.FrontRight,
+                        CompSwerveConstants.BackLeft,
+                        CompSwerveConstants.BackRight
+                    )); // Change for other tuner constants when they are generated.
+                }
+                case SIMBOT -> {
+                    drivetrain_ = new SwerveSubsystem(new SwerveIOCTRE(
+                        CompSwerveConstants.DrivetrainConstants,
+                        CompSwerveConstants.FrontLeft,
+                        CompSwerveConstants.FrontRight,
+                        CompSwerveConstants.BackLeft,
+                        CompSwerveConstants.BackRight
+                    )); // Should auto simulate.
+                }
+            }
+        }
+
         // Configure the trigger bindings
         configureBindings();
         setupDrivetrain();

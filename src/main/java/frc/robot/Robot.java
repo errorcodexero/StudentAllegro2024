@@ -56,7 +56,7 @@ public class Robot extends LoggedRobot {
         }
         
         // Set up data flow
-        switch (Constants.ROBOT_MODE) {
+        switch (Constants.ENVIRONMENT) {
             case REAL:
                 Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
@@ -84,7 +84,7 @@ public class Robot extends LoggedRobot {
                 break;
         }
         
-        Logger.recordMetadata("Environment", Constants.ROBOT_MODE.toString());
+        Logger.recordMetadata("Environment", Constants.ENVIRONMENT.toString());
         
         // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
         Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.

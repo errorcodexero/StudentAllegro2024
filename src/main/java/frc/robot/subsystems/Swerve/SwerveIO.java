@@ -17,8 +17,20 @@ public interface SwerveIO {
 
     @AutoLog
     public static class SwerveIOInputs {
-        public SwerveModuleState[] moduleStates = new SwerveModuleState[4];
-        public SwerveModuleState[] moduleTargetStates = new SwerveModuleState[4];
+        public SwerveModuleState[] moduleStates = {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
+        };
+
+        public SwerveModuleState[] moduleTargetStates = {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
+        };
+        
         public Pose2d pose = new Pose2d();
         public ChassisSpeeds speeds = new ChassisSpeeds();
         public double odometryPeriodSeconds = 0.0;
@@ -30,16 +42,16 @@ public interface SwerveIO {
         public boolean odometryIsValid = false;
     }
 
-    public void updateInputs(SwerveIOInputsAutoLogged inputs);
+    public default void updateInputs(SwerveIOInputsAutoLogged inputs) {};
 
-    public void setOperatorPerspectiveForward(Rotation2d fieldDirection);
+    public default void setOperatorPerspectiveForward(Rotation2d fieldDirection) {};
 
-    public void setControl(SwerveRequest request);
+    public default void setControl(SwerveRequest request) {};
     
-    public void seedFieldRelative(Pose2d pose2d);
-    public void seedFieldRelative();
+    public default void seedFieldRelative(Pose2d pose2d) {};
+    public default void seedFieldRelative() {};
 
-    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds);
-    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs);
+    public default void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {};
+    public default void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {};
 
 }
