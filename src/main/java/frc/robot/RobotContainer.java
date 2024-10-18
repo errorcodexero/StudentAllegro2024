@@ -13,6 +13,7 @@ import frc.robot.Constants.RobotEnvironment;
 import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.Swerve.SwerveIO;
+import frc.robot.subsystems.Swerve.SwerveIOCTRE;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
@@ -44,13 +45,31 @@ public class RobotContainer {
         if (Constants.ENVIRONMENT != RobotEnvironment.REPLAYED) {
             switch (Constants.ROBOT) {
                 case COMPETITION -> {
-                    drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain);
+                    drivetrain_ = new SwerveSubsystem(new SwerveIOCTRE(
+                        CompSwerveConstants.DrivetrainConstants,
+                        CompSwerveConstants.FrontLeft,
+                        CompSwerveConstants.FrontRight,
+                        CompSwerveConstants.BackLeft,
+                        CompSwerveConstants.BackRight
+                    ));
                 }
                 case PRACTICE -> {
-                    drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); // Change for other tuner constants when they are generated.
+                    drivetrain_ = new SwerveSubsystem(new SwerveIOCTRE(
+                        CompSwerveConstants.DrivetrainConstants,
+                        CompSwerveConstants.FrontLeft,
+                        CompSwerveConstants.FrontRight,
+                        CompSwerveConstants.BackLeft,
+                        CompSwerveConstants.BackRight
+                    )); // Change for other tuner constants when they are generated.
                 }
                 case SIMBOT -> {
-                    drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); // Should auto simulate.
+                    drivetrain_ = new SwerveSubsystem(new SwerveIOCTRE(
+                        CompSwerveConstants.DrivetrainConstants,
+                        CompSwerveConstants.FrontLeft,
+                        CompSwerveConstants.FrontRight,
+                        CompSwerveConstants.BackLeft,
+                        CompSwerveConstants.BackRight
+                    )); // Should auto simulate.
                 }
             }
         }
