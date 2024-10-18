@@ -44,13 +44,13 @@ public class RobotContainer {
         if (Constants.ENVIRONMENT != RobotEnvironment.REPLAYED) {
             switch (Constants.ROBOT) {
                 case COMPETITION -> {
-                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain);
+                    drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain);
                 }
                 case PRACTICE -> {
-                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); // Change for other tuner constants when they are generated.
+                    drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); // Change for other tuner constants when they are generated.
                 }
                 case SIMBOT -> {
-                    drivetrain_ = new SwerveSubsystem(TunerConstants.DriveTrain); // Should auto simulate.
+                    drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); // Should auto simulate.
                 }
             }
         }
