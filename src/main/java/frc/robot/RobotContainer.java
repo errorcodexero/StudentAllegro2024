@@ -17,7 +17,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.Limelight.Limelight;
-import frc.robot.subsystems.Limelight.LimelightIOPhoton;
+import frc.robot.subsystems.Limelight.LimelightIOPhotonSim;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTracker;
 import frc.robot.subsystems.oi.OISubsystem;
@@ -41,7 +41,7 @@ public class RobotContainer {
     private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
 
     private final Limelight limelight_ = new Limelight(
-        new LimelightIOPhoton("photon"),
+        new LimelightIOPhotonSim("photon", () -> drivetrain_.getState().Pose),
         () -> drivetrain_.getState().Pose,
         (estimate) -> {
             drivetrain_.addVisionMeasurement(

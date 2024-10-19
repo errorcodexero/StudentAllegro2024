@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight.structs.XeroFiducial;
 import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
@@ -27,8 +28,8 @@ public class LimelightIOPhoton implements LimelightIO {
 
     // Transform from robot to camera.
     protected static final Transform3d robotToCamera_ = new Transform3d(
-        new Translation3d(0.5, 0, 0),
-        new Rotation3d(0, Degrees.of(60).in(Radians), 0)
+        new Translation3d(0.321, 0, 0),
+        new Rotation3d(0, Units.degreesToRadians(-40), Units.degreesToRadians(180))
     );
 
     protected final PhotonCamera camera_;
@@ -42,6 +43,7 @@ public class LimelightIOPhoton implements LimelightIO {
         poseEstimator_ = new PhotonPoseEstimator(
             FieldConstants.FIELD_LAYOUT,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            camera_,
             robotToCamera_
         );
     }
