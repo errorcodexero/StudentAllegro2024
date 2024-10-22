@@ -5,7 +5,6 @@ import edu.wpi.first.util.WPIUtilJNI;
 public class XeroTimer {
     private static int LoggerID = -1 ;
     private static final String LoggerIDName = "XeroTimer" ;
-    private XeroRobot robot_ ;
     private boolean running_ ;
     private double duration_ ;
     private double endtime_ ;
@@ -13,15 +12,9 @@ public class XeroTimer {
     private String name_ ;
 
     public XeroTimer(double duration) {
-        //robot_ = robot ;
-        //name_ = name ;
         duration_ = duration ;
         running_ = false ;
-        endtime_ = 0.0 ;        
-
-        if (LoggerID == -1) {
-            //LoggerID = robot_.getMessageLogger().registerSubsystem(LoggerIDName) ;
-        }
+        endtime_ = 0.0 ;
     }
 
     public double getDuration() {
@@ -29,11 +22,6 @@ public class XeroTimer {
     }
 
     public void setDuration(double dur) {
-        if (running_) {
-            //MessageLogger logger = robot_.getMessageLogger() ;
-            //logger.startMessage(MessageType.Error).add("Timer ").add(name_).add(" had duration updated while running - change ignored").endMessage();
-        }
-
         duration_ = dur ;
     }
 
@@ -42,11 +30,6 @@ public class XeroTimer {
     }
 
     public void start() {
-        if (running_) {
-            //MessageLogger logger = robot_.getMessageLogger() ;
-            //logger.startMessage(MessageType.Error).add("Timer ").add(name_).add(" was started while running").endMessage();
-        }
-
         running_ = true ;
         start_ = WPIUtilJNI.now() * 1.0e-6; ;
         endtime_ = start_ + duration_ ;
