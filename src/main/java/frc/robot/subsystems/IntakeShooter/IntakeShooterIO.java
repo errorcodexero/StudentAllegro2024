@@ -1,91 +1,116 @@
+/**
+ * Interface for the IntakeShooter subsystem's input/output (I/O) operations.
+ * This interface provides methods for updating input data, controlling the motors,
+ * and retrieving various sensor and motor data.
+ */
 package frc.robot.subsystems.IntakeShooter;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 
-public abstract interface IntakeShooterIO {
+public interface IntakeShooterIO {
+    /**
+     * Class to hold input data for the IntakeShooter subsystem.
+     */
     @AutoLog
     public class IntakeShooterIOInputs{
-        public double feederPosition;
-        public double feederVelocity;
-        public double feederAcceleration;
-        public double feederCurrent;
-        public double feederVoltage;
+        public double feederPosition = 0.0;
+        public double feederVelocity = 0.0;
+        public double feederAcceleration = 0.0;
+        public double feederCurrent = 0.0;
+        public double feederVoltage = 0.0;
 
-        public double upDownPosition;
-        public double upDownVelocity;
-        public double upDownAcceleration;
-        public double upDownCurrent;
-        public double upDownVoltage;
+        public double upDownPosition = 0.0;
+        public double upDownVelocity = 0.0;
+        public double upDownAcceleration = 0.0;
+        public double upDownCurrent = 0.0;
+        public double upDownVoltage = 0.0;
 
-        public double shooter1Position;
-        public double shooter1Velocity;
-        public double shooter1Acceleration;
-        public double shooter1Current;
-        public double shooter1Voltage;
+        public double shooter1Position = 0.0;
+        public double shooter1Velocity = 0.0;
+        public double shooter1Acceleration = 0.0;
+        public double shooter1Current = 0.0;
+        public double shooter1Voltage = 0.0;
 
-        public double shooter2Position;
-        public double shooter2Velocity;
-        public double shooter2Acceleration;
-        public double shooter2Current;
-        public double shooter2Voltage;
+        public double shooter2Position = 0.0;
+        public double shooter2Velocity = 0.0;
+        public double shooter2Acceleration = 0.0;
+        public double shooter2Current = 0.0;
+        public double shooter2Voltage = 0.0;
 
-        public double tiltPosition;
-        public double tiltVelocity;
-        public double tiltAcceleration;
-        public double tiltCurrent;
-        public double tiltVoltage;
+        public double tiltPosition = 0.0;
+        public double tiltVelocity = 0.0;
+        public double tiltAcceleration = 0.0;
+        public double tiltCurrent = 0.0;
+        public double tiltVoltage = 0.0;
 
-        public double encoderPosition;
+        public double encoderPosition = 0.0;
 
-        public boolean sensorVal;
-        public boolean hasNote;
+        public boolean hasNote = false;
     }
 
-    abstract void update(IntakeShooterIOInputsAutoLogged inputs_);
+    /**
+     * Update the input data for the IntakeShooter subsystem.
+     * @param inputs_ The new input data.
+     */
+    public default void updateInputs(IntakeShooterIOInputsAutoLogged inputs_) {};
 
-    abstract TalonFX getFeeder();
+    /**
+     * Move the up-down mechanism to the specified revolutions.
+     * @param revs The desired revolutions.
+     */
+    public default void moveUpDown(Measure<Angle> angle) {};
 
-    abstract TalonFX getUpDown();
+    /**
+     * Move the tilt mechanism to the specified revolutions.
+     * @param revs The desired revolutions.
+     */
+    public default void moveTilt(Measure<Angle> angle) {};
 
-    abstract TalonFX getShooter1();
+    /**
+     * Spin the feeder motor at the specified revolutions per second (rps).
+     * @param rps The desired revolutions per second.
+     */
+    public default void spinFeeder(double rps) {};
 
-    abstract TalonFX getShooter2();
+    /**
+     * Spin the shooter motor 1 at the specified revolutions per second (rps).
+     * @param rps The desired revolutions per second.
+     */
+    public default void spinShooter1(double rps) {};
 
-    abstract TalonFX getTilt();
+    /**
+     * Spin the shooter motor 2 at the specified revolutions per second (rps).
+     * @param rps The desired revolutions per second.
+     */
+    public default void spinShooter2(double rps) {};
 
-    abstract void spinFeeder(double rps);
 
-    abstract void moveUpDown(double revs);
+    // /**
+    //  * Move the IntakeShooter subsystem to the specified tilt and up-down positions.
+    //  * @param tilt The desired tilt position.
+    //  * @param upDown The desired up-down position.
+    //  * @return True if the move was successful, false otherwise.
+    //  */
+    // public default boolean moveSystem(double tilt, double upDown) {
+    //     return false;
+    // };
 
-    abstract void moveUpDownRevs(double revs);
-
-    abstract void moveUpDownDegrees(double degs);
-
-    abstract void moveUpDownRadians(double rads);
-
-    abstract void spinShooter1(double rps);
-
-    abstract void spinShooter2(double rps);
-
-    abstract void moveTilt(double revs);
-
-    abstract void moveTiltRevs(double revs);
-
-    abstract void moveTiltDegrees(double degs);
-
-    abstract void moveTiltRadians(double rads);
-
-    abstract void stopFeeder();
+    public default void stopFeeder() {};
     
-    abstract void stopUpDown();
+    public default void stopUpDown() {};
 
-    abstract void stopShooter1();
+    public default void stopShooter1() {};
 
-    abstract void stopShooter2();
+    public default void stopShooter2() {};
 
-    abstract void stopTilt();
+    public default void stopTilt() {};
 
-    abstract boolean hasNote();
+    // TODO: REMOVE THIS!
+    public default boolean moveSystem(double a, double b) {
+        throw new RuntimeException("This is unimplemented! Fix the move system functionality to be inside the subsystem! Then delete this method!");
+    };
+
 }

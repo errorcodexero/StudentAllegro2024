@@ -32,13 +32,17 @@ public class RobotContainer {
     
     // Subsystems
     
+    private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
     private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
 
-    private final IntakeShooterSubsystem intake_shooter_ =
-        new IntakeShooterSubsystem(new IntakeShooterIOHardware());
+    private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(
+        new IntakeShooterIOHardware(),
+        oiPanel_.actionTypeSupplier(),
+        oiPanel_.shootTypeSupplier(),
+        () -> 0.0,
+        () -> true
+    );
 
-    private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
-    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         // Configure the trigger bindings
@@ -57,13 +61,23 @@ public class RobotContainer {
     */
     private void configureBindings() {
         // Points all the swerve modules inward, resulting in restisting movement
-        gamepad_.a().whileTrue(drivetrain_.brake());
+        gamepad_.start().whileTrue(drivetrain_.brake());
         
         // Point all the swerve modules to where the joystick points.
         gamepad_.b().whileTrue(drivetrain_.pointModules(gamepad_::getLeftX, gamepad_::getLeftY)); 
 
         // reset the field-centric heading on Y and B press simultaneously
         gamepad_.y().and(gamepad_.b()).onTrue(drivetrain_.runOnce(() -> drivetrain_.seedFieldRelative()));
+
+        // Intake Shooter Binds
+        gamepad_.rightBumper().or(oiPanel_.collect()::getAsBoolean).whileTrue(intake_shooter_.intake());
+        
+        gamepad_.a().onTrue(intake_shooter_.shoot());
+        oiPanel_.abort().onTrue(intake_shooter_.abort());
+        oiPanel_.turtle().onTrue(intake_shooter_.turtle());
+        oiPanel_.shoot().onTrue(intake_shooter_.shoot());
+        oiPanel_.eject().onTrue(intake_shooter_.eject());
+
     }
     
     private void setupDrivetrain() {
