@@ -170,6 +170,10 @@ out/
 
 # Simulation GUI and other tools window save file
 *-window.json
+/simgui.json
+/simgui-ds.json
+
+/networktables.json
 
 # Simulation data log directory
 logs/
@@ -177,8 +181,13 @@ logs/
 # Folder that has CTRE Phoenix Sim device config storage
 ctre_sim/
 
+<<<<<<< HEAD
 #Building stuff
 .gradle
 build
 
 node_modules/
+=======
+# gversion build constants.
+src/main/java/frc/robot/BuildConstants.java
+>>>>>>> main

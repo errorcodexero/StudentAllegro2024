@@ -6,7 +6,7 @@ package frc.robot.subsystems.IntakeShooter;
 
 import static edu.wpi.first.units.Units.Rotations;
 
-import org.xero1425.util.EncoderMapper;
+import org.xero1425.misc.EncoderMapper;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -205,7 +205,6 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
         inputs.encoderPosition = encoderMapper_.toRobot(absoluteEncoder_.getVoltage());
         
         inputs.hasNote = !sensorVal_;
-
     }
     
     @Override
@@ -260,7 +259,6 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
     
     // TODO: why use an interrupt if we are only going to get the data every robot loop anyways?
     private void interruptHandler(Boolean rising, Boolean falling) {
-        
         if (falling) {
             sensorVal_ = false;
         }
@@ -268,7 +266,6 @@ public class IntakeShooterIOHardware implements IntakeShooterIO{
         if (rising) {
             sensorVal_ = true;
         }
-
     }
     
 }

@@ -9,12 +9,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-
-import frc.robot.subsystems.TargetTracker.TargetTrackerSubsystem;
+import frc.robot.commands.drive.TeleopSwerveDrive;
+import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterIOHardware;
 import frc.robot.subsystems.IntakeShooter.IntakeShooterSubsystem;
-import frc.robot.subsystems.oi.OIConstants;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.oi.OISubsystem;
 
 
@@ -25,19 +24,30 @@ import frc.robot.subsystems.oi.OISubsystem;
 * subsystems, commands, and trigger mappings) should be declared here.
 */
 public class RobotContainer {
-    private final OISubsystem oiPanel_ = new OISubsystem(2);
-    private final TargetTrackerSubsystem tt_ = new TargetTrackerSubsystem();
     
-    private final IntakeShooterSubsystem intakeShooter_ = new IntakeShooterSubsystem(new IntakeShooterIOHardware(), oiPanel_.actionTypeSupplier(), oiPanel_.shootTypeSupplier(), tt_.getDistanceFromTarget(), tt_.getATSeen());
+    // Gamepad and generic initialization
     
-    // Replace with CommandPS4Controller or CommandJoystick if needed
     private final CommandXboxController gamepad_ =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
     
+    // Subsystems
+    
+    private final OISubsystem oiPanel_ = new OISubsystem(OperatorConstants.kOperatorInterfacePort);
+    private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
+
+    private final IntakeShooterSubsystem intake_shooter_ = new IntakeShooterSubsystem(
+        new IntakeShooterIOHardware(),
+        oiPanel_.actionTypeSupplier(),
+        oiPanel_.shootTypeSupplier(),
+        () -> 0.0,
+        () -> true
+    );
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         // Configure the trigger bindings
         configureBindings();
+        setupDrivetrain();
     }
     
     /**
@@ -50,15 +60,34 @@ public class RobotContainer {
     * joysticks}.
     */
     private void configureBindings() {
+        // Points all the swerve modules inward, resulting in restisting movement
+        gamepad_.start().whileTrue(drivetrain_.brake());
         
-        //INTAKE SHOOTER BINDINGS
-        gamepad_.rightBumper().whileTrue(intakeShooter_.intake());
-        gamepad_.a().onTrue(intakeShooter_.shoot());
-        
-        oiPanel_.eject().onTrue(intakeShooter_.eject());
-        oiPanel_.abort().onTrue(intakeShooter_.abort());
-        oiPanel_.turtle().onTrue(intakeShooter_.stow());
+        // Point all the swerve modules to where the joystick points.
+        gamepad_.b().whileTrue(drivetrain_.pointModules(gamepad_::getLeftX, gamepad_::getLeftY)); 
 
+        // reset the field-centric heading on Y and B press simultaneously
+        gamepad_.y().and(gamepad_.b()).onTrue(drivetrain_.runOnce(() -> drivetrain_.seedFieldRelative()));
+
+        // Intake Shooter Binds
+        gamepad_.rightBumper().or(oiPanel_.collect()::getAsBoolean).whileTrue(intake_shooter_.intake());
+        
+        gamepad_.a().onTrue(intake_shooter_.shoot());
+        oiPanel_.abort().onTrue(intake_shooter_.abort());
+        oiPanel_.turtle().onTrue(intake_shooter_.turtle());
+        oiPanel_.shoot().onTrue(intake_shooter_.shoot());
+        oiPanel_.eject().onTrue(intake_shooter_.eject());
+
+    }
+    
+    private void setupDrivetrain() {
+        drivetrain_.setDefaultCommand(new TeleopSwerveDrive(
+            drivetrain_, // 
+            gamepad_::getLeftX, // Suppliers for gamepad controls.
+            gamepad_::getLeftY,
+            gamepad_::getRightX,
+            gamepad_.x()::getAsBoolean // Slow mode boolean supplier.
+        ));
     }
     
     /**
@@ -67,7 +96,6 @@ public class RobotContainer {
     * @return the command to run in autonomous
     */
     public Command getAutonomousCommand() {
-        // An example command will be run in autonomous
-        return Autos.exampleAuto();
+        return Commands.print("No autonomous command configured");
     }
 }
