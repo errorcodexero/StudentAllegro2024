@@ -9,7 +9,6 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.xero1425.AKAbstraction.XeroAKInput;
 import org.xero1425.util.XeroRobot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -71,7 +70,6 @@ public class Robot extends XeroRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    XeroAKInput.periodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

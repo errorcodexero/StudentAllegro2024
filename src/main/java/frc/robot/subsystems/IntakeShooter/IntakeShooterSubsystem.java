@@ -1,5 +1,7 @@
 package frc.robot.subsystems.IntakeShooter;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -39,8 +41,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
 
     private enum TransferState{
         Start,
-        WaitingForSensorStart,
-        WaitingForSensorEnd,
+        WaitingForSensor,
         End,
         Done, WaitingForTrampReady
     }
@@ -51,8 +52,6 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         Done 
     }
 
-    
-
     private IntakeShooterIOInputsAutoLogged inputs_ = new IntakeShooterIOInputsAutoLogged();
     private IntakeShooterIO io_;
 
@@ -60,7 +59,6 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     private IntakeState intakeState_;
     private TransferState transferState_;
     private PrepShootState prepShootState_;
-    private boolean stowing_;
 
     private Supplier<ActionType> intakeNextAction_;
     private Supplier<ShootType> shootingType_;
@@ -89,21 +87,20 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         distFromTarget_ = distFromTarget;
         state_ = State.Idle;
         intakeState_ = IntakeState.MovingAndWaiting;
-        stowing_ = false;
         transferState_ = TransferState.Start;
         prepShootState_ = PrepShootState.Prep;
         aprilTagReady_ = aprilTagReady;
     }
 
     public boolean tiltReady(){
-        boolean upDownGood = Math.abs(io_.getUpDownPosition() - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh;
-        boolean tiltGood = Math.abs(io_.getTiltPosition() - tiltShootTarget_) < IntakeShooterConstants.shootOKThresh;
+        boolean upDownGood = Math.abs(inputs_.upDownPosition - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh;
+        boolean tiltGood = Math.abs(inputs_.tiltPosition - tiltShootTarget_) < IntakeShooterConstants.shootOKThresh;
         return (state_ == State.Shoot || state_ == State.PrepShoot) && upDownGood && tiltGood;
     }
 
     public boolean shooterReady(){
-        boolean shooter1Good = Math.abs(io_.getShooter1Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
-        boolean shooter2Good = Math.abs(io_.getShooter2Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
+        boolean shooter1Good = Math.abs(inputs_.shooter1Velocity - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
+        boolean shooter2Good = Math.abs(inputs_.shooter2Velocity - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
         return shooter1Good && shooter2Good;
     }
 
@@ -114,16 +111,16 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     
     @Override
     public void periodic(){
-        io_.update(inputs_);
-        Logger.processInputs("IntakeShooterSubsystem", inputs_);
-        Logger.recordOutput("Intake Shooter State", state_);
-        Logger.recordOutput("Intake State", intakeState_);
-        Logger.recordOutput("Transfer State", transferState_);
-        Logger.recordOutput("Stowing", stowing_);
-        Logger.recordOutput("Move State", io_.getMoveState());
-        Logger.recordOutput("Shooter Target", shooterShootTarget_);
-        Logger.recordOutput("Up Down Shoot Target", upDownShootTarget_);
-        Logger.recordOutput("Tilt Shoot Target", tiltShootTarget_);
+        io_.updateInputs(inputs_);
+        Logger.processInputs("IntakeShooter", inputs_);
+
+        Logger.recordOutput("IntakeShooter/State", state_);
+        Logger.recordOutput("IntakeShooter/IntakeState", intakeState_);
+        Logger.recordOutput("IntakeShooter/TransferState", transferState_);
+        Logger.recordOutput("IntakeShooter/ShooterShootTarget", shooterShootTarget_);
+        Logger.recordOutput("IntakeShooter/UpdownShootTarget", upDownShootTarget_);
+        Logger.recordOutput("IntakeShooter/TiltShootTarget", tiltShootTarget_);
+
         switch (state_) {
             case Idle, Aborted:
                 if(testing_){
@@ -140,9 +137,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 shootPeriodic();
                 break;
             case Stow:
-                if(true){
-                    return;
-                }
+                if (true) { return; } // Temporary exit TODO: remove eventually
                 stowPeriodic();
                 break;
             case Transfer:
@@ -165,49 +160,29 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     }
 
     public Command stow(){
-        return new Command() {
-            @Override
-            public void initialize() {
-                super.initialize();
-                stowing_ = true;
-                abort(); // bc abort changes state, i need to change it back. 
-                state_ = State.Stow;
-            }
-        };
+        return runOnce(() -> {
+            abort().schedule(); // bc abort changes state, i need to change it back. 
+            state_ = State.Stow;
+        });
     }
     
 
     private void stowPeriodic(){
-        if(stowing_){
-            if(io_.moveSystem(TiltConstants.stowTarget, UpDownConstants.stowTarget)){
-                stowing_ = false;
-                state_ = State.Idle;
-            }
+        if(io_.moveSystem(TiltConstants.stowTarget, UpDownConstants.stowTarget)){
+            state_ = State.Idle;
         }
     }
 
     public Command intake(){
-        return new Command() {
-            @Override
-            public void initialize() {
-                super.initialize();
-                if(state_.equals(State.Idle)){
-                    state_ = State.Intake;
-                }
+        return startEnd(() -> {
+            if(state_.equals(State.Idle)){
+                state_ = State.Intake;
             }
-        };
-    }
-
-    public Command cancelIntake(){
-        return new Command() {
-            @Override
-            public void initialize() {
-                super.initialize();
-                if(state_.equals(State.Intake)){
-                    intakeState_ = IntakeState.Cancel;
-                }
+        }, () -> {
+            if(state_.equals(State.Intake)){
+                intakeState_ = IntakeState.Cancel;
             }
-        };
+        });
     }
 
     private void intakePeriodic(){
@@ -215,12 +190,12 @@ public class IntakeShooterSubsystem extends SubsystemBase{
         switch(intakeState_){
             case MovingAndWaiting:
                 state_ = State.Test;
-                if(true){
-                    return;
-                }
+
+                if (true) { return; } // Temporary exit TODO: remove eventually
+
                 doneMoving = io_.moveSystem(TiltConstants.intakeTarget, UpDownConstants.intakeTarget);
-                if(io_.hasNote()){
-                    intakeFeederStartPosSeenNote_ = io_.getFeederPosition();
+                if(inputs_.hasNote){
+                    intakeFeederStartPosSeenNote_ = inputs_.feederPosition;
                     intakeState_ = IntakeState.HasNoteIdle;
                 }
                 break;
@@ -232,7 +207,7 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                     doneMoving = io_.moveSystem(TiltConstants.intakeTarget, UpDownConstants.intakeTarget);
                     break;
                 }
-                if(intakeFeederStartPosSeenNote_ + FeederConstants.keepSpinningIntakeTarget - io_.getFeederPosition() < IntakeShooterConstants.otherOKThresh){
+                if(intakeFeederStartPosSeenNote_ + FeederConstants.keepSpinningIntakeTarget - inputs_.feederPosition < IntakeShooterConstants.otherOKThresh){
                     io_.stopFeeder();
                 }else{
                     break;
@@ -299,11 +274,11 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 getShootingTargets();
                 io_.spinShooter1(shooterShootTarget_);
                 io_.spinShooter2(shooterShootTarget_);
-                io_.moveTiltDegrees(tiltShootTarget_);
-                io_.moveUpDownDegrees(upDownShootTarget_);
+                io_.moveTilt(Degrees.of(tiltShootTarget_));
+                io_.moveUpDown(Degrees.of(upDownShootTarget_));
                 if(intakeNextAction_.get() != ActionType.SPEAKER){
-                    io_.moveUpDownDegrees(UpDownConstants.transferTarget);
-                    io_.moveTiltDegrees(TiltConstants.transferTarget);
+                    io_.moveUpDown(Degrees.of(UpDownConstants.transferTarget));
+                    io_.moveTilt(Degrees.of(TiltConstants.transferTarget));
                     prepShootState_ = PrepShootState.MovingToTransfer;
                 }
                 break;
@@ -319,31 +294,28 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     }
 
     public Command shoot(){
-        return new Command() {
-            @Override
-            public void initialize() {
-                super.initialize();
-                if(state_.equals(State.PrepShoot)){
-                    state_ = State.Shoot;
-                    prepShootState_ = PrepShootState.Done;
-                }
+        return runOnce(() -> {
+            if(state_.equals(State.PrepShoot)){
+                state_ = State.Shoot;
+                prepShootState_ = PrepShootState.Done;
             }
-        };
+        });
     }
 
     private void shootPeriodic(){
-        boolean shooter1Good = Math.abs(io_.getShooter1Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
-        boolean shooter2Good = Math.abs(io_.getShooter2Velocity() - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
-        boolean upDownGood = Math.abs(io_.getUpDownPosition() - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getUpDownVelocity()) < IntakeShooterConstants.otherOKThresh;
-        boolean tiltGood = Math.abs(io_.getTiltPosition() - tiltShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(io_.getTiltVelocity()) < IntakeShooterConstants.otherOKThresh;
-        XeroTimer wait = null; //So VS code doesnt get mad at me
+        boolean shooter1Good = Math.abs(inputs_.shooter1Velocity - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
+        boolean shooter2Good = Math.abs(inputs_.shooter2Velocity - shooterShootTarget_) < IntakeShooterConstants.shootOKThresh;
+        boolean upDownGood = Math.abs(inputs_.upDownPosition - upDownShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(inputs_.upDownVelocity) < IntakeShooterConstants.otherOKThresh;
+        boolean tiltGood = Math.abs(inputs_.tiltPosition - tiltShootTarget_) < IntakeShooterConstants.shootOKThresh && Math.abs(inputs_.tiltVelocity) < IntakeShooterConstants.otherOKThresh;
+        
+        XeroTimer wait = new XeroTimer(IntakeShooterConstants.shootSecs); //So VS code doesnt get mad at me
         
         if(aprilTagReady_.get() && DBReady_.get() && shooter1Good && shooter2Good && upDownGood && tiltGood){
-            wait = new XeroTimer(IntakeShooterConstants.shootSecs);
             io_.spinFeeder(FeederConstants.shootTarget);
             wait.start();
             weAreShooting_ = true;
         }
+        
         if(weAreShooting_ && wait.isExpired()){
             io_.stopFeeder();
             io_.stopShooter1();
@@ -366,26 +338,16 @@ public class IntakeShooterSubsystem extends SubsystemBase{
                 io_.spinShooter1(ShooterConstants.transferTargetVel);
                 io_.spinShooter2(ShooterConstants.transferTargetVel);
                 io_.spinFeeder(FeederConstants.transferTarget);
-                transferState_ = TransferState.WaitingForSensorStart;
+                transferState_ = TransferState.WaitingForSensor;
                 break;
-            case WaitingForSensorStart:
-                if(io_.sensorVal()){
-                    if(!io_.hasNote()){
-                        transferState_ = TransferState.End;
-                        transferShooterStartPosSeenNote_ = io_.getShooter2Position();
-                    }else{
-                        transferState_ = TransferState.WaitingForSensorEnd;
-                    }
-                }
-                break;
-            case WaitingForSensorEnd:
-                if(!io_.hasNote()){
+            case WaitingForSensor:
+                if(!inputs_.hasNote){
                     transferState_ = TransferState.End;
-                    transferShooterStartPosSeenNote_ = io_.getShooter2Position();
+                    transferShooterStartPosSeenNote_ = inputs_.shooter2Position;
                 }
                 break;
             case End:
-                boolean shooterDone = Math.abs(io_.getShooter2Position() - ShooterConstants.transferTargetPos - transferShooterStartPosSeenNote_) < IntakeShooterConstants.otherOKThresh;
+                boolean shooterDone = Math.abs(inputs_.shooter2Position - ShooterConstants.transferTargetPos - transferShooterStartPosSeenNote_) < IntakeShooterConstants.otherOKThresh;
                 if(shooterDone){
                     io_.stopShooter1();
                     io_.stopShooter2();
@@ -401,35 +363,33 @@ public class IntakeShooterSubsystem extends SubsystemBase{
     }
 
     public Command abort(){
-        return new Command() {
-            @Override
-            public void initialize() {
-                super.initialize();
-                io_.stopFeeder();
-                io_.stopUpDown();
-                io_.stopShooter1();
-                io_.stopShooter2();
-                io_.stopTilt();
-                state_ = State.Aborted;
-            }
-        };
+        return runOnce(() -> {
+            io_.stopFeeder();
+            io_.stopUpDown();
+            io_.stopShooter1();
+            io_.stopShooter2();
+            io_.stopTilt();
+            state_ = State.Aborted;
+        });
+    }
+
+    public Command turtle() {
+        return runOnce(() -> {
+            state_ = State.Stow;
+        });
     }
 
     public Command eject(){
-        return new Command() {
-            @Override
-            public void initialize() {
-                super.initialize();
-                state_ = State.Eject;
-            }
-        };
+        return runOnce(() -> {
+            state_ = State.Eject;
+        });
     }
 
     private void ejectPeriodic(){
         XeroTimer ejectTimer = null;
         if(runOnceEject_){
             ejectTimer = new XeroTimer(IntakeShooterConstants.ejectSecs);
-            abort(); 
+            abort().schedule();
             state_ = State.Eject; // bc abort changes state, i need to change it back. 
             io_.spinShooter1(ShooterConstants.ejectTarget);
             io_.spinShooter2(ShooterConstants.ejectTarget);
