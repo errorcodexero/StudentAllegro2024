@@ -3,13 +3,10 @@ package org.xero1425.util;
 import edu.wpi.first.util.WPIUtilJNI;
 
 public class XeroTimer {
-    private static int LoggerID = -1 ;
-    private static final String LoggerIDName = "XeroTimer" ;
     private boolean running_ ;
     private double duration_ ;
     private double endtime_ ;
     private double start_ ;
-    private String name_ ;
 
     public XeroTimer(double duration) {
         duration_ = duration ;
