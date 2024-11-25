@@ -13,16 +13,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.CompSwerveConstants;
-import frc.robot.subsystems.Limelight.Limelight;
-import frc.robot.subsystems.Limelight.LimelightIOPhotonSim;
+import frc.robot.subsystems.Limelight.AprilTagVision;
+import frc.robot.subsystems.Limelight.GamepieceVision;
+import frc.robot.subsystems.Limelight.sim.VisionIOFiducialSim;
+import frc.robot.subsystems.Limelight.sim.VisionIOGamepieceSim;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTracker;
 import frc.robot.subsystems.oi.OISubsystem;
-
-
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
 * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -40,8 +41,8 @@ public class RobotContainer {
     
     private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
 
-    private final Limelight limelight_ = new Limelight(
-        new LimelightIOPhotonSim("photon", () -> drivetrain_.getState().Pose),
+    private final AprilTagVision aprilTagVision_ = new AprilTagVision(
+        new VisionIOFiducialSim("april", () -> drivetrain_.getState().Pose, FieldConstants.FIELD_LAYOUT),
         () -> drivetrain_.getState().Pose,
         (estimate) -> {
             drivetrain_.addVisionMeasurement(
@@ -50,6 +51,10 @@ public class RobotContainer {
                 VecBuilder.fill(0.7, 0.7, 9999999)
             );
         }
+    );
+
+    private final GamepieceVision gamepieceVision_ = new GamepieceVision(
+        new VisionIOGamepieceSim("gamepiece", () -> drivetrain_.getState().Pose)
     );
 
     private final TargetTracker targetTracker_ = new TargetTracker(() -> drivetrain_.getState().Pose);

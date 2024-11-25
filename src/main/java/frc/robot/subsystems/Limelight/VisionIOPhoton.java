@@ -1,8 +1,5 @@
 package frc.robot.subsystems.Limelight;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -15,29 +12,25 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Limelight.structs.XeroFiducial;
+import frc.robot.subsystems.Limelight.structs.XeroGamepiece;
 import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 
-public class LimelightIOPhoton implements LimelightIO {
+public class VisionIOPhoton implements VisionIO {
 
     // Transform from robot to camera.
-    protected static final Transform3d robotToCamera_ = new Transform3d(
-        new Translation3d(0.321, 0, 0),
-        new Rotation3d(0, Units.degreesToRadians(-40), Units.degreesToRadians(180))
-    );
+    protected final Transform3d robotToCamera_;
 
     protected final PhotonCamera camera_;
     private final PhotonPoseEstimator poseEstimator_;
 
-    public LimelightIOPhoton(String name) {
+    public VisionIOPhoton(String name, Transform3d robotToCamera) {
         // Setup camera
         camera_ = new PhotonCamera(name);
+        robotToCamera_ = robotToCamera;
 
         // Setup pose stimator
         poseEstimator_ = new PhotonPoseEstimator(
@@ -49,7 +42,7 @@ public class LimelightIOPhoton implements LimelightIO {
     }
 
     @Override
-    public void updateInputs(LimelightIOInputsAutoLogged inputs) {
+    public void updateInputs(VisionIOInputsAutoLogged inputs) {
         PhotonPipelineResult result = camera_.getLatestResult();
         PhotonTrackedTarget bestTarget = result.getBestTarget();
 
@@ -71,6 +64,7 @@ public class LimelightIOPhoton implements LimelightIO {
         // Target information to fill
         ArrayList<Translation2d> cornerCoords = new ArrayList<>();
         ArrayList<XeroFiducial> fiducials = new ArrayList<>();
+        ArrayList<XeroGamepiece> gamepieces = new ArrayList<>();
 
         // Get target information
         for (PhotonTrackedTarget target : result.getTargets()) {
@@ -79,16 +73,13 @@ public class LimelightIOPhoton implements LimelightIO {
                 cornerCoords.add(new Translation2d(corner.x, corner.y));
             }
 
-            fiducials.add(new XeroFiducial(
-                target.getFiducialId(),
-                target.getArea(),
-                target.getPitch(),
-                target.getYaw()
-            ));
+            fiducials.add(new XeroFiducial(target));
+            gamepieces.add(new XeroGamepiece(target));
         }
 
         inputs.rawCorners = cornerCoords.toArray(new Translation2d[0]);
         inputs.fiducials = fiducials.toArray(new XeroFiducial[0]);
+        inputs.gamepieces = gamepieces.toArray(new XeroGamepiece[0]);
 
         Optional<EstimatedRobotPose> optionalPhotonEstimate = poseEstimator_.update();
 

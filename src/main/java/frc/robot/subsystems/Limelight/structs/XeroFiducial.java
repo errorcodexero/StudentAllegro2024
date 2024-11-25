@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Limelight.structs;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.util.struct.StructSerializable;
 import frc.robot.subsystems.Limelight.LimelightHelpers.LimelightTarget_Fiducial;
 
@@ -22,11 +24,12 @@ public class XeroFiducial implements StructSerializable {
         this.y = y;
     }
 
+    public XeroFiducial(PhotonTrackedTarget photonFid) {
+        this(photonFid.getFiducialId(), photonFid.getArea(), photonFid.getYaw(), photonFid.getPitch());
+    }
+
     public XeroFiducial(LimelightTarget_Fiducial llFid) {
-        this.id = llFid.fiducialID;
-        this.area = llFid.ta;
-        this.x = llFid.tx;
-        this.y = llFid.ty;
+        this(llFid.fiducialID, llFid.ta, llFid.tx, llFid.ty);
     }
 
     public static XeroFiducial[] fromLimelightArray(LimelightTarget_Fiducial[] llArray) {

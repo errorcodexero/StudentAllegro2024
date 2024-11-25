@@ -4,21 +4,23 @@ import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.Limelight.structs.XeroFiducial;
+import frc.robot.subsystems.Limelight.structs.XeroGamepiece;
 import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 
-public interface LimelightIO {
+public interface VisionIO {
 
     @AutoLog
-    public class LimelightIOInputs {
+    public class VisionIOInputs {
         // General Values That Will be Replayed
         public int simpleID = 0;
         public double simpleX = 0.0;
         public double simpleY = 0.0;
         public double simpleArea = 0.0;
         public boolean simpleValid = false;
-        
         public Translation2d[] rawCorners = new Translation2d[] {};
+        
         public XeroFiducial[] fiducials = new XeroFiducial[] {};
+        public XeroGamepiece[] gamepieces = new XeroGamepiece[] {};
 
         public XeroPoseEstimate poseEstimate = new XeroPoseEstimate();
     }
@@ -27,7 +29,7 @@ public interface LimelightIO {
      * Updates the inputs object with values from the hardware.
      * @param inputs The inputs to update
      */
-    public default void updateInputs(LimelightIOInputsAutoLogged inputs) {};
+    public default void updateInputs(VisionIOInputsAutoLogged inputs) {};
 
     /**
      * Forces the indicator light on the limelight to be off.

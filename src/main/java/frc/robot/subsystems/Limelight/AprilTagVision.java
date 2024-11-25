@@ -17,10 +17,10 @@ import frc.robot.subsystems.Limelight.structs.XeroFiducial;
 import frc.robot.subsystems.Limelight.structs.XeroPoseEstimate;
 import frc.robot.util.AprilTags;
 
-public class Limelight extends SubsystemBase {
+public class AprilTagVision extends SubsystemBase {
 
-    private final LimelightIO io_;
-    private final LimelightIOInputsAutoLogged inputs_;
+    private final VisionIO io_;
+    private final VisionIOInputsAutoLogged inputs_;
 
     private Supplier<Pose2d> poseSupplier_;
     private Consumer<XeroPoseEstimate> megatagConsumer_;
@@ -32,9 +32,9 @@ public class Limelight extends SubsystemBase {
      * Creates a Limelight.
      * @param name The limelight name.
      */
-    public Limelight(LimelightIO io, Supplier<Pose2d> poseSupplier, Consumer<XeroPoseEstimate> megatagConsumer) {
+    public AprilTagVision(VisionIO io, Supplier<Pose2d> poseSupplier, Consumer<XeroPoseEstimate> megatagConsumer) {
         io_ = io;
-        inputs_ = new LimelightIOInputsAutoLogged();
+        inputs_ = new VisionIOInputsAutoLogged();
 
         poseSupplier_ = poseSupplier;
         megatagConsumer_ = megatagConsumer;
