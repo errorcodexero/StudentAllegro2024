@@ -36,14 +36,8 @@ public class VisionIOGamepieceSim extends VisionIOPhoton {
     private final XeroPhotonSim sim_;
     private final Supplier<Pose2d> robotPoseSupplier_;
 
-    private static final Transform3d botToCam = new Transform3d(
-        new Translation3d(-0.321, 0, 0.8),
-        new Rotation3d(0, Units.degreesToRadians(20), 0)
-    );
-
-    public VisionIOGamepieceSim(String name, Supplier<Pose2d> robotPoseSupplier) {
-        super(name, botToCam);
-        Logger.recordOutput("BotToCam", botToCam);
+    public VisionIOGamepieceSim(String name, Transform3d robotToCamera, Supplier<Pose2d> robotPoseSupplier) {
+        super(name, robotToCamera);
         
         sim_ = new XeroPhotonSim(name, camera_, SimCameraProperties.LL2_960_720(), robotToCamera_);
         sim_.enableStreamChannels(true, true);

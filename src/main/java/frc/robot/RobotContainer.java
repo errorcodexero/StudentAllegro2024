@@ -9,6 +9,10 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -53,8 +57,15 @@ public class RobotContainer {
         }
     );
 
+    private final Transform3d robotToGpCamera = new Transform3d(
+        new Translation3d(-0.321, 0, 0.8),
+        new Rotation3d(0, Units.degreesToRadians(20), 0)
+    );
+
     private final GamepieceVision gamepieceVision_ = new GamepieceVision(
-        new VisionIOGamepieceSim("gamepiece", () -> drivetrain_.getState().Pose)
+        new VisionIOGamepieceSim("gamepiece", robotToGpCamera, () -> drivetrain_.getState().Pose),
+        robotToGpCamera,
+        () -> drivetrain_.getState().Pose
     );
 
     private final TargetTracker targetTracker_ = new TargetTracker(() -> drivetrain_.getState().Pose);
