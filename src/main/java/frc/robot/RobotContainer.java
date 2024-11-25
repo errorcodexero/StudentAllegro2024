@@ -4,11 +4,7 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -23,8 +19,8 @@ import frc.robot.commands.drive.TeleopSwerveDrive;
 import frc.robot.generated.CompSwerveConstants;
 import frc.robot.subsystems.Limelight.AprilTagVision;
 import frc.robot.subsystems.Limelight.GamepieceVision;
-import frc.robot.subsystems.Limelight.sim.VisionIOFiducialSim;
-import frc.robot.subsystems.Limelight.sim.VisionIOGamepieceSim;
+import frc.robot.subsystems.Limelight.sim.VisionIOAprilSim;
+import frc.robot.subsystems.Limelight.sim.VisionIONoteSim;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.subsystems.TargetTracker.TargetTracker;
 import frc.robot.subsystems.oi.OISubsystem;
@@ -46,7 +42,7 @@ public class RobotContainer {
     private final SwerveSubsystem drivetrain_ = new SwerveSubsystem(CompSwerveConstants.DriveTrain); 
 
     private final AprilTagVision aprilTagVision_ = new AprilTagVision(
-        new VisionIOFiducialSim("april", () -> drivetrain_.getState().Pose, FieldConstants.FIELD_LAYOUT),
+        new VisionIOAprilSim("april", () -> drivetrain_.getState().Pose, FieldConstants.FIELD_LAYOUT),
         () -> drivetrain_.getState().Pose,
         (estimate) -> {
             drivetrain_.addVisionMeasurement(
@@ -63,7 +59,7 @@ public class RobotContainer {
     );
 
     private final GamepieceVision gamepieceVision_ = new GamepieceVision(
-        new VisionIOGamepieceSim("gamepiece", robotToGpCamera, () -> drivetrain_.getState().Pose),
+        new VisionIONoteSim("gamepiece", robotToGpCamera, () -> drivetrain_.getState().Pose),
         robotToGpCamera,
         () -> drivetrain_.getState().Pose
     );
@@ -77,12 +73,6 @@ public class RobotContainer {
         // Configure the trigger bindings
         configureBindings();
         setupDrivetrain();
-
-        Logger.recordOutput("testpose", new Pose2d());
-
-        Pose3d[] poses = {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()};
-        Logger.recordOutput("componentstest", poses);
-
     }
     
     /**

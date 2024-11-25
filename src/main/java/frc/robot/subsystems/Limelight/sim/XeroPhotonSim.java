@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Limelight.sim;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
@@ -32,6 +33,10 @@ public class XeroPhotonSim {
         camera_ = camera;
         cameraProps_ = cameraProps;
         robotToCamera_ = robotToCamera;
+
+        Logger.recordOutput("CameraSim/" + name + "/HorizontalFovDegrees", cameraProps.getHorizFOV().getDegrees());
+        Logger.recordOutput("CameraSim/" + name + "/DiagonalFovDegrees", cameraProps.getDiagFOV().getDegrees());
+        Logger.recordOutput("CameraSim/" + name + "/VerticalFovDegrees", cameraProps.getVertFOV().getDegrees());
     }
 
     public void enableWireframe(boolean enabled) {

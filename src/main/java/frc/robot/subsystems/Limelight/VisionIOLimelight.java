@@ -58,6 +58,8 @@ public class VisionIOLimelight implements VisionIO {
         inputs.gamepieces = XeroGamepiece.fromLimelightArray(results.targets_Detector);
         inputs.poseEstimate = XeroPoseEstimate.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name_));
 
+        inputs.timestampSeconds = results.timestamp_RIOFPGA_capture;
+
         // Raw Corners
         RawDetection[] detections = LimelightHelpers.getRawDetections(name_);
         ArrayList<Translation2d> corners = new ArrayList<>();

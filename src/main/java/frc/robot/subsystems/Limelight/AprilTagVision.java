@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -25,7 +24,6 @@ public class AprilTagVision extends SubsystemBase {
     private Supplier<Pose2d> poseSupplier_;
     private Consumer<XeroPoseEstimate> megatagConsumer_;
 
-    @AutoLogOutput(key = "Limelight/LastValidTargetTimestamp")
     private double lastValidTargetTimestamp_;
 
     /**
@@ -54,6 +52,7 @@ public class AprilTagVision extends SubsystemBase {
 
         if (hasValidTarget()) {
             lastValidTargetTimestamp_ = Timer.getFPGATimestamp();
+            Logger.recordOutput(getName() + "/LastValidTarget", lastValidTargetTimestamp_);
         }
 
         // Creates an array of poses of the currently visible tags. This is useful for seeing which tags the robot can see visually.

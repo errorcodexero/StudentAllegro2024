@@ -2,7 +2,6 @@ package frc.robot.subsystems.Limelight.sim;
 
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.simulation.SimCameraProperties;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -14,7 +13,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Limelight.VisionIOInputsAutoLogged;
 import frc.robot.subsystems.Limelight.VisionIOPhoton;
 
-public class VisionIOFiducialSim extends VisionIOPhoton {
+public class VisionIOAprilSim extends VisionIOPhoton {
 
     private final XeroPhotonSim sim_;
 
@@ -25,9 +24,8 @@ public class VisionIOFiducialSim extends VisionIOPhoton {
         new Rotation3d(0, Units.degreesToRadians(-40), Units.degreesToRadians(180))
     );
 
-    public VisionIOFiducialSim(String name, Supplier<Pose2d> robotPoseSupplier, AprilTagFieldLayout layout) {
+    public VisionIOAprilSim(String name, Supplier<Pose2d> robotPoseSupplier, AprilTagFieldLayout layout) {
         super(name, botToCam);
-        Logger.recordOutput("AprilCamPos", botToCam);
 
         sim_ = new XeroPhotonSim(name, camera_, SimCameraProperties.LL2_960_720(), robotToCamera_);
         sim_.enableStreamChannels(true, true);

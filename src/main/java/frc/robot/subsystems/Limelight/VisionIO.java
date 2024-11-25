@@ -17,6 +17,7 @@ public interface VisionIO {
         public double simpleY = 0.0;
         public double simpleArea = 0.0;
         public boolean simpleValid = false;
+        public double timestampSeconds = 0.0;
         public Translation2d[] rawCorners = new Translation2d[] {};
         
         public XeroFiducial[] fiducials = new XeroFiducial[] {};

@@ -61,6 +61,8 @@ public class VisionIOPhoton implements VisionIO {
             inputs.simpleValid = false;
         }
 
+        inputs.timestampSeconds = result.getTimestampSeconds();
+
         // Target information to fill
         ArrayList<Translation2d> cornerCoords = new ArrayList<>();
         ArrayList<XeroFiducial> fiducials = new ArrayList<>();
